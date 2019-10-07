@@ -1,0 +1,17 @@
+# Eclipse files and folders
+.metadata
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
+.recommenders
+.classpath
+.project
+
+# Maven 
+target/
