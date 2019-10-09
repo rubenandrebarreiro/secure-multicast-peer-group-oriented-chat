@@ -1,5 +1,7 @@
 package multicast.sockets.messages.components;
 
+import java.security.SecureRandom;
+
 import multicast.common.CommonUtils;
 
 public class SecureMessageAttributes {
@@ -13,9 +15,9 @@ public class SecureMessageAttributes {
 	
 	private String paddingMethod;
 	
-	private String integrityControlConstructionMethod;
+	private String integrityControlCryptographicHashFunctionConstructionMethod;
 
-	private String fastSecurePayloadCheckConstructionMethod;
+	private String fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethod;
 
 	private byte[] secureMessageAttributesSerialized;
 	
@@ -26,8 +28,8 @@ public class SecureMessageAttributes {
 								   String symmetricEncryptionAlgorithm,
 								   String symmetricEncryptionMode, 
 								   String paddingMethod,
-								   String integrityControlConstructionMethod,
-								   String fastSecurePayloadCheckConstructionMethod) {
+								   String integrityControlCryptographicHashFunctionConstructionMethod,
+								   String fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethod) {
 		
 		this.sessionID = sessionID;
 		this.sessionName = sessionName;
@@ -37,8 +39,8 @@ public class SecureMessageAttributes {
 		
 		this.paddingMethod = paddingMethod;
 		
-		this.integrityControlConstructionMethod = integrityControlConstructionMethod;
-		this.fastSecurePayloadCheckConstructionMethod = fastSecurePayloadCheckConstructionMethod;
+		this.integrityControlCryptographicHashFunctionConstructionMethod = integrityControlCryptographicHashFunctionConstructionMethod;
+		this.fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethod = fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethod;
 		
 		this.isSecureMessageAttributesSerialized = false;
 	}
@@ -63,12 +65,12 @@ public class SecureMessageAttributes {
 		return this.paddingMethod;
 	}
 	
-	public String getIntegrityControlConstructionMethod() {
-		return this.integrityControlConstructionMethod;
+	public String getIntegrityControlCryptographicHashFunctionConstructionMethod() {
+		return this.integrityControlCryptographicHashFunctionConstructionMethod;
 	}
 	
-	public String getFastSecurePayloadCheckConstructionMethod() {
-		return this.fastSecurePayloadCheckConstructionMethod;
+	public String getFastSecurePayloadCheckMessageAuthenticationCodeConstructionMethod() {
+		return this.fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethod;
 	}
 
 	public void buildSecureMessageAttributesSerialization() {
@@ -84,14 +86,17 @@ public class SecureMessageAttributes {
 			
 			byte[] paddingMethodSerialized = CommonUtils.fromStringToByteArray(this.paddingMethod);
 			
-			byte[] integrityControlConstructionMethodSerialized = CommonUtils.fromStringToByteArray(this.integrityControlConstructionMethod);
+			byte[] integrityControlCryptographicHashFunctionConstructionMethodSerialized = 
+															CommonUtils.fromStringToByteArray(this.integrityControlCryptographicHashFunctionConstructionMethod);
 			
-			byte[] fastSecurePayloadCheckConstructionMethodSerialized = CommonUtils.fromStringToByteArray(this.fastSecurePayloadCheckConstructionMethod);
+			byte[] fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethodSerialized = 
+															CommonUtils.fromStringToByteArray(this.fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethod);
 			
 			
 			int sizeOfSecureMessageAtrributesSerialized = ( sessionIDSerialized.length + sessionNameSerialized.length + 
 					                                        symmetricEncryptionAlgorithmSerialized.length + symmetricEncryptionModeSerialized.length + paddingMethodSerialized.length + 
-					                                        integrityControlConstructionMethodSerialized.length + fastSecurePayloadCheckConstructionMethodSerialized.length );
+					                                        integrityControlCryptographicHashFunctionConstructionMethodSerialized.length + 
+					                                        fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethodSerialized.length );
 
 			this.secureMessageAttributesSerialized = new byte[sizeOfSecureMessageAtrributesSerialized];
 			
@@ -124,15 +129,15 @@ public class SecureMessageAttributes {
 			
 			// Fills the byte array of the Secure Message Attributes with the serialization of the name of Integrity Control Construction Mode in use,
 			// From the position corresponding to the length of the byte array of the name of Integrity Control Construction Mode in use		
-			System.arraycopy(integrityControlConstructionMethodSerialized, 0, this.secureMessageAttributesSerialized, serializationOffset,
-					         integrityControlConstructionMethodSerialized.length);
-			serializationOffset += integrityControlConstructionMethodSerialized.length;
+			System.arraycopy(integrityControlCryptographicHashFunctionConstructionMethodSerialized, 0, this.secureMessageAttributesSerialized, serializationOffset,
+					         integrityControlCryptographicHashFunctionConstructionMethodSerialized.length);
+			serializationOffset += integrityControlCryptographicHashFunctionConstructionMethodSerialized.length;
 			
 			// Fills the byte array of the Secure Message Attributes with the serialization of the name of Fast Secure Payload Check Construction Mode in use,
 			// From the position corresponding to the length of the byte array of the name of Fast Secure Payload Check Construction Mode in use
-			System.arraycopy(fastSecurePayloadCheckConstructionMethodSerialized, 0, this.secureMessageAttributesSerialized, serializationOffset,
-					         fastSecurePayloadCheckConstructionMethodSerialized.length);
-			serializationOffset += fastSecurePayloadCheckConstructionMethodSerialized.length;
+			System.arraycopy(fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethodSerialized, 0, this.secureMessageAttributesSerialized, serializationOffset,
+							 fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethodSerialized.length);
+			serializationOffset += fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethodSerialized.length;
 						
 			this.isSecureMessageAttributesSerialized = true;
 		}	
@@ -140,5 +145,20 @@ public class SecureMessageAttributes {
 	
 	public byte[] getSecureMessageAttributesSerialized() {
 		return this.isSecureMessageAttributesSerialized ? this.secureMessageAttributesSerialized : null;
+	}
+	
+	public void buildSecureMessageAttributesSerializationHashed() {
+		this.buildSecureMessageAttributesSerialization();
+		
+		byte[] secureMessageAttributesSerialized = this.getSecureMessageAttributesSerialized();
+	
+		
+		// HASHING Process
+		// The Source/Seed of a Secure Random
+		SecureRandom secureRandom = new SecureRandom();
+		
+		// The Initialization Vector and its Parameter's Specifications
+		//IvParameterSpec initializationVectorParameterSpecifications = CommonUtils.createCtrIvForAES(messageNumber, secureRandom)
+		
 	}
 }
