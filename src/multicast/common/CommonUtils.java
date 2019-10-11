@@ -63,6 +63,15 @@ public class CommonUtils {
 	 */
 	public static final int LONG_LENGTH = 6;
 	
+	/**
+	 * The Rate Time for verification of the Cleaning Nonces Service
+	 */
+	public static final long CLEANING_NONCES_SERVICE_VERIFICATION_RATE_TIME = 10000;
+	
+	/**
+	 * The Timeout for triggering the event of cleaning/removing old Nonces
+	 */
+	public static final long NONCES_CLEANING_TIMEOUT = 600000;
 	
 	
 	// Global Instance Variables:

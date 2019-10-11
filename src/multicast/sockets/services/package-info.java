@@ -16,7 +16,7 @@
 
 /**
  * 
- * Package of Multicast.Sockets.Messages.Components.
+ * Package of Multicast.Sockets.Services.
  * 
  * @supervisor Prof. Henrique Joao Domingos - hj@fct.unl.pt
  * 
@@ -24,4 +24,4 @@
  * @author Ruben Andre Barreiro (no. 42648) - r.barreiro@campus.fct.unl.pt
  *
  */
-package multicast.sockets.messages.components;
+package multicast.sockets.services;

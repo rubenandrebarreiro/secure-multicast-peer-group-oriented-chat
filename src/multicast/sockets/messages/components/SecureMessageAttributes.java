@@ -1,6 +1,12 @@
 package multicast.sockets.messages.components;
 
+import java.security.InvalidKeyException;
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
+
+import javax.crypto.Mac;
 
 import multicast.common.CommonUtils;
 
@@ -23,6 +29,11 @@ public class SecureMessageAttributes {
 	
 	private boolean isSecureMessageAttributesSerialized;
 	
+	private byte[] secureMessageAttributesSerializedHashed;
+	
+	private boolean isSecureMessageAttributesSerializedHashed;
+	
+	private boolean isSecureMessageAttributesSerializedHashedValid;
 	
 	public SecureMessageAttributes(String sessionID, String sessionName, 
 								   String symmetricEncryptionAlgorithm,
@@ -43,6 +54,15 @@ public class SecureMessageAttributes {
 		this.fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethod = fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethod;
 		
 		this.isSecureMessageAttributesSerialized = false;
+		this.isSecureMessageAttributesSerializedHashed = false;
+	}
+	
+	public SecureMessageAttributes(byte[] finalSecureMessageAttributesSerializationHashed) {
+		this.secureMessageAttributesSerializedHashed = finalSecureMessageAttributesSerializationHashed;
+		
+		// TODO comparar com o hash do properties
+		this.isSecureMessageAttributesSerializedHashedValid = 
+									this.secureMessageAttributesSerializedHashed.equals(null) ? true : false;
 	}
 	
 	public String getSessionID() {
@@ -147,18 +167,52 @@ public class SecureMessageAttributes {
 		return this.isSecureMessageAttributesSerialized ? this.secureMessageAttributesSerialized : null;
 	}
 	
-	public void buildSecureMessageAttributesSerializationHashed() {
+	public void buildFinalSecureMessageAttributesSerializationHashed() {
 		this.buildSecureMessageAttributesSerialization();
 		
-		byte[] secureMessageAttributesSerialized = this.getSecureMessageAttributesSerialized();
+		if(this.isSecureMessageAttributesSerialized && !this.isSecureMessageAttributesSerializedHashed) {
+			byte[] secureMessageAttributesSerialized = this.getSecureMessageAttributesSerialized();
+			
+			// HASHING Process
+			try {
+				// The Source/Seed of a Secure Random
+				SecureRandom secureRandom = new SecureRandom();
+				
+				// The Initialization Vector and its Parameter's Specifications
+				Key secureMessageAttributesSerializationHashKey = CommonUtils.createKeyForAES(256, secureRandom);
+				
+				//Key secureMessageAttributesSerializationHashKey = null;  // TODO
+				Mac mac = Mac.getInstance("SHA-256");
+				mac.init(secureMessageAttributesSerializationHashKey);
+				mac.update(secureMessageAttributesSerialized);
+				
+				this.secureMessageAttributesSerializedHashed = mac.doFinal();
+			}
+			catch (NoSuchAlgorithmException noSuchAlgorithmException) {
+				System.err.println("Error occurred during the Hashing Function over the Secure Message's Attributes:");
+				System.err.println("- Cryptographic Algorithm not found!!!");
+				noSuchAlgorithmException.printStackTrace();
+			}
+			catch (NoSuchProviderException noSuchProviderException) {
+				System.err.println("Error occurred during the Hashing Function over the Secure Message's Attributes:");
+				System.err.println("- Cryptograhic Provider not found!!!");
+				noSuchProviderException.printStackTrace();
+			}
+			catch (InvalidKeyException invalidKeyException) {
+				System.err.println("Error occurred during the Hashing Function over the Secure Message's Attributes:");
+				System.err.println("- Invalid Secret Key!!!");
+				invalidKeyException.printStackTrace();
+			}
+		
+			this.isSecureMessageAttributesSerializedHashed = true;
+		}
+	}
 	
-		
-		// HASHING Process
-		// The Source/Seed of a Secure Random
-		SecureRandom secureRandom = new SecureRandom();
-		
-		// The Initialization Vector and its Parameter's Specifications
-		//IvParameterSpec initializationVectorParameterSpecifications = CommonUtils.createCtrIvForAES(messageNumber, secureRandom)
-		
+	public byte[] getSecureMessageAttributesSerializedHashed() {
+		return this.isSecureMessageAttributesSerializedHashed ? this.secureMessageAttributesSerializedHashed : null;
+	}
+	
+	public boolean checkIfIsSecureMessageAttributesSerializedHashedValid() {
+		return this.isSecureMessageAttributesSerializedHashedValid;
 	}
 }
