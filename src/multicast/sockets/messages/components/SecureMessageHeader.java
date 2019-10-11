@@ -32,28 +32,28 @@ public class SecureMessageHeader {
 	
 	// Global Instance Variables:
 	/**
-	 * The Version's Number of the Secure Message's Protocol.
+	 * The Version's Number of the Secure Message's Protocol
 	 */
 	private byte versionNumber;
 	
 	/**
-	 * The Session's ID, using the Secure Message's Protocol.
+	 * The Session's ID, using the Secure Message's Protocol
 	 */
 	private String sessionID;
 	
 	/**
-	 * The Message's Type, using the Secure Message's Protocol.
+	 * The Message's Type, using the Secure Message's Protocol
 	 */
 	private byte messageType;
 	
 	/**
-	 * The byte array of the Secure Message's Header serialized.
+	 * The byte array of the Secure Message's Header serialized
 	 */
 	private byte[] secureMessageHeaderSerialized;
 	
 	/**
 	 * The boolean to keep the value to check if
-	 * the Secure Message's Header is serialized.
+	 * the Secure Message's Header is serialized
 	 */
 	private boolean isSecureMessageHeaderSerialized;
 	

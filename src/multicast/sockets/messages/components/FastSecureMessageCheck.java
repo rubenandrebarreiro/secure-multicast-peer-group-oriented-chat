@@ -38,18 +38,18 @@ public class FastSecureMessageCheck {
 	
 	// Global Instance Variables:
 	/**
-	 * The Secure Message serialized.
+	 * The Secure Message serialized
 	 */
 	private byte[] secureMessageSerialized;
 	
 	/**
-	 * The Secure Message serialized hashed.
+	 * The Secure Message serialized hashed
 	 */
 	private byte[] secureMessageSerializedHashed;
 	
 	/**
 	 * The boolean to keep the value to check if
-	 * the Secure Message serialized is hashed.
+	 * the Secure Message serialized is hashed
 	 */
 	private boolean isSecureMessageSerializedHashed;
 	
@@ -162,8 +162,10 @@ public class FastSecureMessageCheck {
 	 */
 	public boolean checkIfIsSecureMessageSerializedHashedValid() {
 		
+		// TODO
 		if(this.isSecureMessageSerializedHashed) {
 			
+			// TODO
 			byte[] secureMessageSerializedHashedToCompare = this.secureMessageSerialized;
 			
 			// Starts the MAC Hash process over the Secure Message serialized received (applying the HMAC or CMAC operation),

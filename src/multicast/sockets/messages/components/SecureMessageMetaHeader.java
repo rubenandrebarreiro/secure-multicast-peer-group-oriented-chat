@@ -32,53 +32,53 @@ public class SecureMessageMetaHeader {
 	
 	// Global Instance Variables:
 	/**
-	 * The size of the Secure Message's Header.
+	 * The size of the Secure Message's Header
 	 */
 	private int sizeOfSecureMessageHeader;
 	
 	/**
-	 * The size of the Secure Message's Attributes.
+	 * The size of the Secure Message's Attributes
 	 */
 	private int sizeOfSecureMessageAttributes;
 	
 	/**
-	 * The size of the Secure Message's Payload.
+	 * The size of the Secure Message's Payload
 	 */
 	private int sizeOfSecureMessagePayload;
 	
 	/**
-	 * The size of the Fast Secure Message's Check.
+	 * The size of the Fast Secure Message's Check
 	 */
 	private int sizeOfFastSecureMessageCheck;
 	
 	/**
-	 * The Secure Message's Meta-Header serialized.
+	 * The Secure Message's Meta-Header serialized
 	 */
 	private byte[] secureMessageMetaHeaderSerialized;
 
 	/**
 	 * The boolean to keep the value to check if
-	 * the Secure Message's Meta-Header is serialized.
+	 * the Secure Message's Meta-Header is serialized
 	 */
 	private boolean isSecureMessageMetaHeaderSerialized;
 	
 	/**
-	 * The size of the Secure Message's Header serialized.
+	 * The size of the Secure Message's Header serialized
 	 */
 	private byte[] sizeOfSecureMessageHeaderSerialized;
 	
 	/**
-	 * The size of the Secure Message's Attributes serialized.
+	 * The size of the Secure Message's Attributes serialized
 	 */
 	private byte[] sizeOfSecureMessageAttributesSerialized;
 	
 	/**
-	 * The size of the Secure Message's Payload serialized.
+	 * The size of the Secure Message's Payload serialized
 	 */
 	private byte[] sizeOfSecureMessagePayloadSerialized;
 	
 	/**
-	 * The size of the Fast Secure Message's Check serialized.
+	 * The size of the Fast Secure Message's Check serialized
 	 */
 	private byte[] sizeOfFastSecureMessageCheckSerialized;
 	
@@ -170,7 +170,7 @@ public class SecureMessageMetaHeader {
 	}
 
 	/**
-	 * Build the Secure Message's Meta-Header serialized.
+	 * Builds the Secure Message's Meta-Header serialized.
 	 */
 	public void buildMessageMetaHeaderSerialized() {
 		
@@ -274,7 +274,7 @@ public class SecureMessageMetaHeader {
 	}
 	
 	/**
-	 * Build the sizes of the several parts of the Secure Message from
+	 * Builds the sizes of the several parts of the Secure Message from
 	 * the Secure Message's Meta-Header serialized.
 	 */
 	public void buildSizesOfSecureMessageParts() {
