@@ -15,22 +15,22 @@ public class FinalSecureMessage {
 	/**
 	 * 
 	 */
-	SecureMessageHeader secureMessageHeader;
+	private SecureMessageHeader secureMessageHeader;
 	
 	/**
 	 * 
 	 */
-	SecureMessageAttributes secureMessageAttributes;
+	private SecureMessageAttributes secureMessageAttributes;
 	
 	/**
 	 * 
 	 */
-	SecureMessagePayload secureMessagePayload;
+	private SecureMessagePayload secureMessagePayload;
 	
 	/**
 	 * 
 	 */
-	FastSecureMessageCheck fastSecureMessageCheck;
+	private FastSecureMessageCheck fastSecureMessageCheck;
 	
 	// Constructors:
 	
