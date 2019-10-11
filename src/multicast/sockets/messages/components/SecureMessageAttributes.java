@@ -50,12 +50,6 @@ public class SecureMessageAttributes {
 		this.fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethod = fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethod;
 		
 		this.isSecureMessageAttributesSerialized = false;
-		
-		
-	}
-	
-	public SecureMessageAttributes() {
-		
 	}
 	
 	public String getSessionID() {
@@ -175,11 +169,11 @@ public class SecureMessageAttributes {
 				Key secureMessageAttributesSerializationHashKey = CommonUtils.createKeyForAES(256, secureRandom);
 				
 				//Key secureMessageAttributesSerializationHashKey = null;  // TODO
-				Mac secureMessageAttributesSerializationHashMAC = Mac.getInstance("SHA-256");
-				secureMessageAttributesSerializationHashMAC.init(secureMessageAttributesSerializationHashKey);
-				secureMessageAttributesSerializationHashMAC.update(secureMessageAttributesSerialized);
+				Mac mac = Mac.getInstance("SHA-256");
+				mac.init(secureMessageAttributesSerializationHashKey);
+				mac.update(secureMessageAttributesSerialized);
 				
-				return secureMessageAttributesSerializationHashMAC.doFinal();
+				return mac.doFinal();
 				
 			}
 			catch (NoSuchAlgorithmException noSuchAlgorithmException) {

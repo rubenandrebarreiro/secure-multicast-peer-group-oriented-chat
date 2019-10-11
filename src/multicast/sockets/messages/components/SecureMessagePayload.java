@@ -3,6 +3,7 @@ package multicast.sockets.messages.components;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.Key;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 
@@ -33,13 +34,14 @@ public class SecureMessagePayload {
 	
 	
 	public SecureMessagePayload(String fromPeerID, int sequenceNumber, int randomNonce,
-								byte[] messageSerialized, byte[] integrityControlSerialiazedHashed) {
+								byte[] messageSerialized) {
 		
 		this.fromPeerID = fromPeerID;
 		this.sequenceNumber = sequenceNumber;
 		this.randomNonce = randomNonce;
 		this.messageSerialized = messageSerialized;
-		this.integrityControlHashSerialiazed = integrityControlSerialiazedHashed;
+		
+		this.buildIntegrityControlHashSerialized(messageSerialized);
 	
 		this.isSecureMessagePayloadSerialized = false;
 	}
@@ -60,9 +62,25 @@ public class SecureMessagePayload {
 		return this.messageSerialized;
 	}
 	
+	public void buildIntegrityControlHashSerialized(byte[] messageSerialized) {
+		if(messageSerialized != null) {
+			try {
+				MessageDigest hashFunctionAlgorithmn = MessageDigest.getInstance("SHA-256");
+				
+				this.integrityControlHashSerialiazed = hashFunctionAlgorithmn.digest(messageSerialized);
+			}
+			catch (NoSuchAlgorithmException noSuchAlgorithmException) {
+				System.err.println("Error occurred during the Hash Function over the Message:");
+				System.err.println("- Cryptographic Algorithm not found!!!");
+				noSuchAlgorithmException.printStackTrace();
+			}
+		}
+	}
+	
 	public byte[] getIntegrityControlSerialiazedHashed() {
 		return this.integrityControlHashSerialiazed;
 	}
+	
 	
 	public void buildSecureMessagePayloadSerialization() {
 		if(!this.isSecureMessagePayloadSerialized) {

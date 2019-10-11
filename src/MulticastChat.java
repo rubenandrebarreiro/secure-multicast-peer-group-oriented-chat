@@ -5,6 +5,8 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+import multicast.sockets.SecureMulticastSocket;
+
 public class MulticastChat extends Thread {
 
 
@@ -26,8 +28,9 @@ public class MulticastChat extends Thread {
   // Multicast socket used to send and receive multicast protocol PDUs
   // Socket Multicast usado para enviar e receber mensagens 
   // no ambito das operacoes que tem lugar no Chat
-  protected MulticastSocket msocket;
-
+  //protected MulticastSocket msocket; // TODO mudar depois
+  protected SecureMulticastSocket secureMulticastSocket;
+  
   // Username / User-Nick-Name do Chat
   protected String username;
 
@@ -52,10 +55,14 @@ public class MulticastChat extends Thread {
     isActive = true;
 
     // create & configure multicast socket
-    msocket = new MulticastSocket(port);
-    msocket.setSoTimeout(DEFAULT_SOCKET_TIMEOUT_MILLIS);
-    msocket.setTimeToLive(ttl);
-    msocket.joinGroup(group);
+    //msocket = new MulticastSocket(port);
+    secureMulticastSocket = new SecureMulticastSocket(port);
+    //msocket.setSoTimeout(DEFAULT_SOCKET_TIMEOUT_MILLIS);
+    secureMulticastSocket.setSoTimeout(DEFAULT_SOCKET_TIMEOUT_MILLIS);
+    //msocket.setTimeToLive(ttl);
+    secureMulticastSocket.setTimeToLive(ttl);
+    //msocket.joinGroup(group);
+    secureMulticastSocket.joinGroup(group);
 
     // start receive thread and send multicast join message
     start();
@@ -91,8 +98,8 @@ public class MulticastChat extends Thread {
 
     byte[] data = byteStream.toByteArray();
     DatagramPacket packet = new DatagramPacket(data, data.length, group, 
-                                               msocket.getLocalPort());
-    msocket.send(packet);
+    										   secureMulticastSocket.getLocalPort());
+    secureMulticastSocket.send(packet);
   } 
 
   // Processamento de um JOIN ao grupo multicast com notificacao
@@ -119,8 +126,8 @@ public class MulticastChat extends Thread {
 
     byte[] data = byteStream.toByteArray();
     DatagramPacket packet = new DatagramPacket(data, data.length, group, 
-                                               msocket.getLocalPort());
-    msocket.send(packet);
+    										   secureMulticastSocket.getLocalPort());
+    secureMulticastSocket.send(packet);
   } 
 
   // Processes a multicast chat LEAVE PDU and notifies listeners
@@ -149,8 +156,8 @@ public class MulticastChat extends Thread {
 
     byte[] data = byteStream.toByteArray();
     DatagramPacket packet = new DatagramPacket(data, data.length, group, 
-                                               msocket.getLocalPort());
-    msocket.send(packet);
+    										   secureMulticastSocket.getLocalPort());
+    secureMulticastSocket.send(packet);
   } 
 
 
@@ -179,7 +186,7 @@ public class MulticastChat extends Thread {
 
         // Comprimento do DatagramPacket RESET antes do request
         packet.setLength(buffer.length);
-        msocket.receive(packet);
+        secureMulticastSocket.receive(packet);
 
         DataInputStream istream = 
           new DataInputStream(new ByteArrayInputStream(packet.getData(), 
@@ -222,7 +229,7 @@ public class MulticastChat extends Thread {
     } 
 
     try {
-      msocket.close();
+    	secureMulticastSocket.close();
     } catch (Throwable e) {}
   } 
 }
