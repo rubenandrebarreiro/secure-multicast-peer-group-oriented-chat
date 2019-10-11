@@ -19,18 +19,41 @@ public class FastSecureMessageCheck {
 	 */
 	private byte[] secureMessageSerialized;
 	
+	/**
+	 * 
+	 */
 	private byte[] secureMessageSerializedHashed;
 	
+	/**
+	 * 
+	 */
 	private boolean isSecureMessageSerializedHashed;
 	
+	/**
+	 * 
+	 */
 	private boolean isSecureMessageSerializedHashedValid;
 	
+	// Constructors:
+	/**
+	 * Constructor #1:
+	 * - TODO
+	 * 
+	 * @param secureMessageSerialized
+	 */
 	public FastSecureMessageCheck(byte[] secureMessageSerialized) {
 		this.secureMessageSerialized = secureMessageSerialized;
 		
 		this.isSecureMessageSerializedHashed = false;
 	}
 	
+	/**
+	 * Constructor #2:
+	 * - TODO
+	 * @param secureMessageSerialized
+	 * 
+	 * @param secureMessageSerializedHashed
+	 */
 	public FastSecureMessageCheck(byte[] secureMessageSerialized, byte[] secureMessageSerializedHashed) {
 		this.secureMessageSerialized = secureMessageSerialized;
 		this.secureMessageSerializedHashed = secureMessageSerializedHashed;

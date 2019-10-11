@@ -1,14 +1,39 @@
 package multicast.sockets.services;
 
+/**
+ * 
+ * Secure Multicast Peer Group Oriented Chat - Phase #1
+ * 
+ * Network and Computer Systems Security
+ * 
+ * Faculty of Science and Technology of New University of Lisbon
+ * (FCT NOVA | FCT/UNL)
+ * 
+ * Integrated Master of Computer Science and Engineering
+ * (BSc. + MSc. Bologna Degree)
+ * 
+ * Academic Year 2019/2020
+ * 
+ */
+
 import java.util.Map;
 import java.util.Map.Entry;
 
 import multicast.common.CommonUtils;
 
+/**
+ * 
+ * Class for the Cleaning Nonces' Services of the Secure Multicast Socket.
+ * 
+ * @supervisor Prof. Henrique Joao Domingos - hj@fct.unl.pt
+ * 
+ * @author Eduardo Bras Silva (no. 41798) - emf.silva@campus.fct.unl.pt
+ * @author Ruben Andre Barreiro (no. 42648) - r.barreiro@campus.fct.unl.pt
+ *
+ */
 public class SecureMulticastSocketCleaningNoncesService implements Runnable {
 	
 	// Global Instance Variables:
-
 	/**
 	 * The Nonces' Map, where will be kept the current valid Nonces of the Secure Multicast Socket
 	 */
