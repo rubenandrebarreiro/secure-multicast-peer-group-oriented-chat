@@ -21,6 +21,21 @@ public class SecureMessageHeader {
 		
 		this.isSecureMessageHeaderSerialized = false;
 	}
+	
+	public SecureMessageHeader(byte[] secureMessageHeaderSerialized) {
+		this.secureMessageHeaderSerialized = secureMessageHeaderSerialized;
+		
+		this.versionNumber = this.secureMessageHeaderSerialized[0];
+		
+		byte[] sessionIDSerialized = new byte[ (secureMessageHeaderSerialized.length - ( 2 * CommonUtils.BYTE_LENGTH ) ) ];
+		
+		System.arraycopy(secureMessageHeaderSerialized, CommonUtils.BYTE_LENGTH,
+						 sessionIDSerialized, 0, ( secureMessageHeaderSerialized.length - CommonUtils.BYTE_LENGTH ));
+		
+		this.sessionID = CommonUtils.fromByteArrayToString(sessionIDSerialized);
+		
+		this.messageType = secureMessageHeaderSerialized[ ( secureMessageHeaderSerialized.length - CommonUtils.BYTE_LENGTH ) ];
+	}
 
 	public byte getVersionNumber() {
 		return this.versionNumber;

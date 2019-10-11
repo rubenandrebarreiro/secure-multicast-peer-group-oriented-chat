@@ -28,6 +28,39 @@ public class SecureMessageMetaHeader {
 		this.sizeOfFastSecureMessageCheck = sizeOfFastSecureMessageCheck;
 	}
 	
+	public SecureMessageMetaHeader(byte[] secureMessageMetaHeaderSerialized) {
+		this.secureMessageMetaHeaderSerialized = secureMessageMetaHeaderSerialized;
+		
+		this.sizeOfSecureMessageHeaderSerialized = new byte[CommonUtils.INTEGER_LENGTH];
+		this.sizeOfSecureMessageAttributesSerialized = new byte[CommonUtils.INTEGER_LENGTH];
+		this.sizeOfSecureMessagePayloadSerialized = new byte[CommonUtils.INTEGER_LENGTH];
+		this.sizeOfFastSecureMessageCheckSerialized = new byte[CommonUtils.INTEGER_LENGTH];
+		
+		
+		int offsetSecureMessageHeaderSerializedParts = 0;
+		
+		System.arraycopy(this.secureMessageMetaHeaderSerialized, offsetSecureMessageHeaderSerializedParts,
+						 this.sizeOfSecureMessageHeaderSerialized, 0, CommonUtils.INTEGER_LENGTH);
+		offsetSecureMessageHeaderSerializedParts += CommonUtils.INTEGER_LENGTH;
+		
+		System.arraycopy(this.secureMessageMetaHeaderSerialized, offsetSecureMessageHeaderSerializedParts,
+				 		 this.sizeOfSecureMessageAttributesSerialized, 0, CommonUtils.INTEGER_LENGTH);
+		offsetSecureMessageHeaderSerializedParts += CommonUtils.INTEGER_LENGTH;
+		
+		System.arraycopy(this.secureMessageMetaHeaderSerialized, offsetSecureMessageHeaderSerializedParts,
+				 		 this.sizeOfSecureMessagePayloadSerialized, 0, CommonUtils.INTEGER_LENGTH);
+		offsetSecureMessageHeaderSerializedParts += CommonUtils.INTEGER_LENGTH;
+		
+		System.arraycopy(this.secureMessageMetaHeaderSerialized, offsetSecureMessageHeaderSerializedParts,
+				 		 this.sizeOfFastSecureMessageCheckSerialized, 0, CommonUtils.INTEGER_LENGTH);
+		
+		
+		this.sizeOfSecureMessageHeader = CommonUtils.fromByteArrayToInt(sizeOfSecureMessageHeaderSerialized);
+		this.sizeOfSecureMessageAttributes = CommonUtils.fromByteArrayToInt(sizeOfSecureMessageAttributesSerialized);
+		this.sizeOfSecureMessagePayload = CommonUtils.fromByteArrayToInt(sizeOfSecureMessagePayloadSerialized);
+		this.sizeOfFastSecureMessageCheck = CommonUtils.fromByteArrayToInt(sizeOfFastSecureMessageCheckSerialized);
+	}
+	
 	public int getSizeOfSecureMessageHeader() {
 		return this.sizeOfSecureMessageHeader;
 	}

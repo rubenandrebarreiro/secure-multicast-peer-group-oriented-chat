@@ -30,6 +30,7 @@ public class SecureMessageAttributes {
 	
 	private boolean isSecureMessageAttributesSerialized;
 	
+	private byte[] finalSecureMessageAttributesSerializationHashed;
 	
 	public SecureMessageAttributes(String sessionID, String sessionName, 
 								   String symmetricEncryptionAlgorithm,
@@ -50,6 +51,10 @@ public class SecureMessageAttributes {
 		this.fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethod = fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethod;
 		
 		this.isSecureMessageAttributesSerialized = false;
+	}
+	
+	public SecureMessageAttributes(byte[] secureMessageAttributesSerialized) {
+		// TODO
 	}
 	
 	public String getSessionID() {
@@ -154,7 +159,7 @@ public class SecureMessageAttributes {
 		return this.isSecureMessageAttributesSerialized ? this.secureMessageAttributesSerialized : null;
 	}
 	
-	public byte[] buildFinalSecureMessageAttributesSerializationHashed() {
+	public void buildFinalSecureMessageAttributesSerializationHashed() {
 		this.buildSecureMessageAttributesSerialization();
 		
 		if(this.isSecureMessageAttributesSerialized) {
@@ -173,8 +178,7 @@ public class SecureMessageAttributes {
 				mac.init(secureMessageAttributesSerializationHashKey);
 				mac.update(secureMessageAttributesSerialized);
 				
-				return mac.doFinal();
-				
+				this.finalSecureMessageAttributesSerializationHashed = mac.doFinal();
 			}
 			catch (NoSuchAlgorithmException noSuchAlgorithmException) {
 				System.err.println("Error occurred during the Hashing Function over the Secure Message's Attributes:");
@@ -192,7 +196,5 @@ public class SecureMessageAttributes {
 				invalidKeyException.printStackTrace();
 			}
 		}
-		
-		return null;
 	}
 }
