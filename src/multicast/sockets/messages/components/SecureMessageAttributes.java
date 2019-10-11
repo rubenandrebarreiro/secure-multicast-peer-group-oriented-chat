@@ -9,6 +9,7 @@ import java.security.SecureRandom;
 import javax.crypto.Mac;
 
 import multicast.common.CommonUtils;
+import multicast.sockets.messages.utils.PropReader;
 
 public class SecureMessageAttributes {
 	private String sessionID;
@@ -34,6 +35,16 @@ public class SecureMessageAttributes {
 	private boolean isSecureMessageAttributesSerializedHashed;
 	
 	private boolean isSecureMessageAttributesSerializedHashedValid;
+	
+	/**
+	 * Properies reader from file
+	 */
+	private PropReader properties;
+	
+	/**
+	 * Filename of properties file
+	 */
+	private static final String propFilename = "SMCP.conf";
 	
 	public SecureMessageAttributes(String sessionID, String sessionName, 
 								   String symmetricEncryptionAlgorithm,
@@ -182,7 +193,7 @@ public class SecureMessageAttributes {
 				Key secureMessageAttributesSerializationHashKey = CommonUtils.createKeyForAES(256, secureRandom);
 				
 				//Key secureMessageAttributesSerializationHashKey = null;  // TODO
-				Mac mac = Mac.getInstance("SHA-256");
+				Mac mac = Mac.getInstance(properties.getProperty("mac"));
 				mac.init(secureMessageAttributesSerializationHashKey);
 				mac.update(secureMessageAttributesSerialized);
 				

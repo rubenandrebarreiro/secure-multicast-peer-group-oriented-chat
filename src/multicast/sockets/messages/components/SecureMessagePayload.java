@@ -29,6 +29,7 @@ import javax.crypto.ShortBufferException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import multicast.common.CommonUtils;
+import multicast.sockets.messages.utils.PropReader;
 
 /**
  * 
@@ -98,6 +99,23 @@ public class SecureMessagePayload {
 	 */
 	private boolean isSecureMessagePayloadSerializedSymmetricEncryptionCiphered;
 	
+	/**
+	 * Encryption provider
+	 */
+	private static final String provider = "BC";
+	
+	/**
+	 * Properies reader from file
+	 */
+	private PropReader properties;
+	
+	/**
+	 * Filename of properties file
+	 */
+	private static final String propFilename = "SMCP.conf";
+	
+
+	
 	
 	
 	// Constructors:
@@ -127,6 +145,8 @@ public class SecureMessagePayload {
 		this.isIntegrityControlHashedSerialized = false;
 		this.isSecureMessagePayloadSerialized = false;
 		this.isSecureMessagePayloadSerializedSymmetricEncryptionCiphered = false;
+		
+		properties = new PropReader(propFilename);
 	}
 	
 	/**
@@ -204,7 +224,7 @@ public class SecureMessagePayload {
 			try {
 				
 				// The configuration, initialization and update of the Integrity Control Hash process
-				MessageDigest hashFunctionAlgorithmn = MessageDigest.getInstance("SHA-256");
+				MessageDigest hashFunctionAlgorithmn = MessageDigest.getInstance(properties.getProperty("inthash"));
 				
 				// Performs the final operation of Integrity Control Hash process over the Message serialized
 				this.integrityControlHashedSerialized = hashFunctionAlgorithmn.digest(this.messageSerialized);
@@ -244,7 +264,7 @@ public class SecureMessagePayload {
 			try {
 				
 				// The configuration, initialization and update of the Integrity Control Hash process
-				MessageDigest hashFunctionAlgorithmn = MessageDigest.getInstance("SHA-256");
+				MessageDigest hashFunctionAlgorithmn = MessageDigest.getInstance(properties.getProperty("inthash"));
 				
 				// Performs the final operation of Integrity Control Hash process over the Message serialized
 				this.integrityControlHashedSerialized = hashFunctionAlgorithmn.digest(this.messageSerialized);
@@ -456,10 +476,18 @@ public class SecureMessagePayload {
 		 		// using the AES (Advanced Encryption Standard - Rijndael) Symmetric Encryption
 		 	    SecretKeySpec secretKeySpecifications = new SecretKeySpec(secretKeyBytes, "AES");
 
+		 	    String symmetricEncryptionAlgorithm = properties.getProperty("sea");
+		 	    String symmetricEncryptionMode = properties.getProperty("mode");
+		 	    String symmetricEncryptionPadding = properties.getProperty("padding");
+		 	    
 				// The parameter specifications for the Initialization Vector
 				IvParameterSpec initializationVectorParameterSpecifications = new IvParameterSpec(initialisingVectorBytes);
 				
-				Cipher secureMessagePayloadSerializationSymmetricEncryptionCipher = Cipher.getInstance("AES/CTR/PKCSPadding", "BC");
+				Cipher secureMessagePayloadSerializationSymmetricEncryptionCipher = Cipher.getInstance(
+						symmetricEncryptionAlgorithm + "/" + 
+						symmetricEncryptionMode + "/" + 
+						symmetricEncryptionPadding, 
+						provider);
 				
 				// TODO verificar se o modo em uso necessita de IV
 				secureMessagePayloadSerializationSymmetricEncryptionCipher
@@ -543,7 +571,15 @@ public class SecureMessagePayload {
 				// The parameter specifications for the Initialization Vector
 				IvParameterSpec initializationVectorParameterSpecifications = new IvParameterSpec(initialisingVectorBytes);
 				
-				Cipher secureMessagePayloadSerializationSymmetricEncryptionDecipher = Cipher.getInstance("AES/CTR/PKCSPadding", "BC");
+		 	    String symmetricEncryptionAlgorithm = properties.getProperty("sea");
+		 	    String symmetricEncryptionMode = properties.getProperty("mode");
+		 	    String symmetricEncryptionPadding = properties.getProperty("padding");
+				
+				Cipher secureMessagePayloadSerializationSymmetricEncryptionDecipher = Cipher.getInstance(
+						symmetricEncryptionAlgorithm + "/" + 
+						symmetricEncryptionMode + "/" + 
+						symmetricEncryptionPadding, 
+						provider);
 				
 				// TODO verificar se o modo em uso necessita de IV
 				secureMessagePayloadSerializationSymmetricEncryptionDecipher
