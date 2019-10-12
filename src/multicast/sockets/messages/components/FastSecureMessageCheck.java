@@ -23,6 +23,7 @@ import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
 import javax.crypto.Mac;
 import multicast.common.CommonUtils;
+import multicast.sockets.messages.utils.PropReader;
 
 /**
  * 
@@ -53,6 +54,16 @@ public class FastSecureMessageCheck {
 	 */
 	private boolean isSecureMessageSerializedHashed;
 	
+	/**
+	 * Properties Reader from file
+	 */
+	private PropReader propertiesReader;
+	
+	/**
+	 * Filename of Properties' file
+	 */
+	private static final String propertiesFilename = "./res/SMCP.conf";
+	
 	
 	
 	// Constructors:
@@ -67,6 +78,8 @@ public class FastSecureMessageCheck {
 		this.secureMessageSerialized = secureMessageSerialized;
 		
 		this.isSecureMessageSerializedHashed = false;
+		
+		this.propertiesReader = new PropReader(propertiesFilename);
 	}
 	
 	/**
@@ -84,6 +97,8 @@ public class FastSecureMessageCheck {
 		this.secureMessageSerializedHashed = secureMessageSerializedHashed;
 		
 		this.isSecureMessageSerializedHashed = true;
+		
+		this.propertiesReader = new PropReader(propertiesFilename);
 	}
 	
 	
@@ -122,10 +137,12 @@ public class FastSecureMessageCheck {
 				SecureRandom secureRandom = new SecureRandom();
 				
 				// The Initialization Vector and its Parameter's Specifications
-				Key secureMessageSerializedMACKey = CommonUtils.createKeyForAES(256, secureRandom);
+				Key secureMessageSerializedMACKey = CommonUtils
+						.createKeyForAES(Integer.parseInt(this.propertiesReader.getProperty("macks")),
+									     secureRandom);
 				
 				// The configuration, initialization and update of the MAC Hash process
-				Mac mac = Mac.getInstance("SHA-256");
+				Mac mac = Mac.getInstance(this.propertiesReader.getProperty("mac"));
 				mac.init(secureMessageSerializedMACKey);
 				mac.update(this.secureMessageSerialized);
 				
@@ -176,10 +193,12 @@ public class FastSecureMessageCheck {
 				SecureRandom secureRandom = new SecureRandom();
 				
 				// The Initialization Vector and its Parameter's Specifications
-				Key secureMessageSerializedMACKey = CommonUtils.createKeyForAES(256, secureRandom);
+				Key secureMessageSerializedMACKey = CommonUtils
+						.createKeyForAES(Integer.parseInt(this.propertiesReader.getProperty("macks")),
+								         secureRandom);
 				
 				// The configuration, initialization and update of the MAC Hash process
-				Mac mac = Mac.getInstance("SHA-256");
+				Mac mac = Mac.getInstance(this.propertiesReader.getProperty("mac"));
 				mac.init(secureMessageSerializedMACKey);
 				mac.update(secureMessageSerializedHashedToCompare);
 				
@@ -205,8 +224,9 @@ public class FastSecureMessageCheck {
 			
 			// Returns true if the hash performed/computed over Secure Message serialized received its valid,
 			// comparing it with the Secure Message serialized hashed received and false, otherwise
-			return (this.isSecureMessageSerializedHashed && this.secureMessageSerializedHashed.equals(secureMessageSerializedHashedToCompare)) ? 
-					true : false;	
+			return (this.isSecureMessageSerializedHashed &&
+					this.secureMessageSerializedHashed.equals(secureMessageSerializedHashedToCompare)) ? 
+							true : false;	
 		}
 		
 		return false;
