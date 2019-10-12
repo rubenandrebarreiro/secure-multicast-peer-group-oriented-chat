@@ -103,16 +103,16 @@ public class SecureMessagePayload {
 	 * Encryption provider
 	 */
 	private static final String provider = "BC";
+
+	/**
+	 * Properties Reader from file
+	 */
+	private PropReader propertiesReader;
 	
 	/**
-	 * Properies reader from file
+	 * Filename of Properties' file
 	 */
-	private PropReader properties;
-	
-	/**
-	 * Filename of properties file
-	 */
-	private static final String propFilename = "SMCP.conf";
+	private static final String propertiesFilename = "./res/SMCP.conf";
 	
 
 	
@@ -146,7 +146,7 @@ public class SecureMessagePayload {
 		this.isSecureMessagePayloadSerialized = false;
 		this.isSecureMessagePayloadSerializedSymmetricEncryptionCiphered = false;
 		
-		properties = new PropReader(propFilename);
+		this.propertiesReader = new PropReader(propertiesFilename);
 	}
 	
 	/**
@@ -224,7 +224,7 @@ public class SecureMessagePayload {
 			try {
 				
 				// The configuration, initialization and update of the Integrity Control Hash process
-				MessageDigest hashFunctionAlgorithmn = MessageDigest.getInstance(properties.getProperty("inthash"));
+				MessageDigest hashFunctionAlgorithmn = MessageDigest.getInstance(this.propertiesReader.getProperty("inthash"));
 				
 				// Performs the final operation of Integrity Control Hash process over the Message serialized
 				this.integrityControlHashedSerialized = hashFunctionAlgorithmn.digest(this.messageSerialized);
@@ -264,7 +264,7 @@ public class SecureMessagePayload {
 			try {
 				
 				// The configuration, initialization and update of the Integrity Control Hash process
-				MessageDigest hashFunctionAlgorithmn = MessageDigest.getInstance(properties.getProperty("inthash"));
+				MessageDigest hashFunctionAlgorithmn = MessageDigest.getInstance(this.propertiesReader.getProperty("inthash"));
 				
 				// Performs the final operation of Integrity Control Hash process over the Message serialized
 				this.integrityControlHashedSerialized = hashFunctionAlgorithmn.digest(this.messageSerialized);
@@ -472,22 +472,21 @@ public class SecureMessagePayload {
 				byte[] initialisingVectorBytes = new byte[] { 0x08, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00 ,
 			                         						   0x08, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00 };
 				
+				String symmetricEncryptionAlgorithm = this.propertiesReader.getProperty("sea");
+		 	    String symmetricEncryptionMode = this.propertiesReader.getProperty("mode");
+		 	    String symmetricEncryptionPadding = this.propertiesReader.getProperty("padding");
+				
 		        // Set the Secret Key and its specifications,
 		 		// using the AES (Advanced Encryption Standard - Rijndael) Symmetric Encryption
-		 	    SecretKeySpec secretKeySpecifications = new SecretKeySpec(secretKeyBytes, "AES");
-
-		 	    String symmetricEncryptionAlgorithm = properties.getProperty("sea");
-		 	    String symmetricEncryptionMode = properties.getProperty("mode");
-		 	    String symmetricEncryptionPadding = properties.getProperty("padding");
+		 	    SecretKeySpec secretKeySpecifications = new SecretKeySpec(secretKeyBytes, symmetricEncryptionAlgorithm);
 		 	    
 				// The parameter specifications for the Initialization Vector
 				IvParameterSpec initializationVectorParameterSpecifications = new IvParameterSpec(initialisingVectorBytes);
 				
-				Cipher secureMessagePayloadSerializationSymmetricEncryptionCipher = Cipher.getInstance(
-						symmetricEncryptionAlgorithm + "/" + 
-						symmetricEncryptionMode + "/" + 
-						symmetricEncryptionPadding, 
-						provider);
+				Cipher secureMessagePayloadSerializationSymmetricEncryptionCipher = 
+							Cipher.getInstance(String.format("%s/%s/%s",
+											   symmetricEncryptionAlgorithm, symmetricEncryptionMode, symmetricEncryptionPadding), 
+									           provider);
 				
 				// TODO verificar se o modo em uso necessita de IV
 				secureMessagePayloadSerializationSymmetricEncryptionCipher
@@ -564,22 +563,21 @@ public class SecureMessagePayload {
 				byte[] initialisingVectorBytes = new byte[] { 0x08, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00 ,
 			                         						   0x08, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00 };
 				
+				String symmetricEncryptionAlgorithm = this.propertiesReader.getProperty("sea");
+		 	    String symmetricEncryptionMode = this.propertiesReader.getProperty("mode");
+		 	    String symmetricEncryptionPadding = this.propertiesReader.getProperty("padding");
+				
 		        // Set the Secret Key and its specifications,
 		 		// using the AES (Advanced Encryption Standard - Rijndael) Symmetric Encryption
-		 	    SecretKeySpec secretKeySpecifications = new SecretKeySpec(secretKeyBytes, "AES");
+		 	    SecretKeySpec secretKeySpecifications = new SecretKeySpec(secretKeyBytes, symmetricEncryptionAlgorithm);
 
 				// The parameter specifications for the Initialization Vector
 				IvParameterSpec initializationVectorParameterSpecifications = new IvParameterSpec(initialisingVectorBytes);
 				
-		 	    String symmetricEncryptionAlgorithm = properties.getProperty("sea");
-		 	    String symmetricEncryptionMode = properties.getProperty("mode");
-		 	    String symmetricEncryptionPadding = properties.getProperty("padding");
-				
-				Cipher secureMessagePayloadSerializationSymmetricEncryptionDecipher = Cipher.getInstance(
-						symmetricEncryptionAlgorithm + "/" + 
-						symmetricEncryptionMode + "/" + 
-						symmetricEncryptionPadding, 
-						provider);
+		 	    Cipher secureMessagePayloadSerializationSymmetricEncryptionDecipher = 
+		 	    			Cipher.getInstance(String.format("%s/%s/%s",
+										   	   symmetricEncryptionAlgorithm, symmetricEncryptionMode, symmetricEncryptionPadding), 
+								               provider);
 				
 				// TODO verificar se o modo em uso necessita de IV
 				secureMessagePayloadSerializationSymmetricEncryptionDecipher
