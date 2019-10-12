@@ -68,7 +68,7 @@ public class SecureMulticastSocketCleaningRandomNoncesService implements Runnabl
 		for(;;) {
 			try {
 				// Sleeping for each 10 seconds (10000 milliseconds)
-				Thread.sleep(CommonUtils.CLEANING_NONCES_SERVICE_VERIFICATION_RATE_TIME);
+				Thread.sleep(CommonUtils.CLEANING_RANDOM_NONCES_SERVICE_VERIFICATION_RATE_TIME);
 			}
 			catch (InterruptedException interruptedException) {
 				System.err.println("Error occurred during the Service of Cleaning Nonces on the Secure Multicast Socket:");
@@ -84,7 +84,7 @@ public class SecureMulticastSocketCleaningRandomNoncesService implements Runnabl
 				// after that, they will be removed from the Random Nonces' Map
 				// Otherwise, they will be kept on the Random Nonces' Map for the remaining time,
 				// until be reached the time equal or greater than 10 minutes (600000 milliseconds)
-				if( (lastNonceReceivedTimestamp + CommonUtils.NONCES_CLEANING_TIMEOUT) < System.currentTimeMillis() ) {
+				if( (lastNonceReceivedTimestamp + CommonUtils.RANDOM_NONCES_CLEANING_TIMEOUT) < System.currentTimeMillis() ) {
 					this.randomNoncesMap.remove(noncesTimestamps.getKey());
 				}
 			}

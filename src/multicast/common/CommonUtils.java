@@ -64,14 +64,30 @@ public class CommonUtils {
 	public static final int LONG_LENGTH = 6;
 	
 	/**
-	 * The Rate Time for verification of the Cleaning Nonces Service
+	 * The ID of the JOIN Message
 	 */
-	public static final long CLEANING_NONCES_SERVICE_VERIFICATION_RATE_TIME = 10000;
+	public static final byte JOIN_MESSAGE = ((byte) 1);
+
+	/**
+	 * The ID of the LEAVE Message
+	 */
+	public static final byte LEAVE_MESSAGE = ((byte) 2);
+
+	/**
+	 * The ID of the TEXT Message
+	 */
+	public static final byte TEXT_MESSAGE = ((byte) 3);
 	
 	/**
-	 * The Timeout for triggering the event of cleaning/removing old Nonces
+	 * The Rate Time for verification of the Cleaning Random Nonces Service
 	 */
-	public static final long NONCES_CLEANING_TIMEOUT = 600000;
+	public static final long CLEANING_RANDOM_NONCES_SERVICE_VERIFICATION_RATE_TIME = 10000;
+	
+	/**
+	 * The Timeout for triggering the event of Cleaning/Removing old Random Nonces
+	 */
+	public static final long RANDOM_NONCES_CLEANING_TIMEOUT = 600000;
+	
 	
 	
 	// Global Instance Variables:
@@ -82,7 +98,7 @@ public class CommonUtils {
 	
     
     
-    // Global Methods/Functions:
+    // Methods/Functions:
     /**
      * Returns and converts a Byte, from a given Character.
      * 
