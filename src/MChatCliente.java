@@ -45,7 +45,7 @@ public class MChatCliente extends JFrame implements MulticastChatEventListener
 														 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
 														 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		getContentPane().add(textAreaScrollPane, BorderLayout.CENTER);
-		
+				
 		users = new DefaultListModel();
 		JList usersList = new JList( users);
 		JScrollPane usersListScrollPane = new JScrollPane(usersList, 
@@ -172,8 +172,6 @@ public class MChatCliente extends JFrame implements MulticastChatEventListener
 					 int ttl) throws IOException {
 		setTitle("CHAT MulticastIP " + username + "@" + group.getHostAddress() 
 				 + ":" + port + " [TTL=" + ttl + "]");
-
-
 		
 		// Criar sessao de chat multicast
 		chat = new MulticastChat(username, group, port, ttl, this);
@@ -341,10 +339,11 @@ public class MChatCliente extends JFrame implements MulticastChatEventListener
 		} 
 
 		try {
+
 			MChatCliente frame = new MChatCliente();
 			frame.setSize(800, 300);
 			frame.setVisible( true);
-
+			
 			frame.join(username, group, port, ttl);
 		} catch (Throwable e) {
 			System.err.println("Erro ao iniciar a frame: " + e.getClass().getName() 

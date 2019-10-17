@@ -216,11 +216,11 @@ public class SecureMessagePayload {
 	 * @param messageSerialized the Message serialized (i.e., the real content of the Message) of
 	 *        the Secure Message's Payload
 	 */
-	public void buildIntegrityControlHashedSerialized(byte[] messageSerialized) {
+	public void buildIntegrityControlHashedSerialized() {
 		
 		// This process it's only made if the Integrity Control Hashed serialized of the Message
 		// (i.e., the real content of the Message) of the Secure Message's Payload it's done
-		if(!this.isIntegrityControlHashedSerialized && messageSerialized != null) {
+		if(!this.isIntegrityControlHashedSerialized && this.messageSerialized != null) {
 			try {
 				
 				// The configuration, initialization and update of the Integrity Control Hash process
@@ -447,7 +447,7 @@ public class SecureMessagePayload {
 	 * Builds the Symmetric Encryption's Cipher on the Secure Message's Payload serialized,
 	 * resulting to the final Secure Message's Payload component.
 	 */
-	public void buildSecureMessagePayloadSerializationSymmetricEncryptionCiphered() {
+	public void buildSecureMessagePayloadSerializedSymmetricEncryptionCiphered() {
 		
 		// This process it's only made if the Integrity Control Hashed serialized of the Message
 		// (i.e., the real content of the Message) of the Secure Message's Payload is done,

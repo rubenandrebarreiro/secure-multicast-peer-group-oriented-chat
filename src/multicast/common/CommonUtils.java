@@ -13,6 +13,12 @@ import javax.crypto.spec.IvParameterSpec;
 public class CommonUtils {
 	
 	// Invariants/Constants:
+	
+	/**
+	 * The current version of the Secure Messages' Protocol
+	 */
+	public static final byte CURRENT_VERSION_PROTOCOL = VersionNumber.VERSION_00.getVersionNumber();
+	
 	/**
 	 * The Number of Components, contained in the Meta Header
 	 */

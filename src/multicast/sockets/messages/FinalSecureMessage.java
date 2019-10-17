@@ -17,13 +17,11 @@ package multicast.sockets.messages;
  */
 
 import java.net.DatagramPacket;
+import java.util.Properties;
 
-import multicast.common.CommonUtils;
 import multicast.sockets.messages.components.FastSecureMessageCheck;
-import multicast.sockets.messages.components.SecureMessageAttributes;
-import multicast.sockets.messages.components.SecureMessageHeader;
+import multicast.sockets.messages.components.SecureMessage;
 import multicast.sockets.messages.components.SecureMessageMetaHeader;
-import multicast.sockets.messages.components.SecureMessagePayload;
 
 /**
  * 
@@ -44,24 +42,9 @@ public class FinalSecureMessage {
 	private SecureMessageMetaHeader secureMessageMetaHeader;
 	
 	/**
-	 * The Secure Message's Header
+	 * The Secure Message
 	 */
-	private SecureMessageHeader secureMessageHeader;
-	
-	/**
-	 * The Secure Message's Attributes
-	 */
-	private SecureMessageAttributes secureMessageAttributes;
-	
-	/**
-	 * The size of the Secure Message's Payload
-	 */
-	private int sizeOfSecureMessagePayload;
-	
-	/**
-	 * The Secure Message's Payload
-	 */
-	private SecureMessagePayload secureMessagePayload;
+	private SecureMessage secureMessage;
 	
 	/**
 	 * The Fast Secure Message's Check
@@ -89,20 +72,18 @@ public class FinalSecureMessage {
 	 * 
 	 * @param
 	 */
-	public FinalSecureMessage(DatagramPacket datagramPacket, boolean firstMessage) {
+	public FinalSecureMessage(DatagramPacket datagramPacket, int sequenceNumber, int randomNonce, Properties properties, byte messageType) {
 		
 		// TODO confirmar
-		this.secureMessagePayload = new SecureMessagePayload(datagramPacket.getSocketAddress().toString(), 0, 0, datagramPacket.getData());
 
-		this.fastSecureMessageCheck = new FastSecureMessageCheck(this.secureMessagePayload.getSecureMessagePayloadSerialized());
-		this.secureMessageAttributes = new SecureMessageAttributes(null, null, null, null, null, null, null);
-		this.secureMessageHeader = new SecureMessageHeader((byte) 0, "aa", (byte) 0);
-		this.fastSecureMessageCheck = new FastSecureMessageCheck(null);
+		this.secureMessage = new SecureMessage(datagramPacket, sequenceNumber, randomNonce, properties, messageType);
 		
-		this.secureMessageMetaHeader = new SecureMessageMetaHeader(this.secureMessageHeader.getSecureMessageHeaderSerialized().length,
-																					  this.secureMessageAttributes.getSecureMessageAttributesSerialized().length, 
-																					  this.secureMessagePayload.getSecureMessagePayloadSerialized().length, 
-																					  0);
+		this.fastSecureMessageCheck = new FastSecureMessageCheck(this.secureMessage.getSecureMessageSerialized());
+				
+		this.secureMessageMetaHeader = new SecureMessageMetaHeader(this.secureMessage.getSecureMessageHeader().getSecureMessageHeaderSerialized().length,
+																   this.secureMessage.getSecureMessageAttributes().getSecureMessageAttributesSerialized().length, 
+																   this.secureMessage.getSecureMessagePayload().getSecureMessagePayloadSerialized().length, 
+																   this.fastSecureMessageCheck.getSecureMessageSerializedHashed().length);
 	}
 	
 	/**
@@ -114,17 +95,8 @@ public class FinalSecureMessage {
 			byte[] secureMessageMetaHeaderSerialized = 
 					this.secureMessageMetaHeader.getSecureMessageMetaHeaderSerialized();
 			
-			byte[] secureMessageHeaderSerialized = 
-					this.secureMessageHeader.getSecureMessageHeaderSerialized();
-			
-			byte[] secureMessageAttributesSerializedHashed = 
-					this.secureMessageAttributes.getSecureMessageAttributesSerializedHashed();
-			
-			byte[] sizeOfSecureMessagePayloadSerialized = 
-					CommonUtils.fromIntToByteArray(this.sizeOfSecureMessagePayload);
-			
-			byte[] secureMessagePayloadSerialized = 
-					this.secureMessagePayload.getSecureMessagePayloadSerialized();
+			byte[] secureMessageSerialized = 
+					this.secureMessage.getSecureMessageSerialized();
 			
 			byte[] fastSecureMessageCheckSerializedHashed =
 					this.fastSecureMessageCheck.getSecureMessageSerializedHashed();
@@ -142,41 +114,20 @@ public class FinalSecureMessage {
 			int serializationOffset = 0;
 			
 			// Fills the byte array of the Final Secure Message with the Secure Message's Meta-Header,
-			// From the position initial to the corresponding to the length of Secure Message's Meta-Header
+			// From the initial position to the corresponding to the length of Secure Message's Meta-Header
 			System.arraycopy(secureMessageMetaHeaderSerialized, 0,
 							 this.finalSecureMessageSerialized, serializationOffset, secureMessageMetaHeaderSerialized.length);
 			serializationOffset += secureMessageMetaHeaderSerialized.length;
-
-			// Fills the byte array of the Final Secure Message with the Secure Message's Header,
-			// From the position corresponding to the length of Secure Message's Meta-Header to
-			// the corresponding to the length of Secure Message's Header
-			System.arraycopy(secureMessageHeaderSerialized, 0,
-							 this.finalSecureMessageSerialized, serializationOffset, secureMessageHeaderSerialized.length);
-			serializationOffset += secureMessageHeaderSerialized.length;
-
-			// Fills the byte array of the Final Secure Message with the Secure Message's Attributes,
-			// From the position corresponding to the length of Secure Message's Header to
-			// the corresponding to the length of Secure Message's Attributes
-			System.arraycopy(secureMessageAttributesSerializedHashed, 0,
-							 this.finalSecureMessageSerialized, serializationOffset, secureMessageAttributesSerializedHashed.length);
-			serializationOffset += secureMessageAttributesSerializedHashed.length;
-
-			// Fills the byte array of the Final Secure Message with the size of Secure Message's Payload,
-			// From the position corresponding to the length of Secure Message's Attributes to
-			// the corresponding to the length of size of Secure Message's Payload
-			System.arraycopy(sizeOfSecureMessagePayloadSerialized, 0,
-							 this.finalSecureMessageSerialized, serializationOffset, sizeOfSecureMessagePayloadSerialized.length);
-			serializationOffset += sizeOfSecureMessagePayloadSerialized.length;
-			
-			// Fills the byte array of the Final Secure Message with the Secure Message's Payload,
-			// From the position corresponding to the length of size of Secure Message's Payload to
-			// the corresponding to the length of Secure Message's Payload
-			System.arraycopy(secureMessagePayloadSerialized, 0,
-							 this.finalSecureMessageSerialized, serializationOffset, secureMessagePayloadSerialized.length);
-			serializationOffset += secureMessagePayloadSerialized.length;
+				
+			// Fills the byte array of the Final Secure Message with the Secure Message's components,
+			// From the position corresponding to the length of Secure Message's Meta-Header components to
+			// the corresponding to the length of Secure Message's components
+			System.arraycopy(secureMessageSerialized, 0,
+							 this.finalSecureMessageSerialized, serializationOffset, secureMessageSerialized.length);
+			serializationOffset += secureMessageSerialized.length;
 			
 			// Fills the byte array of the Final Secure Message with the Fast Secure Message's Check,
-			// From the position corresponding to the length of Secure Message's Payload to
+			// From the position corresponding to the length of Secure Message's components to
 			// the corresponding to the length of Fast Secure Message's Check
 			System.arraycopy(fastSecureMessageCheckSerializedHashed, 0,
 							 this.finalSecureMessageSerialized, serializationOffset, fastSecureMessageCheckSerializedHashed.length);

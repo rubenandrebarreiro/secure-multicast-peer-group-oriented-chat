@@ -93,7 +93,7 @@ public class SecureMulticastSocket extends MulticastSocket {
 		
 		this.secureMulticastSocketCleaningRandomNoncesService = 
 						new SecureMulticastSocketCleaningRandomNoncesService(randomNoncesMap);
-		this.secureMulticastSocketCleaningRandomNoncesService.run();
+		new Thread(this.secureMulticastSocketCleaningRandomNoncesService).start();
 		
 		this.firstMessage = true;
 	}
@@ -148,7 +148,10 @@ public class SecureMulticastSocket extends MulticastSocket {
 		
 		if(this.firstMessage) {
 			
-			finalSecureMessageToSend = new FinalSecureMessage(secureMessageDatagramPacketToSend, false /* firstMessage */);
+			SecureRandom secureRandom = new SecureRandom();
+			int randomNonce = secureRandom.nextInt();
+			
+			//finalSecureMessageToSend = new FinalSecureMessage(secureMessageDatagramPacketToSend, false /* firstMessage */);
 			
 			this.firstMessage = false;
 		}
