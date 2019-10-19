@@ -39,6 +39,11 @@ public class SecureMulticastSocket extends MulticastSocket {
 	
 	// Global Instance Variables:
 	/**
+	 * The Sequence Number, which will be sent or receive
+	 */
+	private int sequenceNumber;
+	
+	/**
 	 * The current Random Nonce, which will be sent or received
 	 */
 	private int randomNonce;
@@ -151,7 +156,9 @@ public class SecureMulticastSocket extends MulticastSocket {
 			SecureRandom secureRandom = new SecureRandom();
 			int randomNonce = secureRandom.nextInt();
 			
-			//finalSecureMessageToSend = new FinalSecureMessage(secureMessageDatagramPacketToSend, false /* firstMessage */);
+			int sequenceN
+			
+			finalSecureMessageToSend = new FinalSecureMessage(secureMessageDatagramPacketToSend, false /* firstMessage */);
 			
 			this.firstMessage = false;
 		}

@@ -1,5 +1,20 @@
-// MChatCliente.java
-// 
+package multicast.chat.client;
+
+/**
+ * 
+ * Secure Multicast Peer Group Oriented Chat - Phase #1
+ * 
+ * Network and Computer Systems Security
+ * 
+ * Faculty of Science and Technology of New University of Lisbon
+ * (FCT NOVA | FCT/UNL)
+ * 
+ * Integrated Master of Computer Science and Engineering
+ * (BSc. + MSc. Bologna Degree)
+ * 
+ * Academic Year 2019/2020
+ * 
+ */
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -7,47 +22,94 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.text.*;
+
+import multicast.chat.MulticastChat;
+import multicast.chat.listener.SecureMulticastChatEventListener;
+import multicast.common.CommonUtils;
+
 import java.util.*;
 
-// Interface para a sessao de chat swing-based
-// e pode ir sendo melhorada pelos alunos para acomodar as
-// diversas funcionalidades do trabalho 
+/**
+ * 
+ * Class for the Multicast Chat Client,
+ * extending the JFrame class and
+ * implementing the Interface for the Secure Multicast Chat Event Listener.
+ * 
+ * NOTES:
+ * - This it's the interface for the Swing-Based Chat's Session and
+ *   can be improved, in order to, support the several functionalities of
+ *   the (Secure) Multicast Chat itself.
+ * 
+ * @supervisor Prof. Henrique Joao Domingos - hj@fct.unl.pt
+ * 
+ * @author Eduardo Bras Silva (no. 41798) - emf.silva@campus.fct.unl.pt
+ * @author Ruben Andre Barreiro (no. 42648) - r.barreiro@campus.fct.unl.pt
+ *
+ */
+public class MulticastChatClient extends JFrame implements SecureMulticastChatEventListener {
+	
+	// Invariants/Constants:
+	/**
+	 * The default serial version ID
+	 */
+	private static final long serialVersionUID = 1L;
 
-public class MChatCliente extends JFrame implements MulticastChatEventListener
-{
-	// definicao de um objecto representando um "multicast chat"
-	protected MulticastChat chat;
+	
+	// Global Instance Variables:
+	/**
+	 * The (Secure) Multicast Chat
+	 */
+	protected MulticastChat multicastChat;
+	
+	/**
+	 * The JTextArea of the current available Operation Messages,
+	 * exchanged between the Users (Clients) participating in the
+	 * (Secure) Multicast Chat, including the JOIN and TEXT Operations' Messages
+	 */
+	protected JTextArea conversationMulticastChatTextArea;
 
-	// area de texto onde se mostram as mensagens das conversas ou a
-	// mensagem qdo alguem se junta ao chat
-	protected JTextArea textArea;
-
-	// Campo de texto onde se dara a entrada de mensagens
+	/**
+	 * The JTextField, which can be entered the TEXT Operation Messages
+	 */
 	protected JTextField messageField;
 	
-	// Campo de texto onde se dara a entrada do ficheiro a fazer download
+	/**
+	 * The JTextField for the text field, which can be entered a file to download
+	 */
 	protected JTextField fileField;
 	
-	// Lista com utilizadores no chat
-	protected DefaultListModel users;
-
+	/**
+	 * The Default List Model containing all the online Users
+	 * currently online in the (Secure) Multicast Chat
+	 */
+	protected DefaultListModel<String> onlineUsersList;
+	
+	
+	// Constructors:
+	/**
+	 * Disconnected
+	 */
+	
 	// Construtor para uma frame com do chat multicast  (inicializado em estado nao conectado)
-	public MChatCliente() {
-		super("MulticastChat (modo: desconectado)");
+	public MulticastChatClient() {
+		super("(Secure) Multicast Chat (Mode: Disconnected)");
 
 		// Construct GUI components (iniciaizacao de sessao)
-		textArea = new JTextArea();
-		textArea.setEditable(false);
-		textArea.setLineWrap( true);
-		textArea.setBorder(BorderFactory.createLoweredBevelBorder());
+		// Builds the several components of the Graphic User Interface (G.U.I.),
+		// related to the (Secure) Multicast Chat for the initializing of
+		// the Chat's Session
+		conversationMulticastChatTextArea = new JTextArea();
+		conversationMulticastChatTextArea.setEditable(false);
+		conversationMulticastChatTextArea.setLineWrap( true);
+		conversationMulticastChatTextArea.setBorder(BorderFactory.createLoweredBevelBorder());
 
-		JScrollPane textAreaScrollPane = new JScrollPane(textArea, 
+		JScrollPane textAreaScrollPane = new JScrollPane(conversationMulticastChatTextArea, 
 														 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
 														 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		getContentPane().add(textAreaScrollPane, BorderLayout.CENTER);
 				
-		users = new DefaultListModel();
-		JList usersList = new JList( users);
+		onlineUsersList = new DefaultListModel();
+		JList usersList = new JList( onlineUsersList);
 		JScrollPane usersListScrollPane = new JScrollPane(usersList, 
 														 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
 														 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER) {
@@ -136,35 +198,37 @@ public class MChatCliente extends JFrame implements MulticastChatEventListener
 	/**
 	 * Adiciona utilizador no interface do utilizador
 	 */
-	protected void uiAddUser( String userName) {
-		users.addElement( userName);
+	protected void uiAddUser( String username) {
+		onlineUsersList.addElement( username);
 	}
 	
 	/**
 	 * Remove utilizador no interface do utilizador.
 	 * @return Devolve true se utilizador foi removido.
 	 */
-	protected boolean uiRemUser( String userName) {
-		return users.removeElement( userName);
+	protected boolean uiRemUser( String username) {
+		return onlineUsersList.removeElement(username);
 	}
 	
 	/**
 	 * Inicializa lista de utilizadores a partir de um iterador -- pode ser usado
 	 * obtendo iterador de qualquer estrutura de dados de java
 	 */
-	protected void uiInitUsers( Iterator it) {
-		users.clear();
-		if( it != null)
-			while( it.hasNext()) {
-				users.addElement( it.next());
+	protected void uiInitUsers(Iterator<String> it) {
+		onlineUsersList.clear();
+		
+		if(it != null) {
+			while(it.hasNext()) {
+				onlineUsersList.addElement(it.next());
 			}
+		}
 	}
 	
 	/**
 	 * Devolve um Enumeration com o nome dos utilizadores que aparecem no UI.
 	 */
 	protected Enumeration uiListUsers() {
-		return users.elements();
+		return onlineUsersList.elements();
 	}
 	
 	// Configuracao do grupo multicast da sessao de chat na interface do cliente
@@ -174,7 +238,7 @@ public class MChatCliente extends JFrame implements MulticastChatEventListener
 				 + ":" + port + " [TTL=" + ttl + "]");
 		
 		// Criar sessao de chat multicast
-		chat = new MulticastChat(username, group, port, ttl, this);
+		multicastChat = new MulticastChat(username, group, port, ttl, this);
 	} 
 
 	protected void log(final String message) {
@@ -182,7 +246,7 @@ public class MChatCliente extends JFrame implements MulticastChatEventListener
 
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-			textArea.append(message + "\n");
+			conversationMulticastChatTextArea.append(message + "\n");
 			} 
 			});
 	} 
@@ -204,7 +268,7 @@ public class MChatCliente extends JFrame implements MulticastChatEventListener
 	 */
 	protected void doSendMessage( String message) {
 		try {
-			chat.sendMessage(message);
+			multicastChat.sendMessage(message);
 		} catch (Throwable ex) {
 			JOptionPane.showMessageDialog(this,
 										  "Erro ao enviar uma menssagem: " 
@@ -262,8 +326,8 @@ public class MChatCliente extends JFrame implements MulticastChatEventListener
 	 */
 	protected void onQuit() {
 		try {
-			if (chat != null) {
-				chat.terminate();
+			if (multicastChat != null) {
+				multicastChat.terminate();
 			} 
 		} catch (Throwable ex) {
 			JOptionPane.showMessageDialog(this, "Erro no termino do chat:  "
@@ -274,21 +338,21 @@ public class MChatCliente extends JFrame implements MulticastChatEventListener
 
 
 	// Invocado quando s erecebe uma mensagem  // 
-	public void chatMessageReceived(String username, InetAddress address, 
+	public void secureMulticastChatParticipantTextMessageReceived(String username, InetAddress address, 
 									int port, String message) {
 		log("MSG:[" + username+"@"+address.getHostName() + "] disse: " + message);
 	} 
 
 
 	// Invocado quando um novo utilizador se juntou ao chat  // 
-	public void chatParticipantJoined(String username, InetAddress address, 
+	public void secureMulticastChatParticipantJoined(String username, InetAddress address, 
 									  int port) {
 		log("+++ NOVO PARTICIPANTE: " + username + " juntou-se ao grupo do chat a partir de " + address.getHostName()
 			+ ":" + port);
 	} 
 
 	// Invocado quando um utilizador sai do chat  // 
-	public void chatParticipantLeft(String username, InetAddress address, 
+	public void secureMulticastChatParticipantLeft(String username, InetAddress address, 
 									int port) {
 		log("--- ABANDONO: " + username + " abandonou o grupo de chat, a partir de " + address.getHostName() + ":" 
 			+ port);
@@ -310,26 +374,29 @@ public class MChatCliente extends JFrame implements MulticastChatEventListener
 
 		try {
 			group = InetAddress.getByName(args[1]);
-		} catch (Throwable e) {
-			System.err.println("Endereco de grupo multicast invalido: " 
-							   + e.getMessage());
+		}
+		catch (Throwable throwableException) {
+			System.err.println("The IP (Secure) Multicast Group Address it's invalid: " 
+							   + throwableException.getMessage() + "!!!");
 			System.exit(1);
 		} 
 
 		if (!group.isMulticastAddress()) {
-			System.err.println("Argumento Grupo '" + args[1] 
-							   + "' nao e um end. IP multicast");
+			System.err.println("The Argument for the The IP (Secure) Multicast Group Address '" + args[1] 
+							   + "' it's not an IP Multicast Address!!!");
 			System.exit(1);
 		} 
 
 		try {
 			port = Integer.parseInt(args[2]);
-		} catch (NumberFormatException e) {
+		}
+		catch (NumberFormatException e) {
 			System.err.println("Porto invalido: " + args[2]);
 			System.exit(1);
 		} 
 
 		if (args.length >= 4) {
+		
 			try {
 				ttl = Integer.parseInt(args[3]);
 			} catch (NumberFormatException e) {
@@ -339,15 +406,28 @@ public class MChatCliente extends JFrame implements MulticastChatEventListener
 		} 
 
 		try {
-
-			MChatCliente frame = new MChatCliente();
-			frame.setSize(800, 300);
-			frame.setVisible( true);
 			
-			frame.join(username, group, port, ttl);
-		} catch (Throwable e) {
-			System.err.println("Erro ao iniciar a frame: " + e.getClass().getName() 
-							   + ": " + e.getMessage());
+			
+			MulticastChatClient frameWindowSecureMulticastChatClient = new MulticastChatClient();
+			
+			// Sets the dimensions of the Frame/Window of the (Secure) Multicast Chat
+			frameWindowSecureMulticastChatClient.setSize(CommonUtils.FRAME_WINDOW_SECURE_MULTICAST_CHAT_WIDTH,
+						  								 CommonUtils.FRAME_WINDOW_SECURE_MULTICAST_CHAT_HEIGHT);
+			
+			// Sets the Frame/Window of the (Secure) Multicast Chat,
+			// previously defined, as visible
+			frameWindowSecureMulticastChatClient.setVisible(true);
+			
+			frameWindowSecureMulticastChatClient.join(username, group, port, ttl);
+		}
+		catch (Throwable throwableException) {
+			
+			// Prints/Shows a message if an Error occurred
+			// when initializing the Frame/Window of the (Secure) Multicast Chat
+			System.err.println("Error occurred when initializing the Frame/Window of the (Secure) Multicast Chat: "
+							   + throwableException.getClass().getName() + ": " + throwableException.getMessage());
+			
+			// Exits and closes the (Secure) Multicast Chat's Application
 			System.exit(1);
 		} 
 	} 

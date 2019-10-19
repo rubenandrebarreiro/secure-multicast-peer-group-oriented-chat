@@ -1,4 +1,5 @@
 package multicast.chat;
+
 /**
  * 
  * Secure Multicast Peer Group Oriented Chat - Phase #1

@@ -39,6 +39,15 @@ import javax.crypto.spec.IvParameterSpec;
 public class CommonUtils {
 	
 	// Invariants/Constants:
+	/**
+	 * The Width of the Frame/Window of the (Secure) Multicast Chat
+	 */
+	public static final int FRAME_WINDOW_SECURE_MULTICAST_CHAT_WIDTH = 800;
+	
+	/**
+	 * The HEIGHT of the Frame/Window of the (Secure) Multicast Chat
+	 */
+	public static final int FRAME_WINDOW_SECURE_MULTICAST_CHAT_HEIGHT = 300;
 	
 	/**
 	 * The current version of the Secure Messages' Protocol
