@@ -131,7 +131,9 @@ public class SecureMessageAttributes {
 					                                        symmetricEncryptionAlgorithmSerialized.length + symmetricEncryptionModeSerialized.length + paddingMethodSerialized.length + 
 					                                        integrityControlCryptographicHashFunctionConstructionMethodSerialized.length + 
 					                                        fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethodSerialized.length );
-
+			
+			System.out.println("VOU FUGIIIIIIR");
+			
 			this.secureMessageAttributesSerialized = new byte[sizeOfSecureMessageAtrributesSerialized];
 			
 			int serializationOffset = 0;
@@ -151,6 +153,8 @@ public class SecureMessageAttributes {
 			System.arraycopy(symmetricEncryptionAlgorithmSerialized, 0, this.secureMessageAttributesSerialized, serializationOffset, symmetricEncryptionAlgorithmSerialized.length);
 			serializationOffset += symmetricEncryptionAlgorithmSerialized.length;
 			
+			System.out.println("ONDE É A ILHAAAAAA");
+			
 			// Fills the byte array of the Secure Message Attributes with the serialization of the name of Symmetric Encryption Mode in use,
 			// From the position corresponding to the length of the byte array of the name of Symmetric Encryption Mode in use
 			System.arraycopy(symmetricEncryptionModeSerialized, 0, this.secureMessageAttributesSerialized, serializationOffset, symmetricEncryptionModeSerialized.length);
@@ -167,12 +171,16 @@ public class SecureMessageAttributes {
 					         integrityControlCryptographicHashFunctionConstructionMethodSerialized.length);
 			serializationOffset += integrityControlCryptographicHashFunctionConstructionMethodSerialized.length;
 			
+			System.out.println("OBLAAAAA");
+			
 			// Fills the byte array of the Secure Message Attributes with the serialization of the name of Fast Secure Payload Check Construction Mode in use,
 			// From the position corresponding to the length of the byte array of the name of Fast Secure Payload Check Construction Mode in use
 			System.arraycopy(fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethodSerialized, 0, this.secureMessageAttributesSerialized, serializationOffset,
 							 fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethodSerialized.length);
 			serializationOffset += fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethodSerialized.length;
-						
+			
+			System.out.println("ARRRROOOOZ");
+			
 			this.isSecureMessageAttributesSerialized = true;
 		}	
 	}
@@ -191,16 +199,22 @@ public class SecureMessageAttributes {
 		if(this.isSecureMessageAttributesSerialized && !this.isSecureMessageAttributesSerializedHashed) {
 			byte[] secureMessageAttributesSerialized = this.getSecureMessageAttributesSerialized();
 			
+			System.out.println("AGRIDOCEEEEE");
+			
 			// HASHING Process
 			try {
 				// The Source/Seed of a Secure Random
 				SecureRandom secureRandom = new SecureRandom();
 				
+				System.out.println("UM BELO PREGO NO PAOOO MANO, OBLAAAA");
+				
+				System.out.println(this.secureMessageAttributesParameters == null ? "O PROPERTIES ESTA MALLL OS ALFACINHAS NAO PERCEBEM NADA DISTO" : "ISTO ESTA FIXINHOOOO MEU");
+				
 				// The Initialization Vector and its Parameter's Specifications
 				Key secureMessageAttributesSerializationHashKey = 
 						CommonUtils.createKeyForAES(Integer.parseInt(this.secureMessageAttributesParameters.getProperty("macks")),
 													secureRandom);
-				
+				System.out.println("BORAAAA CAMARADAAAAAAAAA");
 				//Key secureMessageAttributesSerializationHashKey = null;  // TODO
 				Mac mac = Mac.getInstance(this.secureMessageAttributesParameters.getProperty("mac"));
 				mac.init(secureMessageAttributesSerializationHashKey);

@@ -152,7 +152,9 @@ public class SecureMessage {
 			this.secureMessageAttributes.buildFinalSecureMessageAttributesSerializedHashed();
 			byte[] secureMessageAttributesSerializedHashed = 
 					this.secureMessageAttributes.getSecureMessageAttributesSerializedHashed();
-
+			
+			System.out.println("PASSSOU 2");
+			
 			this.secureMessagePayload.buildIntegrityControlHashedSerialized();
 			this.secureMessagePayload.buildSecureMessagePayloadSerialized();
 			this.secureMessagePayload.buildSecureMessagePayloadSerializedSymmetricEncryptionCiphered();
