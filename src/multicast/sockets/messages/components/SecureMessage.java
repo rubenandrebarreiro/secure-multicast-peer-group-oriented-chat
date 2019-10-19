@@ -64,7 +64,7 @@ public class SecureMessage {
 																   properties.getProperty("sea"), properties.getProperty("seaks"), properties.getProperty("mode"),
 																   properties.getProperty("inthash"), properties.getProperty("macks"));
 		
-		this.secureMessageHeader = new SecureMessageHeader(VersionNumber.VERSION_00.getVersionNumber(), properties.getProperty("sid"), messageType);
+		this.secureMessageHeader = new SecureMessageHeader(VersionNumber.VERSION_01.getVersionNumber(), properties.getProperty("sid"), messageType);
 		
 		this.secureMessagePayload = new SecureMessagePayload(/* TODO - fromPeerID */ null, sequenceNumber, randomNonce, datagramPacket.getData());
 		
@@ -186,8 +186,5 @@ public class SecureMessage {
 			// The Secure Message have already its serialization done
 			this.isSecureMessageSerialized = true;
 		}
-		
-		
-		
 	}
 }
