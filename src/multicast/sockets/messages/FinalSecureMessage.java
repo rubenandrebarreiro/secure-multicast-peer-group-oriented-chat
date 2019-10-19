@@ -81,11 +81,13 @@ public class FinalSecureMessage {
 		this.secureMessage = new SecureMessage(datagramPacketToBeSent,
 				                               fromPeerID, secureMulticastChatSessionParameters,
 				                               sequenceNumber, randomNonce, messageType);
+		this.secureMessage.buildSecureMessageSerialized();
 		
 		System.out.println("OLE");
 		
 		this.fastSecureMessageCheck = new FastSecureMessageCheck(this.secureMessage.getSecureMessageSerialized());
-				
+		this.fastSecureMessageCheck.buildSecureMessageSerializedHashed();
+		
 		System.out.println("OLEEEEE");
 		
 		System.out.println(this.secureMessage.getSecureMessageHeader() != null ? "PASSOU" : "FALHOU");
@@ -96,6 +98,16 @@ public class FinalSecureMessage {
 
 		System.out.println(this.fastSecureMessageCheck.getSecureMessageSerializedHashed() != null ? "PASSOU" : "FALHOU");
 
+		
+		System.out.println("2º TESTEEEEEEEEEEE");
+		
+		System.out.println(this.secureMessage.getSecureMessageHeader().getSecureMessageHeaderSerialized() != null ? "PASSOU" : "FALHOU");
+		
+		System.out.println(this.secureMessage.getSecureMessageAttributes().getSecureMessageAttributesSerialized() != null ? "PASSOU" : "FALHOU");
+		
+		System.out.println(this.secureMessage.getSecureMessagePayload().getSecureMessagePayloadSerialized() != null ? "PASSOU" : "FALHOU");
+
+		System.out.println(this.fastSecureMessageCheck.getSecureMessageSerializedHashed() != null ? "PASSOU" : "FALHOU");
 		
 		this.secureMessageMetaHeader = new SecureMessageMetaHeader(this.secureMessage.getSecureMessageHeader().getSecureMessageHeaderSerialized().length,
 																   this.secureMessage.getSecureMessageAttributes().getSecureMessageAttributesSerialized().length, 
