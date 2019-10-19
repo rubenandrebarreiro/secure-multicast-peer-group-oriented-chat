@@ -140,9 +140,13 @@ public class SecureMessage {
 	public void buildSecureMessageSerialized() {
 		if(!this.isSecureMessageSerialized) {			
 			
+			System.out.println("VOU CONSTRUIR A SECUREEEE MESSAGEEEEEEEEE");
+			
 			this.secureMessageHeader.buildMessageHeaderSerialized();
 			byte[] secureMessageHeaderSerialized = 
 					this.secureMessageHeader.getSecureMessageHeaderSerialized();
+			
+			System.out.println("PASSSOU 1");
 			
 			this.secureMessageAttributes.buildSecureMessageAttributesSerialized();
 			this.secureMessageAttributes.buildFinalSecureMessageAttributesSerializedHashed();
@@ -159,6 +163,7 @@ public class SecureMessage {
 			byte[] sizeOfSecureMessagePayloadSerialized = 
 					CommonUtils.fromIntToByteArray(this.sizeOfSecureMessagePayload);
 			
+			System.out.println("FILLLLLLLLLLLLLLLLLLLLLLLL");
 			
 			// Operations to Fill a Byte Array, with the following parameters:
 			// 1) src - The source of the array to be copied

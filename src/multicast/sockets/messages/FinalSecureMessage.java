@@ -81,6 +81,7 @@ public class FinalSecureMessage {
 		this.secureMessage = new SecureMessage(datagramPacketToBeSent,
 				                               fromPeerID, secureMulticastChatSessionParameters,
 				                               sequenceNumber, randomNonce, messageType);
+		
 		this.secureMessage.buildSecureMessageSerialized();
 		
 		System.out.println("OLE");

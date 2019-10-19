@@ -128,17 +128,21 @@ public class SecureMessageHeader {
 	 */
 	public void buildMessageHeaderSerialized() {
 		
+		System.out.println("EU");
+		
 		// This process it's only made if the Secure Message's Header is not serialized
 		if(!this.isSecureMessageHeaderSerialized) {
 			
 			// The Version's Number of the Secure Message's Protocol
-			byte versionNumberSerialized = versionNumber;
+			byte[] versionNumberSerialized = new byte[CommonUtils.BYTE_LENGTH];
+			versionNumberSerialized[0] = this.versionNumber;
 			
 			// The Session's ID serialized, using the Secure Message's Protocol
 			byte[] sessionIDSerialized = CommonUtils.fromStringToByteArray(this.getSessionID());
 			
 			// The Message's Type, using the Secure Message's Protocol
-			byte messageTypeSerialized = messageType;
+			byte[] messageTypeSerialized = new byte[CommonUtils.BYTE_LENGTH];
+			messageTypeSerialized[0] = this.messageType;
 			
 			
 			// The size of the Secure Message's Header serialized
@@ -147,6 +151,7 @@ public class SecureMessageHeader {
 			// The creation of the Secure Message's Header serialized
 			this.secureMessageHeaderSerialized = new byte[sizeOfMessageHeaderSerialized];
 			
+			System.out.println("TU");
 			
 			// Operations to Fill a Byte Array, with the following parameters:
 			// 1) src - The source of the array to be copied
@@ -163,6 +168,8 @@ public class SecureMessageHeader {
 			// From the position corresponding to the length of the byte of the Version's Number
 			System.arraycopy(versionNumberSerialized, 0, this.secureMessageHeaderSerialized, 0, CommonUtils.BYTE_LENGTH);
 			serializationOffset += CommonUtils.BYTE_LENGTH;
+			
+			System.out.println("ELE");
 			
 			// Fills the byte array of the Secure Message Header with the serialization of the Session's ID,
 			// From the position corresponding to the length of the byte array of the Session's ID
