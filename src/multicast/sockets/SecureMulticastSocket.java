@@ -22,6 +22,9 @@ import java.net.MulticastSocket;
 import java.security.SecureRandom;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Properties;
+
+import multicast.common.MessageType;
 import multicast.sockets.messages.FinalSecureMessage;
 import multicast.sockets.services.SecureMulticastSocketCleaningRandomNoncesService;
 
@@ -42,6 +45,11 @@ public class SecureMulticastSocket extends MulticastSocket {
 	 * The Sequence Number, which will be sent or receive
 	 */
 	private int sequenceNumber;
+	
+	/**
+	 * The Secure Random seed, to generate Random Nonces
+	 */
+	private SecureRandom secureRandom;
 	
 	/**
 	 * The current Random Nonce, which will be sent or received
@@ -69,35 +77,34 @@ public class SecureMulticastSocket extends MulticastSocket {
 	// Constructors:
 	/**
 	 * Constructor #1:
-	 * - 
+	 * - TODO Socket to send
 	 * 
 	 * @throws IOException an Input/Output Exception occurred
 	 */
-	public SecureMulticastSocket() throws IOException {
+	public SecureMulticastSocket(Properties properties) throws IOException {
 		super();
 		
-		SecureRandom secureRandom = new SecureRandom();
-		
-		this.randomNonce = secureRandom.nextInt();
+		this.secureRandom = new SecureRandom();
 		
 		this.firstMessage = true;
 	}
 	
 	/**
 	 * Constructor #2:
-	 * - 
+	 * - TODO Socket to receive
 	 * 
 	 * @param port the port of the Multicast Group's Address
 	 * 
 	 * @throws IOException an Input/Output Exception occurred
 	 */
-	public SecureMulticastSocket(int port) throws IOException {
+	public SecureMulticastSocket(Properties properties, int port) throws IOException {
 		super(port);
 		
 		this.randomNoncesMap = new LinkedHashMap<>();
 		
 		this.secureMulticastSocketCleaningRandomNoncesService = 
 						new SecureMulticastSocketCleaningRandomNoncesService(randomNoncesMap);
+		
 		new Thread(this.secureMulticastSocketCleaningRandomNoncesService).start();
 		
 		this.firstMessage = true;
@@ -148,23 +155,21 @@ public class SecureMulticastSocket extends MulticastSocket {
 	 */
 	@Override
 	public void send(DatagramPacket secureMessageDatagramPacketToSend) {
-		
-		FinalSecureMessage finalSecureMessageToSend = null;
+				
+		this.randomNonce = secureRandom.nextInt();
 		
 		if(this.firstMessage) {
-			
-			SecureRandom secureRandom = new SecureRandom();
-			int randomNonce = secureRandom.nextInt();
-			
-			int sequenceN
-			
-			finalSecureMessageToSend = new FinalSecureMessage(secureMessageDatagramPacketToSend, false /* firstMessage */);
+			this.sequenceNumber = 1;
 			
 			this.firstMessage = false;
 		}
 		else {
-			// TODO
+			this.sequenceNumber++;
 		}
+		
+		FinalSecureMessage finalSecureMessageToSend = new FinalSecureMessage(secureMessageDatagramPacketToSend,
+				                                                             this.sequenceNumber, this.randomNonce,
+				                                                             null /* Properties */, MessageType.MESSAGE_TYPE_1.getMessageType());
 		
 		try {
 			

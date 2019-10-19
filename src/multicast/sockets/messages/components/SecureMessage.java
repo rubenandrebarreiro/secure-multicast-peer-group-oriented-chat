@@ -121,7 +121,7 @@ public class SecureMessage {
 	/**
 	 * 
 	 */
-	public void buildSecureMessage() {
+	public void buildSecureMessageSerialized() {
 		if(!this.isSecureMessageSerialized) {			
 			
 			this.secureMessageHeader.buildMessageHeaderSerialized();

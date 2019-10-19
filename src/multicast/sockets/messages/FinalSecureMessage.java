@@ -92,12 +92,19 @@ public class FinalSecureMessage {
 	public void buildFinalSecureMessageSerialized() {
 		
 		if(!this.isFinalSecureMessageSerialized) {
+			
+			// META-HEADER
+			this.secureMessageMetaHeader.buildMessageMetaHeaderSerialized();
 			byte[] secureMessageMetaHeaderSerialized = 
 					this.secureMessageMetaHeader.getSecureMessageMetaHeaderSerialized();
 			
+			// SECURE MESSAGE
+			this.secureMessage.buildSecureMessageSerialized();
 			byte[] secureMessageSerialized = 
 					this.secureMessage.getSecureMessageSerialized();
 			
+			// FAST SECURE MESSAGE CHECK
+			this.fastSecureMessageCheck.buildSecureMessageSerializedHashed();
 			byte[] fastSecureMessageCheckSerializedHashed =
 					this.fastSecureMessageCheck.getSecureMessageSerializedHashed();
 			
