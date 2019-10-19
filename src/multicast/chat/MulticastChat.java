@@ -211,7 +211,7 @@ public class MulticastChat extends Thread {
     										   		               this.secureMulticastChatSocket.getLocalPort());
 		
 		// Sends the final Datagram Packet through the (Secure) Multicast Chat Socket previously created
-		this.secureMulticastChatSocket.send(datagramPacketToBeSent, this.secureMulticastChatSessionParameters);
+		this.secureMulticastChatSocket.send(datagramPacketToBeSent);
 	} 
 
 	/**
