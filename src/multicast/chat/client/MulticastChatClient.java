@@ -18,10 +18,12 @@ package multicast.chat.client;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.text.DateFormatSymbols;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.text.*;
 
 import multicast.chat.MulticastChat;
 import multicast.chat.listener.SecureMulticastChatEventListener;
@@ -71,12 +73,13 @@ public class MulticastChatClient extends JFrame implements SecureMulticastChatEv
 	/**
 	 * The JTextField, which can be entered the TEXT Operation Messages
 	 */
-	protected JTextField messageField;
+	protected JTextField messageTextAreaField;
 	
 	/**
 	 * The JTextField for the text field, which can be entered a file to download
+	 * through the (Secure) Multicast Chat's Session
 	 */
-	protected JTextField fileField;
+	protected JTextField downloadFileTextField;
 	
 	/**
 	 * The Default List Model containing all the online Users
@@ -87,338 +90,571 @@ public class MulticastChatClient extends JFrame implements SecureMulticastChatEv
 	
 	// Constructors:
 	/**
-	 * Disconnected
+	 * Constructor #1:
+	 * - Constructor for the Multicast Chat Client,
+	 *   initializing also its several components of the Graphic User Interface (G.U.I.) and
+	 *   the Chat's Session (initialized with the state of Disconnected or Not Connected)
 	 */
-	
-	// Construtor para uma frame com do chat multicast  (inicializado em estado nao conectado)
 	public MulticastChatClient() {
 		super("(Secure) Multicast Chat (Mode: Disconnected)");
 
-		// Construct GUI components (iniciaizacao de sessao)
-		// Builds the several components of the Graphic User Interface (G.U.I.),
-		// related to the (Secure) Multicast Chat for the initializing of
-		// the Chat's Session
-		conversationMulticastChatTextArea = new JTextArea();
-		conversationMulticastChatTextArea.setEditable(false);
-		conversationMulticastChatTextArea.setLineWrap( true);
-		conversationMulticastChatTextArea.setBorder(BorderFactory.createLoweredBevelBorder());
-
-		JScrollPane textAreaScrollPane = new JScrollPane(conversationMulticastChatTextArea, 
+		// Builds and sets the several components of the Graphic User Interface (G.U.I.),
+		// related to the (Secure) Multicast Chat for
+		// the initializing of the Chat's Session
+		
+		// Builds and sets the JTextArea of the current available Operation Messages,
+		// exchanged between the Users (Clients) participating in the
+		// (Secure) Multicast Chat, including the JOIN and TEXT Operations' Messages
+		this.conversationMulticastChatTextArea = new JTextArea();
+		this.conversationMulticastChatTextArea.setEditable(false);
+		this.conversationMulticastChatTextArea.setLineWrap(true);
+		this.conversationMulticastChatTextArea.setBorder(BorderFactory.createLoweredBevelBorder());
+		
+		// Builds, sets and binds a JScrollPane to the JTextArea of the current available Operation Messages,
+		// exchanged between the Users (Clients) participating in the
+		// (Secure) Multicast Chat, including the JOIN and TEXT Operations' Messages
+		JScrollPane textAreaScrollPane = new JScrollPane(this.conversationMulticastChatTextArea, 
 														 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
 														 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		getContentPane().add(textAreaScrollPane, BorderLayout.CENTER);
+		
+		// Adds the previously created/built JScrollPane to the main JFrame's Content
+		this.getContentPane().add(textAreaScrollPane, BorderLayout.CENTER);
+		
+		// Builds, sets and binds the JList of currently Online Users in the (Secure) Multicast Chat's Session
+		this.onlineUsersList = new DefaultListModel<String>();
+		JList<String> onlineUsersJList = new JList<String>(onlineUsersList);
+		
+		// Builds, sets and binds a JScrollPane to
+		// the JList of currently Online Users in the (Secure) Multicast Chat's Session
+		JScrollPane onlineUsersListJScrollPane = new JScrollPane(onlineUsersJList, 
+														 		 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
+														 		 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER) {
+			// Invariants/Constants:
+			/**
+			 * The default serial version ID
+			 */
+			private static final long serialVersionUID = 1L;
+			
+			/**
+			 * Returns the minimum size of the JScrollPane to
+			 * the JList of currently Online Users in the Chat's Session.
+			 * 
+			 * @return the minimum size of the JScrollPane to
+			 *         the JList of currently Online Users in the Chat's Session 
+			 */
+			public Dimension getMinimumSize() {
+				Dimension minimumSizeDimension = super.getMinimumSize();
+				minimumSizeDimension.width = 100;
 				
-		onlineUsersList = new DefaultListModel();
-		JList usersList = new JList( onlineUsersList);
-		JScrollPane usersListScrollPane = new JScrollPane(usersList, 
-														 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
-														 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER) {
-				public Dimension getMinimumSize() {
-					Dimension d = super.getMinimumSize();
-					d.width = 100;
-					return d;
-				}
-				public Dimension getPreferredSize() {
-					Dimension d = super.getPreferredSize();
-					d.width = 100;
-					return d;
-				}
-			};
-		getContentPane().add(usersListScrollPane, BorderLayout.WEST);
-
-		Box box = new Box( BoxLayout.Y_AXIS);
-		box.add( Box.createVerticalGlue());
-		JPanel messagePanel = new JPanel(new BorderLayout());
-
-		messagePanel.add(new JLabel("Menssagem:"), BorderLayout.WEST);
-
-		messageField = new JTextField();
-		messageField.addActionListener( new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			sendMessage();
+				return minimumSizeDimension;
 			}
-			});
-		messagePanel.add(messageField, BorderLayout.CENTER);
-
-		JButton sendButton = new JButton("  ENVIAR ");
-		sendButton.addActionListener( new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			sendMessage();
+			
+			/**
+			 * Returns the preferred size of the JScrollPane to
+			 * the JList of currently Online Users in the Chat's Session.
+			 * 
+			 * @return the preferred size of the JScrollPane to
+			 *         the JList of currently Online Users in the Chat's Session
+			 */
+			public Dimension getPreferredSize() {
+				Dimension minimumSizeDimension = super.getPreferredSize();
+				minimumSizeDimension.width = 100;
+			
+				return minimumSizeDimension;
 			}
-			});
-		messagePanel.add(sendButton, BorderLayout.EAST);
-		box.add( messagePanel);
-
-		box.add( Box.createVerticalGlue());
+		};
 		
+		// Adds the previously created/built JScrollPane to the main JFrame's Content, in the west (left) side
+		this.getContentPane().add(onlineUsersListJScrollPane, BorderLayout.WEST);
 		
-		JPanel filePanel = new JPanel(new BorderLayout());
-
-		filePanel.add(new JLabel("Not used"), BorderLayout.WEST);
-		fileField = new JTextField();
-		fileField.addActionListener( new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			downloadFile();
+		// Creates a Box of Components binded to Y axis
+		Box box = new Box(BoxLayout.Y_AXIS);
+		
+		// Adds a first vertical orientation to the Box previously created
+		box.add(Box.createVerticalGlue());
+		
+		// The JPanel related to the field to insert new messages to send to
+		// the (Secure) Multicast Chat's Session
+		JPanel insertMessagePanel = new JPanel(new BorderLayout());
+		
+		// Adds the label "Message" to the JPanel previously created, in the left (west) side
+		insertMessagePanel.add(new JLabel("Message:"), BorderLayout.WEST);
+		
+		// Creates the JTextField, which can be entered the TEXT Operation Messages
+		this.messageTextAreaField = new JTextField();
+		
+		// Adds a Action Event Listener to the JTextField, where can be entered the TEXT Operation Messages
+		this.messageTextAreaField.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent actionEvent) {
+				sendTextMessage();
 			}
-			});
-		filePanel.add(fileField, BorderLayout.CENTER);
-
-		JButton downloadButton = new JButton("Not Impl.");
-		downloadButton.addActionListener( new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-		downloadFile();
-		}
 		});
-		filePanel.add(downloadButton, BorderLayout.EAST);
-		box.add( filePanel);
 		
-		box.add( Box.createVerticalGlue());
+		// Adds the JTextField, which can be entered the TEXT Operation Messages to
+		// the JPanel previously created, in the middle (center) side
+		insertMessagePanel.add(this.messageTextAreaField, BorderLayout.CENTER);
+
+		// Creates the JButton labeled "SEND"
+		JButton sendTextMessageButton = new JButton("  SEND  ");
 		
+		// Adds a Action Event Listener to the the JButton labeled "SEND",
+		// which can be clicked to send the entered the TEXT Operation Messages
+		sendTextMessageButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent actionEvent) {
+				sendTextMessage();
+			}
+		});
+		
+		// Adds the JButton labeled "SEND", which can be clicked to send the entered the TEXT Operation Messages to
+		// the JPanel previously created, in the east (right) side
+		insertMessagePanel.add(sendTextMessageButton, BorderLayout.EAST);
+		
+		// Adds the JPanel previously created, in the middle (center) side to
+		// the previously created Box
+		box.add(insertMessagePanel);
 
-		getContentPane().add(box, BorderLayout.SOUTH);
+		// Adds a second vertical orientation to the Box previously created
+		box.add(Box.createVerticalGlue());
+		
+		// Creates the JPanel, which allow to download files through the (Secure) Multicast Chat's Session
+		JPanel downloadFilePanel = new JPanel(new BorderLayout());
 
-		// detect window closing and terminate multicast chat session
-		// detectar o fecho da janela no termino de uma sessao de chat    // 
-		addWindowListener( new WindowAdapter() {
-			// Invocado na primeira vez que a janela e tornada visivel.
-			public void windowOpened(WindowEvent e) {
-				messageField.requestFocus();
+		// Adds the label "Not Used" to the JPanel previously created, in the left (west) side
+		downloadFilePanel.add(new JLabel("Not Used" /* TODO - Change it to be able to download files through the (Secure) Multicast Chat's Session */),
+					  		  BorderLayout.WEST);
+		
+		// Creates the JTextField for the text field, where can be entered a file to download through the (Secure) Multicast Chat's Session
+		this.downloadFileTextField = new JTextField();
+		
+		// Adds a Action Event Listener to the JTextField, where can be entered a file to download through the (Secure) Multicast Chat's Session
+		this.downloadFileTextField.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent actionEvent) {
+				downloadFile();
+			}
+		});
+		
+		// Adds the JTextField for the text field, which can be entered a file to download through the (Secure) Multicast Chat's Session to
+		// the JPanel previously created, in the middle (center) side
+		downloadFilePanel.add(this.downloadFileTextField, BorderLayout.CENTER);
+		
+		// Creates the JButton labeled "Not Implemented"
+		JButton downloadFileButton = new JButton("Not Implemented" /* TODO - Change it to be able to download files through the (Secure) Multicast Chat's Session */);
+		
+		// Adds a Action Event Listener to the the JButton labeled "Not Implemented",
+		// which can be clicked to download files through the (Secure) Multicast Chat's Session
+		downloadFileButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent actionEvent) {
+				downloadFile();
+			}
+		});
+		
+		// Adds the JButton labeled "Not Implemented", which can be clicked to download files through the (Secure) Multicast Chat's Session from
+		// the JPanel previously created, in the east (right) side
+		downloadFilePanel.add(downloadFileButton, BorderLayout.EAST);
+		
+		// Adds the JPanel previously created, in the right (east) side to
+		// the previously created Box
+		box.add(downloadFilePanel);
+		
+		// Adds a third vertical orientation to the Box previously created
+		box.add(Box.createVerticalGlue());
+		
+		// Adds the previously created/built Box to the main JFrame's Content, in the south (bottom) side
+		this.getContentPane().add(box, BorderLayout.SOUTH);
+		
+		// Adds the Event Listener to the Frame/Window of the (Secure) Multicast Chat's Session
+		this.addWindowListener(new WindowAdapter() {
+			
+			// Invoked in the first time that Frame/Window of
+			// the (Secure) Multicast Chat's Session is set as visible
+			public void windowOpened(WindowEvent windowEvent) {
+				messageTextAreaField.requestFocus();
 			} 
-			// terminar o char a quando do fecho da janela
-			public void windowClosing(WindowEvent e) {
+			
+			// Terminates the which joined to the (Secure) Multicast Chat's Session
+			// when the closing of its Frame/Window happened
+			public void windowClosing(WindowEvent windowEvent) {
 				onQuit();
 				dispose();
 			} 
-			public void windowClosed(WindowEvent e) {
+			
+			// Exits the Application of the (Secure) Multicast Chat's Session
+			public void windowClosed(WindowEvent windowEvent) {
 				System.exit(0);
 			} 
-			});
+		});
 	}
 	
 	/**
-	 * Adiciona utilizador no interface do utilizador
+	 * Adds an User (Client) which joined to the (Secure) Multicast Chat's Session to
+	 * the List of Online Users in its Graphic User Interface (G.U.I.), given his Username.
+	 * 
+	 * @param userUsername the Username of the User (Client)
+	 *        which joined to the (Secure) Multicast Chat's Session
 	 */
-	protected void uiAddUser( String username) {
-		onlineUsersList.addElement( username);
+	protected void addUserToTheOnlineUsersList(String userUsername) {
+		this.onlineUsersList.addElement(userUsername);
 	}
 	
 	/**
-	 * Remove utilizador no interface do utilizador.
-	 * @return Devolve true se utilizador foi removido.
+	 * Removes an User (Client) who left to the (Secure) Multicast Chat's Session from
+	 * the List of Online Users in its Graphic User Interface (G.U.I.), given his Username.
+	 * 
+	 * @param userUsername the Username of the User (Client)
+	 *        which left to the (Secure) Multicast Chat's Session
+	 * 
+	 * @return the Username of the removed User (Client) who left 
+	 * 		   the (Secure) Multicast Chat's Session from
+	 *         the List of Online Users in its Graphic User Interface (G.U.I.)
 	 */
-	protected boolean uiRemUser( String username) {
-		return onlineUsersList.removeElement(username);
+	protected boolean removeUserFromTheOnlineUsersList(String userUsername) {
+		return this.onlineUsersList.removeElement(userUsername);
 	}
 	
 	/**
-	 * Inicializa lista de utilizadores a partir de um iterador -- pode ser usado
-	 * obtendo iterador de qualquer estrutura de dados de java
+	 * Initializes and iterates the elements of an Iterator of all the Usernames of the Users (Clients),
+	 * currently online/active Users (Clients) the List of Online Users in its Graphic User Interface (G.U.I.).
+	 * 
+	 * @param onlineUsersListIterator the Iterator of all the Usernames of the Users (Clients),
+	 *		  currently online/active Users (Clients) the List of Online Users in its Graphic User Interface (G.U.I.)
 	 */
-	protected void uiInitUsers(Iterator<String> it) {
-		onlineUsersList.clear();
+	protected void iteratesAllTheOnlineUsersList(Iterator<String> onlineUsersListIterator) {
+		this.onlineUsersList.clear();
 		
-		if(it != null) {
-			while(it.hasNext()) {
-				onlineUsersList.addElement(it.next());
+		if(onlineUsersListIterator != null) {
+			while(onlineUsersListIterator.hasNext()) {
+				this.onlineUsersList.addElement(onlineUsersListIterator.next());
 			}
 		}
 	}
 	
 	/**
-	 * Devolve um Enumeration com o nome dos utilizadores que aparecem no UI.
+	 * Returns all the Usernames of the Users (Clients),
+	 * currently online/active Users (Clients) the List of Online Users in its Graphic User Interface (G.U.I.). 
+	 * 
+	 * @return all the Usernames of the Users (Clients),
+	 * 		   currently online/active Users (Clients) the List of Online Users in its Graphic User Interface (G.U.I.)
 	 */
-	protected Enumeration uiListUsers() {
-		return onlineUsersList.elements();
+	protected Enumeration<String> getOnlineUsersList() {
+		return this.onlineUsersList.elements();
 	}
 	
 	// Configuracao do grupo multicast da sessao de chat na interface do cliente
-	public void join(String username, InetAddress group, int port, 
-					 int ttl) throws IOException {
-		setTitle("CHAT MulticastIP " + username + "@" + group.getHostAddress() 
-				 + ":" + port + " [TTL=" + ttl + "]");
+	
+	/**
+	 * 
+	 * 
+	 * @param userUsername
+	 * 
+	 * @param ipMulticastGroup
+	 * 
+	 * @param port
+	 * 
+	 * @param timeToLive
+	 * 
+	 * @throws IOException
+	 */
+	public void joinOperationToTheMulticastChatSession(String userUsername,
+					 								   InetAddress ipMulticastGroup, int port, int timeToLive) throws IOException {
 		
-		// Criar sessao de chat multicast
-		multicastChat = new MulticastChat(username, group, port, ttl, this);
+		// Sets the title of the 
+		this.setTitle("(Secure) Multicast Chat IP - " + userUsername + " @ " + ipMulticastGroup.getHostAddress() 
+				      + ":" + port + " | [Time To Live (T.T.L.) = " + timeToLive + "]");
+		
+		// Creates a (Secure) Multicast Chat's Session
+		this.multicastChat = new MulticastChat(userUsername, ipMulticastGroup, port, timeToLive, this);
 	} 
-
-	protected void log(final String message) {
-		java.util.Date date = new java.util.Date();
+	
+	/**
+	 * Logs a TEXT Message, given the content bo be assigned to it.
+	 * 
+	 * @param textMessageLog the content of the TEXT Message's Log
+	 */
+	protected void textMessageLog(final String textMessageLog) {
+		
+		// The Date's Object representation 
+		Date date = new Date();
+		
+		// The Calendar's Object representation
+		//Calendar calendar = new GregorianCalendar();
 
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-			conversationMulticastChatTextArea.append(message + "\n");
+				
+				// The Date Format Symbols' Object representation
+				DateFormatSymbols dateFormatSymbols = new DateFormatSymbols();
+				
+				// The conversion of the Month's numerical representation to text representation
+				@SuppressWarnings("deprecation")
+				String month = dateFormatSymbols.getMonths()[date.getMonth()];
+				
+				// The formation of the Time's 24-Hours representation
+				@SuppressWarnings("deprecation")
+				String time24HoursNotation = String.format("%d:%d",
+														   date.getHours(), date.getMinutes());
+				
+				// The conversion of the Time's 24-Hours representation to the Time's 12-Hours [AM|PM] representation
+				String time12HoursAMPMNotation = LocalTime.parse(time24HoursNotation).format(DateTimeFormatter.ofPattern("h:mma"));
+				
+				// The final formation of the Time and Date representation to be appended to the TEXT Message's Log
+				@SuppressWarnings("deprecation")
+				String timeAndDateLogMessageStringFormat = String.format("%s, %s %d, %d - %s",
+																		 date.getDay(), month, date.getDate(), date.getYear(),
+																		 time12HoursAMPMNotation);
+				
+				// Appends the final formation of the Time and Date representation to the TEXT Message's Log
+				conversationMulticastChatTextArea.append(timeAndDateLogMessageStringFormat + "\n- " + textMessageLog);
 			} 
-			});
+		});
 	} 
 
 	/**
-	 * Envia mensagem. Chamado quando se carrega no botao de SEND ou se faz ENTER 
-	 * na linha da mensagem. 
-	 * Executa operacoes relacionadas com interface -- nao modificar
+	 * Sends a TEXT Message, through the (Secure) Multicast Chat's Session.
+	 *
+	 * NOTES:
+	 * - It's called when the "SEND" button it's clicked or when the "ENTER" key on the keyboard it's pressed;
+	 * - Performs the operations related to the Graphic User Interface (G.U.I.);
 	 */
-	protected void sendMessage() {
-		String message = messageField.getText();
-		messageField.setText("");
-		doSendMessage( message);
-		messageField.requestFocus();
+	protected void sendTextMessage() {
+		
+		// Retrieves the TEXT Message from the JTextField, which can be entered the TEXT Operation Messages
+		String textMessage = this.messageTextAreaField.getText();
+		
+		// Resets the content of the JTextField, which can be entered the TEXT Operation Messages
+		this.messageTextAreaField.setText("");
+		
+		// Performs the effective sending of the TEXT Message
+		this.performTheSendTextMessageOperations(textMessage);
+		
+		this.messageTextAreaField.requestFocus();
 	}
 
 	/**
-	 * Executa operacoes relativas ao envio de mensagens
+	 * Performs the operations related to the sending of the TEXT Messages.
+	 * 
+	 * NOTES:
+	 * - It's called after the "SEND" button be clicked or after the "ENTER" key on the keyboard be pressed;
+	 * 
+	 * @param textMessage the TEXT Message to be sent, through the (Secure) Multicast Chat's Session
 	 */
-	protected void doSendMessage( String message) {
+	protected void performTheSendTextMessageOperations(String textMessage) {
+		
+		// Sends the TEXT Message through the (Secure) Multicast Chat's Session
 		try {
-			multicastChat.sendMessage(message);
-		} catch (Throwable ex) {
-			JOptionPane.showMessageDialog(this,
-										  "Erro ao enviar uma menssagem: " 
-										  + ex.getMessage(), "Chat Error", 
-															 JOptionPane.ERROR_MESSAGE);
+			this.multicastChat.sendMessage(textMessage);
+		}
+		catch (Throwable throwableException) {
+			JOptionPane.showMessageDialog(this, "Error during the sending of the message: " 
+										  + throwableException.getMessage(), "(Secure) Multicast Chat's Session Error", 
+								          JOptionPane.ERROR_MESSAGE);
 		} 
 	}
 	
+	/**
+	 * Requests the Download of a File, through the (Secure) Multicast Chat's Session.
+	 *
+	 * NOTES:
+	 * - It's called when the "SEND" button it's clicked or when the "ENTER" key on the keyboard it's pressed,
+	 *   in the Download's Text Field;
+	 * - Performs the operations related to the Graphic User Interface (G.U.I.);
+	 */
+	protected void downloadFile() {
+		
+		final String file = downloadFileTextField.getText();
+		
+		this.downloadFileTextField.setText("");
+		
+		new Thread(new Runnable() {
+			public void run() {
+				performTheDownloadFileOperation(file);
+			}
+		}).start();
+	
+		this.messageTextAreaField.requestFocus();
+	}
 	
 	/**
-	 * Imprime mensagem de erro
+	 * Performs the operations related to the downloading of files.
+	 * 
+	 * NOTES:
+	 * - It's called when the "SEND" button it's clicked or when the "ENTER" key on the keyboard it's pressed,
+	 *   in the Download's Text Field;
+	 * - Any information to be displayed to the User (Client) of the (Secure) Multicast Chat's Session,
+	 *   using the auxiliary method/function "displayErrorMessage";
+	 * 
+	 * @param fileName the name of the file to have its download made
 	 */
-	protected void displayMsg( final String str, final boolean error) {
-		final JFrame f = this;
+	protected void performTheDownloadFileOperation(String fileName) {
+		// TODO - To Complete
+		System.err.println("Request of File Download: " + fileName);
+	}
+	
+	/**
+	 * Prints/Shows an Error Message, during the communications over the (Secure) Multicast Chat's Session.
+	 * 
+	 * @param errorMessage the Error Message to be displayed
+	 * 
+	 * @param isError the boolean value to keep the information about if the Error Message it's really due to
+	 *        an Error occurred over the (Secure) Multicast Chat's Session or not
+	 */
+	protected void displayErrorMessage(final String errorMessage, final boolean isError) {
+		final JFrame displayErrorMessageFrame = this;
 
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				if( error)
-					JOptionPane.showMessageDialog(f, str, "Chat Error", JOptionPane.ERROR_MESSAGE);
-				else
-					JOptionPane.showMessageDialog(f, str, "Chat Information", JOptionPane.INFORMATION_MESSAGE);
-			} 
-			});
-	}
-
-	/**
-	 * Pede downlaod dum ficheiro. Chamado quando se carrega no botao de SEND ou se faz ENTER 
-	 * na linha de download. 
-	 * Executa operacoes relacionadas com interface -- nao modificar
-	 */
-	protected void downloadFile() {
-		final String file = fileField.getText();
-		fileField.setText("");
-		new Thread( new Runnable() {
-			public void run() {
-				doDownloadFile( file);
+				
+				// The Error Message it's really due to an Error occurred over the (Secure) Multicast Chat's Session
+				if(isError) {
+					JOptionPane.showMessageDialog(displayErrorMessageFrame, errorMessage,
+							                      "Error occurred on (Secure) Multicast Chat's Session", JOptionPane.ERROR_MESSAGE);
+				}
+				// The Error Message it's not due to an Error occurred over the (Secure) Multicast Chat's Session
+				else {
+					JOptionPane.showMessageDialog(displayErrorMessageFrame, errorMessage,
+							                      "Information related to (Secure) Multicast Chat's Session", JOptionPane.INFORMATION_MESSAGE);
+				}
 			}
-			}).start();
-		messageField.requestFocus();
+		});
 	}
-
+	
 	/**
-	 * Executa operacoes relativas ao envio de mensagens.
-	 * 
-	 * NOTA: Qualquer informacao ao utilizador deve ser efectuada usando 
-	 * o metodo "displayMsg".
-	 */
-	protected void doDownloadFile( String file) {
-		// TODO: a completar
-		System.err.println( "Pedido download do ficheiro " + file);
-	}
-
-	/**
-	 * Chamado quando o utilizador fechou a janela do chat
+	 * Performs the operations related to the closing of the Frame/Window of the (Secure) Multicast Chat's Session.
 	 */
 	protected void onQuit() {
 		try {
-			if (multicastChat != null) {
-				multicastChat.terminate();
+			// If the (Secure) Multicast Chat's Session it's not null
+			if(this.multicastChat != null) {
+				this.multicastChat.terminate();
 			} 
-		} catch (Throwable ex) {
-			JOptionPane.showMessageDialog(this, "Erro no termino do chat:  "
-										  + ex.getMessage(), "ERRO no Chat", 
-										 JOptionPane.ERROR_MESSAGE);
-		} 
+		}
+		catch (Throwable throwableException) {
+			JOptionPane.showMessageDialog(this, "Error during the termination of the (Secure) Multicast Chat's Session:  "
+										  + throwableException.getMessage(), "ERROR on the (Secure) Multicast Chat's Session", 
+										  JOptionPane.ERROR_MESSAGE);
+		}
+	}
+
+	/**
+	 * Method/Function invoked when it's received a JOIN Operation Message from an User (Client),
+	 * through the (Secure) Multicast Chat's Session.
+	 */
+	public void secureMulticastChatParticipantJoined(String userUsername, InetAddress userINETAddress, int port) {
+		this.textMessageLog("A NEW PARTICIPANT JOINED:\n- " + userUsername
+				            + " has joined to the Multicast Chat's Group, from the following IP Address [" 
+				            + userINETAddress.getHostName() + ":" + port + "]");
 	} 
 
-
-	// Invocado quando s erecebe uma mensagem  // 
-	public void secureMulticastChatParticipantTextMessageReceived(String username, InetAddress address, 
-									int port, String message) {
-		log("MSG:[" + username+"@"+address.getHostName() + "] disse: " + message);
+	/**
+	 * Method/Function invoked when it's received a LEAVE Operation Message from an User (Client),
+	 * through the (Secure) Multicast Chat's Session.
+	 */
+	public void secureMulticastChatParticipantLeft(String userUsername, InetAddress userINETAddress, int port) {
+		this.textMessageLog("A PARTICIPANT LEFT:\n- " + userUsername
+				            + " has left the Multicast Chat's Group, from the following IP Address [" 
+				            + userINETAddress.getHostName() + ":" + port);
 	} 
 
-
-	// Invocado quando um novo utilizador se juntou ao chat  // 
-	public void secureMulticastChatParticipantJoined(String username, InetAddress address, 
-									  int port) {
-		log("+++ NOVO PARTICIPANTE: " + username + " juntou-se ao grupo do chat a partir de " + address.getHostName()
-			+ ":" + port);
+	/**
+	 * Method/Function invoked when it's received a TEXT Operation Message from an User (Client),
+	 * through the (Secure) Multicast Chat's Session.
+	 */
+	public void secureMulticastChatParticipantTextMessageReceived(String userUsername, InetAddress userINETAddress, int port, String textMessage) {
+		this.textMessageLog("A NEW MESSAGE FROM A PARTICIPANT:\n- " + userUsername
+				            + " @ " + userINETAddress.getHostName() + " said: " + textMessage);
 	} 
-
-	// Invocado quando um utilizador sai do chat  // 
-	public void secureMulticastChatParticipantLeft(String username, InetAddress address, 
-									int port) {
-		log("--- ABANDONO: " + username + " abandonou o grupo de chat, a partir de " + address.getHostName() + ":" 
-			+ port);
-	} 
-
-	// Command-line invocation expecting three arguments
+		
+	/**
+	 * Command-line invocation of the (Secure) Multicast Chat's application, expecting:
+	 * - At least, 3 arguments [<Nickname or Username> <IP Multicast Group> <Port>]
+	 * - At most, 4 arguments [<Nickname or Username> <IP Multicast Group> <Port> { <Time To Live (T.T.L.)> }]
+	 * 
+	 * @param args the arguments to be used during the initialization of the (Secure) Multicast Chat's application
+	 */
 	public static void main(String[] args) {
-		if ((args.length != 3) && (args.length != 4)) {
-			System.err.println("Utilizar: MChatCliente " 
-							   + "<nickusername> <grupo IPMulticast> <porto> { <ttl> }");
-			System.err.println("       - TTL default = 1");
+		
+		// Error during the usage of the arguments, during the command-line invocation
+		if((args.length != 3) && (args.length != 4)) {
+			System.err.println("Usage: MulticastChatClient " 
+							   + "<Nickname or Username> <IP Multicast Group> <Port> { <Time To Live (T.T.L.)> }");
+			System.err.println("       - Default Time To Live (T.T.L.) = 1");
+			
+			// Exits and closes the (Secure) Multicast Chat's application
 			System.exit(1);
 		} 
-
-		String username = args[0];
-		InetAddress group = null;
+		
+		
+		// The Username of the User (Client)
+		String userUsername = args[0];
+		
+		// The INET Address of the IP (Secure) Multicast Group
+		InetAddress ipMulticastGroup = null;
+		
+		// The Port used by the (Secure) Multicast Chat Socket
 		int port = -1;
-		int ttl = 1;
-
+		
+		// The T.T.L. (Time To Live) to be used by the (Secure) Multicast Chat's Session 
+		int timeToLive = 1;
+		
+		
+		// Retrieves the INET Address of the IP (Secure) Multicast Group
 		try {
-			group = InetAddress.getByName(args[1]);
+			ipMulticastGroup = InetAddress.getByName(args[1]);
 		}
 		catch (Throwable throwableException) {
 			System.err.println("The IP (Secure) Multicast Group Address it's invalid: " 
 							   + throwableException.getMessage() + "!!!");
+			
+			// Exits and closes the (Secure) Multicast Chat's application
 			System.exit(1);
 		} 
-
-		if (!group.isMulticastAddress()) {
-			System.err.println("The Argument for the The IP (Secure) Multicast Group Address '" + args[1] 
+		
+		// The INET Address of the IP (Secure) Multicast Group it's not an IP Multicast Address 
+		if (!ipMulticastGroup.isMulticastAddress()) {
+			System.err.println("The argument for the The IP (Secure) Multicast Group Address '" + args[1] 
 							   + "' it's not an IP Multicast Address!!!");
+			
+			// Exits and closes the (Secure) Multicast Chat's application
 			System.exit(1);
 		} 
-
+		
+		// Retrieves the Port used by the (Secure) Multicast Chat Socket
 		try {
 			port = Integer.parseInt(args[2]);
 		}
-		catch (NumberFormatException e) {
-			System.err.println("Porto invalido: " + args[2]);
+		catch (NumberFormatException numberFormatException) {
+			System.err.println("Invalid Port: " + args[2]);
+			
+			// Exits and closes the (Secure) Multicast Chat's application
 			System.exit(1);
 		} 
-
-		if (args.length >= 4) {
 		
+		// The T.T.L. (Time To Live) was also defined by the User (Client)
+		if (args.length >= 4) {
 			try {
-				ttl = Integer.parseInt(args[3]);
-			} catch (NumberFormatException e) {
-				System.err.println("TTL invalido: " + args[3]);
+				timeToLive = Integer.parseInt(args[3]);
+			}
+			catch (NumberFormatException numberFormatException) {
+				System.err.println("Invalid T.T.L. (Time To Live): " + args[3]);
+			
+				// Exits and closes the (Secure) Multicast Chat's application
 				System.exit(1); 
 			} 
 		} 
 
 		try {
+			// Creates the (Secure) Multicast Chat's Session
+			MulticastChatClient secureMulticastChatClient = new MulticastChatClient();
 			
-			
-			MulticastChatClient frameWindowSecureMulticastChatClient = new MulticastChatClient();
-			
-			// Sets the dimensions of the Frame/Window of the (Secure) Multicast Chat
-			frameWindowSecureMulticastChatClient.setSize(CommonUtils.FRAME_WINDOW_SECURE_MULTICAST_CHAT_WIDTH,
+			// Sets the dimensions of the Frame/Window of the (Secure) Multicast Chat's Session
+			secureMulticastChatClient.setSize(CommonUtils.FRAME_WINDOW_SECURE_MULTICAST_CHAT_WIDTH,
 						  								 CommonUtils.FRAME_WINDOW_SECURE_MULTICAST_CHAT_HEIGHT);
 			
 			// Sets the Frame/Window of the (Secure) Multicast Chat,
 			// previously defined, as visible
-			frameWindowSecureMulticastChatClient.setVisible(true);
+			secureMulticastChatClient.setVisible(true);
 			
-			frameWindowSecureMulticastChatClient.join(username, group, port, ttl);
+			// Performs the JOIN Message Operation by the User (Client) on the (Secure) Multicast Chat's Session
+			secureMulticastChatClient.joinOperationToTheMulticastChatSession(userUsername, ipMulticastGroup, port, timeToLive);
 		}
 		catch (Throwable throwableException) {
 			
@@ -427,8 +663,9 @@ public class MulticastChatClient extends JFrame implements SecureMulticastChatEv
 			System.err.println("Error occurred when initializing the Frame/Window of the (Secure) Multicast Chat: "
 							   + throwableException.getClass().getName() + ": " + throwableException.getMessage());
 			
-			// Exits and closes the (Secure) Multicast Chat's Application
+			// Exits and closes the (Secure) Multicast Chat's application
 			System.exit(1);
 		} 
 	} 
+	
 }
