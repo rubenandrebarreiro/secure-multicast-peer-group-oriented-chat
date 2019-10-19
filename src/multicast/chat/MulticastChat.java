@@ -22,6 +22,7 @@ import java.net.*;
 import multicast.chat.listener.SecureMulticastChatEventListener;
 import multicast.common.CommonUtils;
 import multicast.sockets.SecureMulticastSocket;
+import multicast.sockets.messages.utils.SecureMulticastChatSessionParameters;
 
 /**
  * 
@@ -34,7 +35,15 @@ import multicast.sockets.SecureMulticastSocket;
  *
  */
 public class MulticastChat extends Thread {
-
+	
+	// Invariants/Constants:
+	/**
+	 * The Filename of Properties' File all the information of
+	 * the (Secure) Multicast Chat's Session
+	 */
+	private static final String propertiesFilename = "./res/SMCP.conf";
+	
+	
 	// Global Instance Variables:
 	/**
 	 * The Multicast Chat Socket,
@@ -51,6 +60,12 @@ public class MulticastChat extends Thread {
 	 * in the scope of the operation which have place in the Secure Multicast Chat
 	 */
 	protected SecureMulticastSocket secureMulticastChatSocket;
+
+	/**
+	 * The Properties' Reader, to retrieve all the information of
+	 * the (Secure) Multicast Chat's Session from some Properties' File
+	 */
+	protected SecureMulticastChatSessionParameters secureMulticastChatSessionParameters;
 	
 	/**
 	 * The Username or NickName of the User (Client) of the (Secure) Multicast Chat
@@ -101,10 +116,14 @@ public class MulticastChat extends Thread {
 	    this.userUsername = userUsername;
 	    this.ipMulticastGroup = ipMulticastGroup;
 	    
+	    this.secureMulticastChatSessionParameters = new SecureMulticastChatSessionParameters(propertiesFilename);
+	    
 	    this.secureMulticastChatEventListener = secureMulticastChatEventListener;
 	    
 	    this.isSecureMulticastChatActive = true;
-
+	    
+	    System.out.println("HHHHHHHHHHHHHH");
+	    
 	    // Create and Configure the Multicast Chat Socket
 	    //this.multicastChatSocket = new MulticastSocket(port);
 	    //this.multicastChatSocket.setSoTimeout(CommonUtils.DEFAULT_MULTICAST_SOCKET_TIMEOUT_MILLIS);
@@ -112,15 +131,23 @@ public class MulticastChat extends Thread {
 	    //this.multicastChatSocket.joinGroup(ipMulticastGroup);
 	    
 	    // Create and Configure the Secure Multicast Chat Socket
-	    this.secureMulticastChatSocket = new SecureMulticastSocket(null /*properties*/, port);
+	    this.secureMulticastChatSocket = new SecureMulticastSocket(port);
+	    
+	    System.out.println("JJJJJJJJJJJJKNK");
+	    
 	    this.secureMulticastChatSocket.setSoTimeout(CommonUtils.DEFAULT_SECURE_MULTICAST_SOCKET_TIMEOUT_MILLIS);
 	    this.secureMulticastChatSocket.setTimeToLive(timeToLive);
 	    this.secureMulticastChatSocket.joinGroup(ipMulticastGroup);
 	
-	    // Start the Receiving Thread and
-	    // send the JOIN Operation Message by the (Secure) Multicast communication
-	    start();
-	    sendJoinOperationMessage();
+	    // Start the Receiving Operation Messages' Thread
+	    this.start();
+	    
+	    System.out.println("AAAAAAAAAAAAAAAAAAAAADKNFJBNAJFBAJ");
+	    
+	    // Sends the JOIN Operation Message by the (Secure) Multicast communication
+	    this.sendJoinOperationMessage();
+	    
+	    System.out.println("sdlgjfdobjofdgjmod");
 	}
 	
 	/**
@@ -133,9 +160,11 @@ public class MulticastChat extends Thread {
 	 *         in the case of an Input/Output error occurred
 	 */
 	public void terminate() throws IOException {
-		// Start the Receiving Thread and
-		// Send the JOIN Operation Message by Multicast communication
+		
+		// Stops the Receiving Thread and
 		this.isSecureMulticastChatActive = false;
+		
+		// Sends the LEAVE Operation Message by Multicast communication
 		sendLeaveOperationMessage();
 	} 
 	
@@ -182,7 +211,7 @@ public class MulticastChat extends Thread {
     										   		               this.secureMulticastChatSocket.getLocalPort());
 		
 		// Sends the final Datagram Packet through the (Secure) Multicast Chat Socket previously created
-		this.secureMulticastChatSocket.send(datagramPacketToBeSent);
+		this.secureMulticastChatSocket.send(datagramPacketToBeSent, this.secureMulticastChatSessionParameters);
 	} 
 
 	/**

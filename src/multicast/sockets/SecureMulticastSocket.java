@@ -26,6 +26,7 @@ import java.util.Properties;
 
 import multicast.common.MessageType;
 import multicast.sockets.messages.FinalSecureMessage;
+import multicast.sockets.messages.utils.SecureMulticastChatSessionParameters;
 import multicast.sockets.services.SecureMulticastSocketCleaningRandomNoncesService;
 
 /**
@@ -81,8 +82,8 @@ public class SecureMulticastSocket extends MulticastSocket {
 	 * 
 	 * @throws IOException an Input/Output Exception occurred
 	 */
-	public SecureMulticastSocket(Properties properties) throws IOException {
-		super();
+	public SecureMulticastSocket(int port) throws IOException {
+		super(port);
 		
 		this.secureRandom = new SecureRandom();
 		
@@ -97,8 +98,8 @@ public class SecureMulticastSocket extends MulticastSocket {
 	 * 
 	 * @throws IOException an Input/Output Exception occurred
 	 */
-	public SecureMulticastSocket(Properties properties, int port) throws IOException {
-		super(port);
+	public SecureMulticastSocket(Properties properties) throws IOException {
+		super();
 		
 		this.randomNoncesMap = new LinkedHashMap<>();
 		
@@ -150,6 +151,7 @@ public class SecureMulticastSocket extends MulticastSocket {
 	
 	/**
 	 * TODO
+	 * @param secureMulticastChatSessionParameters 
 	 * 
 	 * @param
 	 */
@@ -192,25 +194,34 @@ public class SecureMulticastSocket extends MulticastSocket {
 	 */
 	@Override
 	public void receive(DatagramPacket secureMessageDatagramPacketReceived) {
-		
 		try {
-			if(this.firstMessage) {
-				this.firstMessage = false;
-			}
-			else {
-				
-			}
-			
 			super.receive(secureMessageDatagramPacketReceived);
-		
-			FinalSecureMessage finalSecureMessage;
-			
-			this.randomNoncesMap.put(0, System.currentTimeMillis());
 		}
 		catch (IOException inputOutputException) {
 			System.err.println("Error occurred during the receiving process of the Final Secure Message:");
 			System.err.println("- Input/Output error occurred!!!");
 			inputOutputException.printStackTrace();
 		}
+		
+		
+		FinalSecureMessage finalSecureMessage = new FinalSecureMessage(secureMessageDatagramPacketReceived);
+		
+		//finalSecureMessage.
+		
+		if(this.firstMessage) {	
+			// This must be always true in the reception of the First Message
+			if(this.randomNoncesMap.isEmpty()) {
+				
+			}
+			
+			this.firstMessage = false;
+		}
+		else {
+			
+		}
+			
+			
+			
+			this.randomNoncesMap.put(0, System.currentTimeMillis());
 	}
 }

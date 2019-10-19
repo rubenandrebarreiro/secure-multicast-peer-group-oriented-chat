@@ -55,7 +55,7 @@ public class MulticastChatClient extends JFrame implements SecureMulticastChatEv
 	 * The default serial version ID
 	 */
 	private static final long serialVersionUID = 1L;
-
+	
 	
 	// Global Instance Variables:
 	/**
@@ -342,7 +342,7 @@ public class MulticastChatClient extends JFrame implements SecureMulticastChatEv
 	// Configuracao do grupo multicast da sessao de chat na interface do cliente
 	
 	/**
-	 * 
+	 * TODO
 	 * 
 	 * @param userUsername
 	 * 
@@ -647,14 +647,18 @@ public class MulticastChatClient extends JFrame implements SecureMulticastChatEv
 			
 			// Sets the dimensions of the Frame/Window of the (Secure) Multicast Chat's Session
 			secureMulticastChatClient.setSize(CommonUtils.FRAME_WINDOW_SECURE_MULTICAST_CHAT_WIDTH,
-						  								 CommonUtils.FRAME_WINDOW_SECURE_MULTICAST_CHAT_HEIGHT);
+						  					  CommonUtils.FRAME_WINDOW_SECURE_MULTICAST_CHAT_HEIGHT);
 			
 			// Sets the Frame/Window of the (Secure) Multicast Chat,
 			// previously defined, as visible
 			secureMulticastChatClient.setVisible(true);
 			
+			System.out.println("AAAAAAAAAAAAAAAAAAAAAA");
+			
 			// Performs the JOIN Message Operation by the User (Client) on the (Secure) Multicast Chat's Session
 			secureMulticastChatClient.joinOperationToTheMulticastChatSession(userUsername, ipMulticastGroup, port, timeToLive);
+			
+			System.out.println("BBBBBBBBBBBBBBBB");
 		}
 		catch (Throwable throwableException) {
 			

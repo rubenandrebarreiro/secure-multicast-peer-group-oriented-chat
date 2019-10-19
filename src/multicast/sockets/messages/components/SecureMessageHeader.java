@@ -95,7 +95,7 @@ public class SecureMessageHeader {
 	
 	
 	
-	// Methods:
+	// Methods/Functions:
 	/**
 	 * Returns the Version's Number of the Secure Message's Protocol.
 	 * 

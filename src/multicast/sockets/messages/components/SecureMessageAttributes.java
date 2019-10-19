@@ -9,7 +9,7 @@ import java.security.SecureRandom;
 import javax.crypto.Mac;
 
 import multicast.common.CommonUtils;
-import multicast.sockets.messages.utils.PropReader;
+import multicast.sockets.messages.utils.SecureMulticastChatSessionParameters;
 
 public class SecureMessageAttributes {
 	private String sessionID;
@@ -36,15 +36,6 @@ public class SecureMessageAttributes {
 	
 	private byte[] secureMessageAttributesSerializedHashedToCompare;
 
-	/**
-	 * Properties Reader from file
-	 */
-	private PropReader propertiesReader;
-	
-	/**
-	 * Filename of Properties' file
-	 */
-	private static final String propertiesFilename = "./res/SMCP.conf";
 	
 	
 	
@@ -69,7 +60,7 @@ public class SecureMessageAttributes {
 		this.isSecureMessageAttributesSerialized = false;
 		this.isSecureMessageAttributesSerializedHashed = false;
 		
-		this.propertiesReader = new PropReader(propertiesFilename);
+		this.propertiesReader = new SecureMulticastChatSessionParameters(propertiesFilename);
 	}
 	
 	public SecureMessageAttributes(byte[] finalSecureMessageAttributesSerializedHashed) {
@@ -78,7 +69,7 @@ public class SecureMessageAttributes {
 		this.isSecureMessageAttributesSerialized = false;
 		this.isSecureMessageAttributesSerializedHashed = false;
 		
-		this.propertiesReader = new PropReader(propertiesFilename);
+		this.propertiesReader = new SecureMulticastChatSessionParameters(propertiesFilename);
 	}
 	
 	public String getSessionID() {

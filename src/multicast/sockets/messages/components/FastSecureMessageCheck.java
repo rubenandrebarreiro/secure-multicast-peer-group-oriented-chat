@@ -23,7 +23,7 @@ import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
 import javax.crypto.Mac;
 import multicast.common.CommonUtils;
-import multicast.sockets.messages.utils.PropReader;
+import multicast.sockets.messages.utils.SecureMulticastChatSessionParameters;
 
 /**
  * 
@@ -57,7 +57,7 @@ public class FastSecureMessageCheck {
 	/**
 	 * Properties Reader from file
 	 */
-	private PropReader propertiesReader;
+	private SecureMulticastChatSessionParameters propertiesReader;
 	
 	/**
 	 * Filename of Properties' file
@@ -79,7 +79,7 @@ public class FastSecureMessageCheck {
 		
 		this.isSecureMessageSerializedHashed = false;
 		
-		this.propertiesReader = new PropReader(propertiesFilename);
+		this.propertiesReader = new SecureMulticastChatSessionParameters(propertiesFilename);
 	}
 	
 	/**
@@ -98,7 +98,7 @@ public class FastSecureMessageCheck {
 		
 		this.isSecureMessageSerializedHashed = true;
 		
-		this.propertiesReader = new PropReader(propertiesFilename);
+		this.propertiesReader = new SecureMulticastChatSessionParameters(propertiesFilename);
 	}
 	
 	

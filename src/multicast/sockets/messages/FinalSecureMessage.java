@@ -72,11 +72,11 @@ public class FinalSecureMessage {
 	 * 
 	 * @param
 	 */
-	public FinalSecureMessage(DatagramPacket datagramPacket, int sequenceNumber, int randomNonce, Properties properties, byte messageType) {
+	public FinalSecureMessage(DatagramPacket datagramPacketToBeSent, int sequenceNumber, int randomNonce, Properties properties, byte messageType) {
 		
 		// TODO confirmar
 
-		this.secureMessage = new SecureMessage(datagramPacket, sequenceNumber, randomNonce, properties, messageType);
+		this.secureMessage = new SecureMessage(datagramPacketToBeSent, sequenceNumber, randomNonce, properties, messageType);
 		
 		this.fastSecureMessageCheck = new FastSecureMessageCheck(this.secureMessage.getSecureMessageSerialized());
 				
@@ -84,6 +84,19 @@ public class FinalSecureMessage {
 																   this.secureMessage.getSecureMessageAttributes().getSecureMessageAttributesSerialized().length, 
 																   this.secureMessage.getSecureMessagePayload().getSecureMessagePayloadSerialized().length, 
 																   this.fastSecureMessageCheck.getSecureMessageSerializedHashed().length);
+		
+		this.isFinalSecureMessageSerialized = false;
+	}
+	
+	/**
+	 * 
+	 * 
+	 * @param datagramPacketToBeSent
+	 */
+	public FinalSecureMessage(DatagramPacket datagramPacketReceived) {
+		this.finalSecureMessageSerialized = datagramPacketReceived.getData();
+		
+		this.isFinalSecureMessageSerialized = true;
 	}
 	
 	/**

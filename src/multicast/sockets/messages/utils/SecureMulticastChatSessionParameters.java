@@ -6,10 +6,10 @@ import java.io.IOException;
 import java.util.InvalidPropertiesFormatException;
 import java.util.Properties;
 
-public class PropReader {
+public class SecureMulticastChatSessionParameters {
 	
 	public static void main(String[] args) {
-		PropReader prop = new PropReader("res/SMCP.conf");
+		SecureMulticastChatSessionParameters prop = new SecureMulticastChatSessionParameters("res/SMCP.conf");
 		
 		System.out.println(prop.getProperty("ip"));
 		System.out.println(prop.getProperty("port"));
@@ -25,7 +25,7 @@ public class PropReader {
 	
 	Properties properties;
 	
-	public PropReader(String filename) {
+	public SecureMulticastChatSessionParameters(String filename) {
 		properties = new Properties();
 		try {
 			properties.load(new FileInputStream(filename));

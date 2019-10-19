@@ -29,7 +29,7 @@ import javax.crypto.ShortBufferException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import multicast.common.CommonUtils;
-import multicast.sockets.messages.utils.PropReader;
+import multicast.sockets.messages.utils.SecureMulticastChatSessionParameters;
 
 /**
  * 
@@ -107,7 +107,7 @@ public class SecureMessagePayload {
 	/**
 	 * Properties Reader from file
 	 */
-	private PropReader propertiesReader;
+	private SecureMulticastChatSessionParameters propertiesReader;
 	
 	/**
 	 * Filename of Properties' file
@@ -146,7 +146,7 @@ public class SecureMessagePayload {
 		this.isSecureMessagePayloadSerialized = false;
 		this.isSecureMessagePayloadSerializedSymmetricEncryptionCiphered = false;
 		
-		this.propertiesReader = new PropReader(propertiesFilename);
+		this.propertiesReader = new SecureMulticastChatSessionParameters(propertiesFilename);
 	}
 	
 	/**
