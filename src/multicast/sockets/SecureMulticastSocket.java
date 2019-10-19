@@ -43,6 +43,11 @@ public class SecureMulticastSocket extends MulticastSocket {
 	
 	// Global Instance Variables:
 	/**
+	 * The Username of the User (Client) using this (Secure) Multicast Socket
+	 */
+	private String fromPeerID;
+	
+	/**
 	 * The Sequence Number, which will be sent or receive
 	 */
 	private int sequenceNumber;
@@ -68,6 +73,12 @@ public class SecureMulticastSocket extends MulticastSocket {
 	private SecureMulticastSocketCleaningRandomNoncesService secureMulticastSocketCleaningRandomNoncesService;
 	
 	/**
+	 * The (Secure) Multicast Chat Session's Parameters,
+	 * loaded from the User (Client) using this (Secure) Multicast Socket
+	 */
+	private SecureMulticastChatSessionParameters secureMulticastChatSessionParameters;
+	
+	/**
 	 * The boolean value to keep the information about if
 	 * it's the first Message sent/received
 	 */
@@ -79,13 +90,20 @@ public class SecureMulticastSocket extends MulticastSocket {
 	/**
 	 * Constructor #1:
 	 * - TODO Socket to send
+	 * @param secureMulticastChatSessionParameters 
 	 * 
 	 * @throws IOException an Input/Output Exception occurred
 	 */
-	public SecureMulticastSocket(int port) throws IOException {
+	public SecureMulticastSocket(String fromPeerID, int port,
+								 SecureMulticastChatSessionParameters secureMulticastChatSessionParameters) throws IOException {
+		
 		super(port);
 		
+		this.fromPeerID = fromPeerID;
+		
 		this.secureRandom = new SecureRandom();
+		
+		this.secureMulticastChatSessionParameters = secureMulticastChatSessionParameters;
 		
 		this.firstMessage = true;
 	}
@@ -170,8 +188,9 @@ public class SecureMulticastSocket extends MulticastSocket {
 		}
 		
 		FinalSecureMessage finalSecureMessageToSend = new FinalSecureMessage(secureMessageDatagramPacketToSend,
+				                                                             this.fromPeerID, this.secureMulticastChatSessionParameters,
 				                                                             this.sequenceNumber, this.randomNonce,
-				                                                             null /* Properties */, MessageType.MESSAGE_TYPE_1.getMessageType());
+				                                                             MessageType.MESSAGE_TYPE_1.getMessageType());
 		
 		try {
 			

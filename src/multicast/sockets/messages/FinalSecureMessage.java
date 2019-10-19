@@ -17,11 +17,10 @@ package multicast.sockets.messages;
  */
 
 import java.net.DatagramPacket;
-import java.util.Properties;
-
 import multicast.sockets.messages.components.FastSecureMessageCheck;
 import multicast.sockets.messages.components.SecureMessage;
 import multicast.sockets.messages.components.SecureMessageMetaHeader;
+import multicast.sockets.messages.utils.SecureMulticastChatSessionParameters;
 
 /**
  * 
@@ -67,16 +66,21 @@ public class FinalSecureMessage {
 	// Constructors:
 	/**
 	 * TODO
+	 * @param secureMulticastChatSessionParameters 
 	 * 
 	 * @param datagramPacket
 	 * 
 	 * @param
 	 */
-	public FinalSecureMessage(DatagramPacket datagramPacketToBeSent, int sequenceNumber, int randomNonce, Properties properties, byte messageType) {
+	public FinalSecureMessage(DatagramPacket datagramPacketToBeSent,
+			                  String fromPeerID, SecureMulticastChatSessionParameters secureMulticastChatSessionParameters,
+							  int sequenceNumber, int randomNonce, byte messageType) {
 		
 		// TODO confirmar
 
-		this.secureMessage = new SecureMessage(datagramPacketToBeSent, sequenceNumber, randomNonce, properties, messageType);
+		this.secureMessage = new SecureMessage(datagramPacketToBeSent,
+				                               fromPeerID, secureMulticastChatSessionParameters,
+				                               sequenceNumber, randomNonce, messageType);
 		
 		this.fastSecureMessageCheck = new FastSecureMessageCheck(this.secureMessage.getSecureMessageSerialized());
 				

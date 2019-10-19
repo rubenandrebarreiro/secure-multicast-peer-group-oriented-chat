@@ -1,10 +1,10 @@
 package multicast.sockets.messages.components;
 
 import java.net.DatagramPacket;
-import java.util.Properties;
 
 import multicast.common.CommonUtils;
 import multicast.common.VersionNumber;
+import multicast.sockets.messages.utils.SecureMulticastChatSessionParameters;
 
 public class SecureMessage {
 	
@@ -13,6 +13,13 @@ public class SecureMessage {
 	 * The Secure Message's Header
 	 */
 	private SecureMessageHeader secureMessageHeader;
+	
+	/**
+	 * The (Secure) Multicast Chat Session's Parameters,
+	 * loaded from the User (Client) sending this Secure Message,
+	 * which will be used in the Secure Message's Attributes
+	 */
+	private SecureMulticastChatSessionParameters secureMessageAttributesParameters;
 	
 	/**
 	 * The Secure Message's Attributes
@@ -44,10 +51,12 @@ public class SecureMessage {
 	// Constructors:
 	/**
 	 * Constructor #1:
-	 * - The Constructor of the Secure Message,
+	 * - The Constructor of the Secure Message to send,
 	 *   from the respectively basic components of it.
 	 * 
 	 * @param datagramPacket the Datagram Packet corresponding to the real content of the Message
+	 * 
+	 * @param fromPeerID the ID (i.e., Username or Nickname) of the User (Client) associated to the Message
 	 * 
 	 * @param sequenceNumber the Sequence Number of the Secure Message
 	 * 
@@ -57,16 +66,23 @@ public class SecureMessage {
 	 * 
 	 * @param messageType the Message's Type of the Secure Message
 	 */
-	public SecureMessage(DatagramPacket datagramPacket, int sequenceNumber, int randomNonce, Properties properties, byte messageType) {
+	public SecureMessage(DatagramPacket datagramPacket, String fromPeerID, SecureMulticastChatSessionParameters secureMessageAttributesParameters, int sequenceNumber, int randomNonce, byte messageType) {
 		
+		this.secureMessageAttributesParameters = secureMessageAttributesParameters;
 		
-		this.secureMessageAttributes = new SecureMessageAttributes(properties.getProperty("sid"), /* TODO - Session's Name */ null,
-																   properties.getProperty("sea"), properties.getProperty("seaks"), properties.getProperty("mode"),
-																   properties.getProperty("inthash"), properties.getProperty("macks"));
+		this.secureMessageAttributes = new SecureMessageAttributes(this.secureMessageAttributesParameters.getProperty("sid"),
+																   this.secureMessageAttributesParameters.getProperty("sid"),
+																   this.secureMessageAttributesParameters.getProperty("sea"),
+																   this.secureMessageAttributesParameters.getProperty("seaks"),
+																   this.secureMessageAttributesParameters.getProperty("mode"),
+																   this.secureMessageAttributesParameters.getProperty("inthash"),
+																   this.secureMessageAttributesParameters.getProperty("macks"));
 		
-		this.secureMessageHeader = new SecureMessageHeader(VersionNumber.VERSION_01.getVersionNumber(), properties.getProperty("sid"), messageType);
+		this.secureMessageHeader = new SecureMessageHeader(VersionNumber.VERSION_01.getVersionNumber(),
+														   this.secureMessageAttributesParameters.getProperty("sid"),
+														   messageType);
 		
-		this.secureMessagePayload = new SecureMessagePayload(/* TODO - fromPeerID */ null, sequenceNumber, randomNonce, datagramPacket.getData());
+		this.secureMessagePayload = new SecureMessagePayload(fromPeerID, sequenceNumber, randomNonce, datagramPacket.getData());
 		
 		this.isSecureMessageSerialized = false;
 	}

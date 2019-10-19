@@ -131,7 +131,7 @@ public class MulticastChat extends Thread {
 	    //this.multicastChatSocket.joinGroup(ipMulticastGroup);
 	    
 	    // Create and Configure the Secure Multicast Chat Socket
-	    this.secureMulticastChatSocket = new SecureMulticastSocket(port);
+	    this.secureMulticastChatSocket = new SecureMulticastSocket(this.userUsername, port, this.secureMulticastChatSessionParameters);
 	    
 	    System.out.println("JJJJJJJJJJJJKNK");
 	    

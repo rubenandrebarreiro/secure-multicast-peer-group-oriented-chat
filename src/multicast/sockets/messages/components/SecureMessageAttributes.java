@@ -26,6 +26,13 @@ public class SecureMessageAttributes {
 
 	private String fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethod;
 
+	/**
+	 * The (Secure) Multicast Chat Session's Parameters,
+	 * loaded from the User (Client) sending this Secure Message,
+	 * which will be used in the Secure Message's Attributes
+	 */
+	private SecureMulticastChatSessionParameters secureMessageAttributesParameters;
+	
 	private byte[] secureMessageAttributesSerialized;
 	
 	private boolean isSecureMessageAttributesSerialized;
@@ -59,17 +66,17 @@ public class SecureMessageAttributes {
 		
 		this.isSecureMessageAttributesSerialized = false;
 		this.isSecureMessageAttributesSerializedHashed = false;
-		
-		this.propertiesReader = new SecureMulticastChatSessionParameters(propertiesFilename);
 	}
 	
-	public SecureMessageAttributes(byte[] finalSecureMessageAttributesSerializedHashed) {
+	public SecureMessageAttributes(byte[] finalSecureMessageAttributesSerializedHashed,
+								   SecureMulticastChatSessionParameters secureMessageAttributesParameters) {
+		
 		this.secureMessageAttributesSerializedHashedToCompare = finalSecureMessageAttributesSerializedHashed;
 		
 		this.isSecureMessageAttributesSerialized = false;
 		this.isSecureMessageAttributesSerializedHashed = false;
 		
-		this.propertiesReader = new SecureMulticastChatSessionParameters(propertiesFilename);
+		this.secureMessageAttributesParameters = secureMessageAttributesParameters;
 	}
 	
 	public String getSessionID() {
@@ -191,11 +198,11 @@ public class SecureMessageAttributes {
 				
 				// The Initialization Vector and its Parameter's Specifications
 				Key secureMessageAttributesSerializationHashKey = 
-						CommonUtils.createKeyForAES(Integer.parseInt(propertiesReader.getProperty("macks")),
+						CommonUtils.createKeyForAES(Integer.parseInt(this.secureMessageAttributesParameters.getProperty("macks")),
 													secureRandom);
 				
 				//Key secureMessageAttributesSerializationHashKey = null;  // TODO
-				Mac mac = Mac.getInstance(propertiesReader.getProperty("mac"));
+				Mac mac = Mac.getInstance(this.secureMessageAttributesParameters.getProperty("mac"));
 				mac.init(secureMessageAttributesSerializationHashKey);
 				mac.update(secureMessageAttributesSerialized);
 				
@@ -225,17 +232,18 @@ public class SecureMessageAttributes {
 		
 		if(this.isSecureMessageAttributesSerialized && this.isSecureMessageAttributesSerializedHashed) {
 			
-			this.sessionID = String.format("%s:%s", this.propertiesReader.getProperty("ip"),
-												    this.propertiesReader.getProperty("port"));
+			//this.sessionID = String.format("%s:%s", this.secureMessageAttributesParameters.getProperty("ip"),
+			//									    this.secureMessageAttributesParameters.getProperty("port"));
 			
-			this.sessionName = this.propertiesReader.getProperty("sid");
+			this.sessionID = this.secureMessageAttributesParameters.getProperty("sid");
+			this.sessionName = this.secureMessageAttributesParameters.getProperty("sid");
 			
-			this.symmetricEncryptionAlgorithm = this.propertiesReader.getProperty("sea");
-			this.symmetricEncryptionMode = this.propertiesReader.getProperty("mode");
-			this.paddingMethod = this.propertiesReader.getProperty("padding");
+			this.symmetricEncryptionAlgorithm = this.secureMessageAttributesParameters.getProperty("sea");
+			this.symmetricEncryptionMode = this.secureMessageAttributesParameters.getProperty("mode");
+			this.paddingMethod = this.secureMessageAttributesParameters.getProperty("padding");
 			
-			this.integrityControlCryptographicHashFunctionConstructionMethod = this.propertiesReader.getProperty("inthash");
-			this.fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethod = this.propertiesReader.getProperty("mac");
+			this.integrityControlCryptographicHashFunctionConstructionMethod = this.secureMessageAttributesParameters.getProperty("inthash");
+			this.fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethod = this.secureMessageAttributesParameters.getProperty("mac");
 			
 			buildSecureMessageAttributesSerialized();
 			
@@ -246,11 +254,11 @@ public class SecureMessageAttributes {
 				
 				// The Initialization Vector and its Parameter's Specifications
 				Key secureMessageAttributesSerializationHashKey = 
-						CommonUtils.createKeyForAES(Integer.parseInt(propertiesReader.getProperty("macks")),
+						CommonUtils.createKeyForAES(Integer.parseInt(this.secureMessageAttributesParameters.getProperty("macks")),
 													secureRandom);
 				
 				//Key secureMessageAttributesSerializationHashKey = null;  // TODO
-				Mac mac = Mac.getInstance(propertiesReader.getProperty("mac"));
+				Mac mac = Mac.getInstance(this.secureMessageAttributesParameters.getProperty("mac"));
 				mac.init(secureMessageAttributesSerializationHashKey);
 				mac.update(this.secureMessageAttributesSerializedHashedToCompare);
 				
