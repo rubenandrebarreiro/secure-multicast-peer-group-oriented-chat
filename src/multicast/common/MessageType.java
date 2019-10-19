@@ -16,21 +16,53 @@ package multicast.common;
  * 
  */
 
+/**
+ * 
+ * Enumeration for the Message's Types of the Secure Multicast Chat Protocol.
+ * 
+ * @supervisor Prof. Henrique Joao Domingos - hj@fct.unl.pt
+ * 
+ * @author Eduardo Bras Silva (no. 41798) - emf.silva@campus.fct.unl.pt
+ * @author Ruben Andre Barreiro (no. 42648) - r.barreiro@campus.fct.unl.pt
+ *
+ */
 public enum MessageType {
-	JOIN((byte) 0x00), LEAVE((byte) 0x01), NORMAL_MESSAGE((byte) 0x02);
 	
+	// Enumerations:
+	/**
+	 * The several Enumerations for the Message's Types
+	 */
+	MESSAGE_TYPE_1((byte) 0x01), MESSAGE_TYPE_2((byte) 0x02),
+	MESSAGE_TYPE_3((byte) 0x03), MESSAGE_TYPE_4((byte) 0x04);
+	
+	
+	// Global Instance Variables:
+	/**
+	 * The Message's Type
+	 */
 	private byte messageType;
 	
+	
+	// Constructors:
 	/**
+	 * Constructor #1:
+	 * - The Constructor for the Message's Type.
 	 * 
-	 * 
-	 * @param versionNumber
+	 * @param messageType the Message's Type
 	 */
 	private MessageType(byte messageType) {
 		this.messageType = messageType;
 	}
 	
+	
+	// Methods/Functions:
+	/**
+	 * Returns the Message's Type.
+	 * 
+	 * @return the Message's Type
+	 */
 	public byte getMessageType() {
 		return this.messageType;
 	}
+	
 }
