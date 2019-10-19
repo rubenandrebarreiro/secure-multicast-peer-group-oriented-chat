@@ -210,6 +210,8 @@ public class MulticastChat extends Thread {
 																   this.ipMulticastGroup, 
     										   		               this.secureMulticastChatSocket.getLocalPort());
 		
+		System.out.println("AQUIIIIIIIIIIIIIIIIIIIIIIIIII");
+		
 		// Sends the final Datagram Packet through the (Secure) Multicast Chat Socket previously created
 		this.secureMulticastChatSocket.send(datagramPacketToBeSent);
 	} 

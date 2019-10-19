@@ -187,10 +187,13 @@ public class SecureMulticastSocket extends MulticastSocket {
 			this.sequenceNumber++;
 		}
 		
+		System.out.println("VOU CONSTRUIR A MENSAGEEEEEEEEEEEEEEEEEM");
+		
 		FinalSecureMessage finalSecureMessageToSend = new FinalSecureMessage(secureMessageDatagramPacketToSend,
 				                                                             this.fromPeerID, this.secureMulticastChatSessionParameters,
 				                                                             this.sequenceNumber, this.randomNonce,
 				                                                             MessageType.MESSAGE_TYPE_1.getMessageType());
+		System.out.println("AQUIIIIIIIIIIIII VAIIIIIIIIIIIIIIII");
 		
 		try {
 			
