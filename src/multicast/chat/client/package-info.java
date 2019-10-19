@@ -15,7 +15,7 @@
  */
 
 /**
- * Package for the Multicast.
+ * Package for the Multicast.Chat.Client.
  * 
  * @supervisor Prof. Henrique Joao Domingos - hj@fct.unl.pt
  * 
@@ -23,4 +23,4 @@
  * @author Ruben Andre Barreiro (no. 42648) - r.barreiro@campus.fct.unl.pt
  *
  */
-package multicast;
+package multicast.chat.client;

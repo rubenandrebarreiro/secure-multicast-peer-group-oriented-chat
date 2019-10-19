@@ -15,8 +15,7 @@
  */
 
 /**
- * 
- * Package of Multicast.Sockets.Messages.Components.
+ * Package for the Multicast.Sockets.Messages.Components.
  * 
  * @supervisor Prof. Henrique Joao Domingos - hj@fct.unl.pt
  * 

@@ -15,8 +15,7 @@
  */
 
 /**
- * 
- * Package of Multicast.Sockets.Messages.Utils.
+ * Package for the Multicast.Sockets.Messages.Utils.
  * 
  * @supervisor Prof. Henrique Joao Domingos - hj@fct.unl.pt
  * 

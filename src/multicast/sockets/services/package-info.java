@@ -15,8 +15,7 @@
  */
 
 /**
- * 
- * Package of Multicast.Sockets.Services.
+ * Package for the Multicast.Sockets.Services.
  * 
  * @supervisor Prof. Henrique Joao Domingos - hj@fct.unl.pt
  * 
