@@ -70,19 +70,37 @@ public class CommonUtils {
 	public static final int LONG_LENGTH = 6;
 	
 	/**
-	 * The ID of the JOIN Message
+	 * The ID of the JOIN Operation Message to the (Secure) Multicast Chat
 	 */
 	public static final byte JOIN_MESSAGE = ((byte) 1);
 
 	/**
-	 * The ID of the LEAVE Message
+	 * The ID of the LEAVE Operation Message to the (Secure) Multicast Chat
 	 */
 	public static final byte LEAVE_MESSAGE = ((byte) 2);
 
 	/**
-	 * The ID of the TEXT Message
+	 * The ID of the TEXT Operation Message to the (Secure) Multicast Chat
 	 */
 	public static final byte TEXT_MESSAGE = ((byte) 3);
+	
+	/**
+	 * The Magic Number, which works as an unique ID of
+	 * the (Secure) Multicast Chat
+	 */
+	public static final long SECURE_MULTICAST_CHAT_MAGIC_NUMBER = 4969756929653643804L;
+	
+	/**
+	 * The time (in milliseconds) to the pooling test of termination of
+	 * the Multicast Chat Socket
+	 */
+	public static final int DEFAULT_MULTICAST_SOCKET_TIMEOUT_MILLIS = 5000;
+	
+	/**
+	 * The time (in milliseconds) to the pooling test of termination of
+	 * the (Secure) Multicast Chat Socket
+	 */
+	public static final int DEFAULT_SECURE_MULTICAST_SOCKET_TIMEOUT_MILLIS = 5000;
 	
 	/**
 	 * The Rate Time for verification of the Cleaning Random Nonces Service
