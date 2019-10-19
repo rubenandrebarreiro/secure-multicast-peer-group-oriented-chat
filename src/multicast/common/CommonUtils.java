@@ -46,6 +46,12 @@ public class CommonUtils {
 	public static final byte CURRENT_VERSION_PROTOCOL = VersionNumber.VERSION_01.getVersionNumber();
 	
 	/**
+	 * The default length of the buffer to keep the data of the Datagram Packet received,
+	 * related to the Operation Messages 
+	 */
+	public static final int DEFAULT_MESSAGE_DATAGRAM_PACKET_RECEIVED_SIZE = 65508;
+	
+	/**
 	 * The Number of Components, contained in the Meta Header
 	 */
 	public static final int NUM_COMPONENTS_META_HEADER = 4;
