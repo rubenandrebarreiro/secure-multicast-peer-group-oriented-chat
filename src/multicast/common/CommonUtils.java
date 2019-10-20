@@ -21,10 +21,12 @@ import java.nio.ByteOrder;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
+import java.util.Base64;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 
 /**
  * 
@@ -426,5 +428,14 @@ public class CommonUtils {
           initializationVectorBytes[15] = 1;
           
           return new IvParameterSpec(initializationVectorBytes);
+      }
+      
+      public static SecretKey convertStringToKey(String keyToConvert) {
+    	  byte[] decodedKey = Base64.getDecoder().decode(keyToConvert);
+    	  
+    	  SecretKey secretKey = new SecretKeySpec(decodedKey, 0,
+    			    decodedKey.length, "AES");
+
+    	  return secretKey;
       }
 }

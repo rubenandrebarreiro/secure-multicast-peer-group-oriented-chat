@@ -23,6 +23,7 @@ import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
 import javax.crypto.Mac;
 import multicast.common.CommonUtils;
+import multicast.sockets.messages.utils.KeyStoreInterface;
 import multicast.sockets.messages.utils.SecureMulticastChatSessionParameters;
 
 /**
@@ -60,9 +61,19 @@ public class FastSecureMessageCheck {
 	private SecureMulticastChatSessionParameters propertiesReader;
 	
 	/**
+	 * Keystore interface
+	 */
+	private KeyStoreInterface keystoreInterface;
+	
+	/**
 	 * Filename of Properties' file
 	 */
 	private static final String propertiesFilename = "./res/SMCP.conf";
+	
+	/**
+	 * Filename of Keystore file
+	 */
+	private static final String keystoreFilename = "./res/SMCPKeystore.jecks";
 	
 	
 	
@@ -80,6 +91,8 @@ public class FastSecureMessageCheck {
 		this.isSecureMessageSerializedHashed = false;
 		
 		this.propertiesReader = new SecureMulticastChatSessionParameters(propertiesFilename);
+		
+		this.keystoreInterface = new KeyStoreInterface(keystoreFilename, "CSNS1920");
 	}
 	
 	/**
@@ -99,6 +112,8 @@ public class FastSecureMessageCheck {
 		this.isSecureMessageSerializedHashed = true;
 		
 		this.propertiesReader = new SecureMulticastChatSessionParameters(propertiesFilename);
+		
+		this.keystoreInterface = new KeyStoreInterface(keystoreFilename, "CSNS1920");
 	}
 	
 	
@@ -136,15 +151,11 @@ public class FastSecureMessageCheck {
 			// Starts the MAC Hash process over the Secure Message serialized (applying the HMAC or CMAC operation),
 			// before the sending of the final concatenation of it with Secure Message serialized
 			try {
-			
-				// The Source/Seed of a Secure Random
-				SecureRandom secureRandom = new SecureRandom();
 				
 				// The Initialization Vector and its Parameter's Specifications
 				Key secureMessageSerializedMACKey = CommonUtils
-						.createKeyForAES(Integer.parseInt(this.propertiesReader.getProperty("macks")),
-									     secureRandom);
-				
+						.convertStringToKey(keystoreInterface.load(propertiesReader.getProperty("ip")));
+								
 				// The configuration, initialization and update of the MAC Hash process
 				Mac mac = Mac.getInstance(this.propertiesReader.getProperty("mac"));
 				mac.init(secureMessageSerializedMACKey);
@@ -158,11 +169,6 @@ public class FastSecureMessageCheck {
 				System.err.println("Error occurred during the Hashing Function over the Secure Message's Attributes:");
 				System.err.println("- Cryptographic Algorithm not found!!!");
 				noSuchAlgorithmException.printStackTrace();
-			}
-			catch (NoSuchProviderException noSuchProviderException) {
-				System.err.println("Error occurred during the Hashing Function over the Secure Message's Attributes:");
-				System.err.println("- Cryptograhic Provider not found!!!");
-				noSuchProviderException.printStackTrace();
 			}
 			catch (InvalidKeyException invalidKeyException) {
 				System.err.println("Error occurred during the Hashing Function over the Secure Message's Attributes:");
