@@ -99,6 +99,8 @@ public class KeyStoreInterface {
 			this.password = new String(password);
 		} catch (Exception e) {
 			// TODO: handle exception
+			ks = null;
+			System.err.println("Something happened, could not open keystore!");
 		}
 
 	}
