@@ -172,6 +172,9 @@ public class SecureMessage {
 			
 			System.out.println("FILLLLLLLLLLLLLLLLLLLLLLLL");
 			
+			this.secureMessageSerialized = new byte[( secureMessageHeaderSerialized.length + secureMessageAttributesSerializedHashed.length
+					                                + sizeOfSecureMessagePayloadSerialized.length + secureMessagePayloadSerialized.length )];
+			
 			// Operations to Fill a Byte Array, with the following parameters:
 			// 1) src - The source of the array to be copied
 			// 2) srcPos - The position from the array to be copied, representing the first element to be copied
@@ -183,12 +186,16 @@ public class SecureMessage {
 			// The offset related to fulfillment of the serialization process
 			int serializationOffset = 0;
 			
+			System.out.println(this.secureMessageSerialized != null ? "NAO NULLLLL" : "NULLLLLLL");
+			
 			// Fills the byte array of the Secure Message with the Secure Message's Header,
 			// From the initial position to the corresponding to the length of Secure Message's Header
 			System.arraycopy(secureMessageHeaderSerialized, 0,
 							 this.secureMessageSerialized, serializationOffset, secureMessageHeaderSerialized.length);
 			serializationOffset += secureMessageHeaderSerialized.length;
 
+			System.out.println("ABBIE");
+			
 			// Fills the byte array of the Secure Message with the Secure Message's Attributes,
 			// From the position corresponding to the length of Secure Message's Header to
 			// the corresponding to the length of Secure Message's Attributes
@@ -210,6 +217,7 @@ public class SecureMessage {
 							 this.secureMessageSerialized, serializationOffset, secureMessagePayloadSerialized.length);
 			serializationOffset += secureMessagePayloadSerialized.length;
 			
+			System.out.println("CARAMELOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
 			
 			// The Secure Message have already its serialization done
 			this.isSecureMessageSerialized = true;

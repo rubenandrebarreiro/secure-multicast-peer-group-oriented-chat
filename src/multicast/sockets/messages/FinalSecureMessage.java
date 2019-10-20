@@ -138,10 +138,15 @@ public class FinalSecureMessage {
 		
 		if(!this.isFinalSecureMessageSerialized) {
 			
+			System.out.println("ENTREI NO FINAL");
+			
 			// META-HEADER
+			
 			this.secureMessageMetaHeader.buildMessageMetaHeaderSerialized();
 			byte[] secureMessageMetaHeaderSerialized = 
 					this.secureMessageMetaHeader.getSecureMessageMetaHeaderSerialized();
+			
+			System.out.println(secureMessageMetaHeader.getSecureMessageMetaHeaderSerialized() != null ? "metaheader serial nao null" : "metaheader serial null");
 			
 			// SECURE MESSAGE
 			this.secureMessage.buildSecureMessageSerialized();
@@ -152,6 +157,15 @@ public class FinalSecureMessage {
 			this.fastSecureMessageCheck.buildSecureMessageSerializedHashed();
 			byte[] fastSecureMessageCheckSerializedHashed =
 					this.fastSecureMessageCheck.getSecureMessageSerializedHashed();
+			
+			this.finalSecureMessageSerialized = new byte[( secureMessageMetaHeaderSerialized.length 
+													     + secureMessageSerialized.length 
+					                                     + fastSecureMessageCheckSerializedHashed.length )];
+			
+			System.out.println(secureMessageMetaHeaderSerialized != null ? "PASSOU METAHEADER" : "NAO PASSOU METAHEADER");
+			System.out.println(secureMessageSerialized != null ? "PASSOU MESSAGE" : "NAO PASSOU MESSAGE");
+			System.out.println(fastSecureMessageCheckSerializedHashed != null ? "PASSOU FAST" : "NAO PASSOU FAST");
+			System.out.println(finalSecureMessageSerialized != null ? "PASSOU FINAL" : "NAO PASSOU FINAL");
 			
 			
 			// Operations to Fill a Byte Array, with the following parameters:

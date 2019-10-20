@@ -198,6 +198,9 @@ public class SecureMulticastSocket extends MulticastSocket {
 		System.out.println("AQUIIIIIIIIIIIII VAIIIIIIIIIIIIIIII");
 		
 		try {
+			System.out.println("AAAAAAAABBBBBBBCCCCCCCCCC");
+			finalSecureMessageToSend.buildFinalSecureMessageSerialized();
+			System.out.println(finalSecureMessageToSend.getFinalSecureMessageSerialized() != null ? "Objecto final serial nao null" : "objeto final serial null");
 			
 			byte[] finalSecureMessageToSendSerialized = finalSecureMessageToSend.getFinalSecureMessageSerialized();
 			secureMessageDatagramPacketToSend.setData(finalSecureMessageToSendSerialized);
