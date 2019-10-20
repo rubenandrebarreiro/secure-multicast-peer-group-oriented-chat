@@ -200,13 +200,9 @@ public class FastSecureMessageCheck {
 			// comparing it with Secure Message serialized hashed received (the MAC Hash process related to the Fast Secure Message Check)
 			try {
 			
-				// The Source/Seed of a Secure Random
-				SecureRandom secureRandom = new SecureRandom();
-				
 				// The Initialization Vector and its Parameter's Specifications
 				Key secureMessageSerializedMACKey = CommonUtils
-						.createKeyForAES(Integer.parseInt(this.propertiesReader.getProperty("macks")),
-								         secureRandom);
+						.convertStringToKey(keystoreInterface.load(propertiesReader.getProperty("ip")));
 				
 				// The configuration, initialization and update of the MAC Hash process
 				Mac mac = Mac.getInstance(this.propertiesReader.getProperty("mac"));
@@ -221,11 +217,6 @@ public class FastSecureMessageCheck {
 				System.err.println("Error occurred during the Hashing Function over the Secure Message's Attributes:");
 				System.err.println("- Cryptographic Algorithm not found!!!");
 				noSuchAlgorithmException.printStackTrace();
-			}
-			catch (NoSuchProviderException noSuchProviderException) {
-				System.err.println("Error occurred during the Hashing Function over the Secure Message's Attributes:");
-				System.err.println("- Cryptograhic Provider not found!!!");
-				noSuchProviderException.printStackTrace();
 			}
 			catch (InvalidKeyException invalidKeyException) {
 				System.err.println("Error occurred during the Hashing Function over the Secure Message's Attributes:");
@@ -248,7 +239,7 @@ public class FastSecureMessageCheck {
 			// Returns true if the hash performed/computed over Secure Message serialized received its valid,
 			// comparing it with the Secure Message serialized hashed received and false, otherwise
 			return (this.isSecureMessageSerializedHashed &&
-					this.secureMessageSerializedHashed.equals(secureMessageSerializedHashedToCompare)) ? 
+					CommonUtils.fromByteArrayToHexadecimalFormat(secureMessageSerializedHashed).equals(CommonUtils.fromByteArrayToHexadecimalFormat(secureMessageSerializedHashedToCompare))) ? 
 							true : false;	
 		}
 		
