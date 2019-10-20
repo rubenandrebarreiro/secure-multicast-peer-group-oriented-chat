@@ -157,7 +157,7 @@ public class FinalSecureMessage {
 			this.fastSecureMessageCheck.buildSecureMessageSerializedHashed();
 			byte[] fastSecureMessageCheckSerializedHashed =
 					this.fastSecureMessageCheck.getSecureMessageSerializedHashed();
-			
+			 
 			this.finalSecureMessageSerialized = new byte[( secureMessageMetaHeaderSerialized.length 
 													     + secureMessageSerialized.length 
 					                                     + fastSecureMessageCheckSerializedHashed.length )];
