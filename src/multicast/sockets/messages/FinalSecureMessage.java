@@ -113,7 +113,7 @@ public class FinalSecureMessage {
 		System.out.println(this.fastSecureMessageCheck.getSecureMessageSerializedHashed() != null ? "PASSOU" : "FALHOU");
 		
 		this.secureMessageMetaHeader = new SecureMessageMetaHeader(this.secureMessage.getSecureMessageHeader().getSecureMessageHeaderSerialized().length,
-																   this.secureMessage.getSecureMessageAttributes().getSecureMessageAttributesSerialized().length, 
+																   this.secureMessage.getSecureMessageAttributes().getSecureMessageAttributesSerializedHashed().length, 
 																   this.secureMessage.getSecureMessagePayload().getSecureMessagePayloadSerialized().length, 
 																   this.fastSecureMessageCheck.getSecureMessageSerializedHashed().length);
 		
@@ -241,6 +241,13 @@ public class FinalSecureMessage {
 			this.secureMessageMetaHeader.buildSizesOfSecureMessageComponents();
 			
 			int sizeOfSecureMessage = this.secureMessageMetaHeader.getSizeOfSecureMessage();
+			
+			System.out.println("SIZES:");
+			System.out.println("- HEADER: " + this.secureMessageMetaHeader.getSizeOfSecureMessageHeader());
+			System.out.println("- ATRIBUTES: " + this.secureMessageMetaHeader.getSizeOfSecureMessageAttributes());
+			//System.out.println("- HEADER: " + this.secureMessageMetaHeader.getSizeOfSecureMessageHeader());
+			System.out.println("- PAYLOAD: " + this.secureMessageMetaHeader.getSizeOfSecureMessagePayload());
+			
 			int sizeOfFastSecureMessageCheck = this.secureMessageMetaHeader.getSizeOfFastSecureMessageCheck();
 			
 			byte[] secureMessage = new byte[sizeOfSecureMessage];

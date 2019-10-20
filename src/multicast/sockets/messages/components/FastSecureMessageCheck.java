@@ -127,6 +127,10 @@ public class FastSecureMessageCheck {
 	 */
 	public void buildSecureMessageSerializedHashed() {
 		
+		System.out.println("VOU FAZER O FAST HASH");
+		System.out.println("TAMANHO DO MESSAGE");
+		System.out.println(secureMessageSerialized.length);
+		
 		if(!this.isSecureMessageSerializedHashed) {
 			
 			// Starts the MAC Hash process over the Secure Message serialized (applying the HMAC or CMAC operation),

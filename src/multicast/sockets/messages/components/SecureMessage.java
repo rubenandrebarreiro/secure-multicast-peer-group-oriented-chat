@@ -71,6 +71,10 @@ public class SecureMessage {
 		this.secureMessageAttributesParameters = secureMessageAttributesParameters;
 		System.out.println(this.secureMessageAttributesParameters != null ? "SIIIIIIIIIM4X" : "NAAAAAAAAAAAAO4X");
 		
+		this.secureMessageHeader = new SecureMessageHeader(VersionNumber.VERSION_01.getVersionNumber(),
+				   this.secureMessageAttributesParameters.getProperty("sid"),
+				   messageType);
+
 		this.secureMessageAttributes = new SecureMessageAttributes(this.secureMessageAttributesParameters.getProperty("sid"),
 																   this.secureMessageAttributesParameters.getProperty("sid"),
 																   this.secureMessageAttributesParameters.getProperty("sea"),
@@ -80,10 +84,6 @@ public class SecureMessage {
 																   this.secureMessageAttributesParameters.getProperty("inthash"),
 																   this.secureMessageAttributesParameters.getProperty("mac"),
 																   Integer.parseInt(this.secureMessageAttributesParameters.getProperty("macks")));
-		
-		this.secureMessageHeader = new SecureMessageHeader(VersionNumber.VERSION_01.getVersionNumber(),
-														   this.secureMessageAttributesParameters.getProperty("sid"),
-														   messageType);
 		
 		this.secureMessagePayload = new SecureMessagePayload(fromPeerID, sequenceNumber, randomNonce, datagramPacket.getData());
 		
@@ -149,12 +149,16 @@ public class SecureMessage {
 			byte[] secureMessageHeaderSerialized = 
 					this.secureMessageHeader.getSecureMessageHeaderSerialized();
 			
+			System.out.println(secureMessageHeaderSerialized.length);
+			
 			System.out.println("PASSSOU 1");
 			
 			this.secureMessageAttributes.buildSecureMessageAttributesSerialized();
 			this.secureMessageAttributes.buildFinalSecureMessageAttributesSerializedHashed();
 			byte[] secureMessageAttributesSerializedHashed = 
 					this.secureMessageAttributes.getSecureMessageAttributesSerializedHashed();
+			
+			System.out.println(secureMessageAttributesSerializedHashed.length);
 			
 			System.out.println("PASSSOU 2");
 			
@@ -166,9 +170,14 @@ public class SecureMessage {
 			byte[] secureMessagePayloadSerialized = 
 					this.secureMessagePayload.getSecureMessagePayloadSerialized();
 			System.out.println("AHAHAHAHAHAHAHAHAHAHAHAHAHAHAH");
+			
+			System.out.println(secureMessagePayloadSerialized.length);
+			
 			this.sizeOfSecureMessagePayload = this.secureMessagePayload.getSecureMessagePayloadSerialized().length;
 			byte[] sizeOfSecureMessagePayloadSerialized = 
 					CommonUtils.fromIntToByteArray(this.sizeOfSecureMessagePayload);
+			
+			System.out.println(sizeOfSecureMessagePayloadSerialized.length);
 			
 			System.out.println("FILLLLLLLLLLLLLLLLLLLLLLLL");
 			
@@ -194,6 +203,8 @@ public class SecureMessage {
 							 this.secureMessageSerialized, serializationOffset, secureMessageHeaderSerialized.length);
 			serializationOffset += secureMessageHeaderSerialized.length;
 
+			System.out.println(secureMessageHeaderSerialized.length);
+
 			System.out.println("ABBIE");
 			
 			// Fills the byte array of the Secure Message with the Secure Message's Attributes,
@@ -203,12 +214,16 @@ public class SecureMessage {
 							 this.secureMessageSerialized, serializationOffset, secureMessageAttributesSerializedHashed.length);
 			serializationOffset += secureMessageAttributesSerializedHashed.length;
 
+			System.out.println(secureMessageAttributesSerializedHashed.length);
+			
 			// Fills the byte array of the Final Secure Message with the size of Secure Message's Payload,
 			// From the position corresponding to the length of Secure Message's Attributes to
 			// the corresponding to the length of size of Secure Message's Payload
 			System.arraycopy(sizeOfSecureMessagePayloadSerialized, 0,
 							 this.secureMessageSerialized, serializationOffset, sizeOfSecureMessagePayloadSerialized.length);
 			serializationOffset += sizeOfSecureMessagePayloadSerialized.length;
+			
+			System.out.println(sizeOfSecureMessagePayloadSerialized.length);
 			
 			// Fills the byte array of the Final Secure Message with the Secure Message's Payload,
 			// From the position corresponding to the length of size of Secure Message's Payload to
@@ -217,7 +232,9 @@ public class SecureMessage {
 							 this.secureMessageSerialized, serializationOffset, secureMessagePayloadSerialized.length);
 			serializationOffset += secureMessagePayloadSerialized.length;
 			
-			System.out.println("CARAMELOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
+			System.out.println(secureMessagePayloadSerialized.length);
+			
+			System.out.println("CARAMELOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO          " + this.secureMessageSerialized.length);
 			
 			// The Secure Message have already its serialization done
 			this.isSecureMessageSerialized = true;
