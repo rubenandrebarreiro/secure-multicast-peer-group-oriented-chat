@@ -18,6 +18,7 @@ package multicast.chat;
 
 import java.io.*;
 import java.net.*;
+import java.util.Date;
 
 import multicast.chat.listener.SecureMulticastChatEventListener;
 import multicast.common.CommonUtils;
@@ -177,7 +178,7 @@ public class MulticastChat extends Thread {
 	 *        to be printed/shown
 	 */
 	protected void printError(String errorMessage) {
-		System.err.println(new java.util.Date() + ": SecureMulticastChat: " + errorMessage);
+		System.err.println(new Date() + ": SecureMulticastChat: " + errorMessage);
 	} 
 
 	/**

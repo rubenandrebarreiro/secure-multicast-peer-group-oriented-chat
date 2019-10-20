@@ -103,6 +103,13 @@ public class SecureMulticastSocket extends MulticastSocket {
 		
 		this.secureRandom = new SecureRandom();
 		
+		this.randomNoncesMap = new LinkedHashMap<>();
+		
+		this.secureMulticastSocketCleaningRandomNoncesService = 
+						new SecureMulticastSocketCleaningRandomNoncesService(randomNoncesMap);
+		
+		new Thread(this.secureMulticastSocketCleaningRandomNoncesService).start();
+		
 		this.secureMulticastChatSessionParameters = secureMulticastChatSessionParameters;
 		System.out.println(this.secureMulticastChatSessionParameters != null ? "SIIIIIIIIIM2X" : "NAAAAAAAAAAAAO2X");
 		this.firstMessage = true;
@@ -118,6 +125,8 @@ public class SecureMulticastSocket extends MulticastSocket {
 	 */
 	public SecureMulticastSocket(Properties properties) throws IOException {
 		super();
+		
+		System.out.println("ESTOU PRONTO PARA RECEBER");
 		
 		this.randomNoncesMap = new LinkedHashMap<>();
 		
@@ -221,6 +230,8 @@ public class SecureMulticastSocket extends MulticastSocket {
 	 */
 	@Override
 	public void receive(DatagramPacket secureMessageDatagramPacketReceived) {
+		
+		System.out.println("RECEBI QQ COISA");
 		try {
 			super.receive(secureMessageDatagramPacketReceived);
 		}
@@ -230,7 +241,7 @@ public class SecureMulticastSocket extends MulticastSocket {
 			inputOutputException.printStackTrace();
 		}
 		
-		
+		System.out.println(this.sequenceNumber);
 		FinalSecureMessage finalSecureMessage = new FinalSecureMessage(secureMessageDatagramPacketReceived);
 		
 		//finalSecureMessage.
@@ -238,7 +249,7 @@ public class SecureMulticastSocket extends MulticastSocket {
 		if(this.firstMessage) {	
 			// This must be always true in the reception of the First Message
 			if(this.randomNoncesMap.isEmpty()) {
-				
+				System.out.println(this.sequenceNumber);
 			}
 			
 			this.firstMessage = false;
