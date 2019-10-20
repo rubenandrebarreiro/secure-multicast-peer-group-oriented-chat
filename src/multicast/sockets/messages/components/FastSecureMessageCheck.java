@@ -88,7 +88,7 @@ public class FastSecureMessageCheck {
 	 *   comparing the hash of the received Secure Message serialized with
 	 *   the received Secure Message serialized hashed.
 	 * 
-	 * @param secureMessageSerialized he Secure Message serialized
+	 * @param secureMessageSerialized the Secure Message serialized
 	 * 
 	 * @param secureMessageSerializedHashed the Secure Message serialized hashed
 	 */
@@ -181,6 +181,7 @@ public class FastSecureMessageCheck {
 		
 		// TODO
 		if(this.isSecureMessageSerializedHashed) {
+			System.out.println("VAI VERIFICAR O HASH");
 			
 			// TODO
 			byte[] secureMessageSerializedHashedToCompare = this.secureMessageSerialized;
@@ -221,6 +222,18 @@ public class FastSecureMessageCheck {
 				System.err.println("- Invalid Secret Key!!!");
 				invalidKeyException.printStackTrace();
 			}
+
+			System.out.println();
+			System.out.println();
+			System.out.println("TAMANHO DOS HASHES:");
+			System.out.println(secureMessageSerializedHashedToCompare.length);
+			System.out.println(secureMessageSerializedHashed.length);
+			System.out.println();
+			System.out.println();
+
+			System.out.println("CONTEUDO DOS HASHES:");
+			System.out.println(CommonUtils.fromByteArrayToHexadecimalFormat(secureMessageSerializedHashedToCompare));
+			System.out.println(CommonUtils.fromByteArrayToHexadecimalFormat(secureMessageSerializedHashed));
 			
 			// Returns true if the hash performed/computed over Secure Message serialized received its valid,
 			// comparing it with the Secure Message serialized hashed received and false, otherwise

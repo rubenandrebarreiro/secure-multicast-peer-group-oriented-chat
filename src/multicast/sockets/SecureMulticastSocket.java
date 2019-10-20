@@ -243,8 +243,7 @@ public class SecureMulticastSocket extends MulticastSocket {
 		
 		System.out.println(this.sequenceNumber);
 		FinalSecureMessage finalSecureMessage = new FinalSecureMessage(secureMessageDatagramPacketReceived);
-		
-		//finalSecureMessage.
+		finalSecureMessage.buildFinalSecureMessageComponents();
 		
 		if(this.firstMessage) {	
 			// This must be always true in the reception of the First Message

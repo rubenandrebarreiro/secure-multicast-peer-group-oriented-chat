@@ -103,7 +103,7 @@ public class CommonUtils {
 	/**
 	 * The Total Length of an Integer
 	 */
-	public static final int INTEGER_LENGTH = 4;
+	public static final int INTEGER_IN_BYTES_LENGTH = 4;
 	
 	/**
 	 * The Total Length of a Long
@@ -199,7 +199,7 @@ public class CommonUtils {
      * @return and converts a Byte Array, from a given Integer Number
      */
 	public static byte[] fromIntToByteArray(int integerNumber) {
-		byte[] integerNumberSerialized = new byte[INTEGER_LENGTH];
+		byte[] integerNumberSerialized = new byte[INTEGER_IN_BYTES_LENGTH];
 		
 		ByteBuffer byteBuffer = ByteBuffer.wrap(integerNumberSerialized);
 		byteBuffer.order(ByteOrder.nativeOrder()).putInt(integerNumber);

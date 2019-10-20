@@ -355,7 +355,8 @@ public class SecureMessagePayload {
 			
 			// Fills the byte array of the Secure Message Payload with the serialization of the Integrity Control Hash,
 			// From the position corresponding to the length of the hashed byte array of the Integrity Control Hash
-			System.arraycopy(this.integrityControlHashedSerialized, 0, this.secureMessagePayloadSerialized, serializationOffset, this.integrityControlHashedSerialized.length);
+			System.arraycopy(this.integrityControlHashedSerialized, 0, this.secureMessagePayloadSerialized,
+							 serializationOffset, this.integrityControlHashedSerialized.length);
 			serializationOffset += this.integrityControlHashedSerialized.length;
 			
 			
