@@ -69,14 +69,17 @@ public class SecureMessage {
 	public SecureMessage(DatagramPacket datagramPacket, String fromPeerID, SecureMulticastChatSessionParameters secureMessageAttributesParameters, int sequenceNumber, int randomNonce, byte messageType) {
 		
 		this.secureMessageAttributesParameters = secureMessageAttributesParameters;
+		System.out.println(this.secureMessageAttributesParameters != null ? "SIIIIIIIIIM4X" : "NAAAAAAAAAAAAO4X");
 		
 		this.secureMessageAttributes = new SecureMessageAttributes(this.secureMessageAttributesParameters.getProperty("sid"),
 																   this.secureMessageAttributesParameters.getProperty("sid"),
 																   this.secureMessageAttributesParameters.getProperty("sea"),
-																   this.secureMessageAttributesParameters.getProperty("seaks"),
+																   Integer.parseInt(this.secureMessageAttributesParameters.getProperty("seaks")),
 																   this.secureMessageAttributesParameters.getProperty("mode"),
+																   this.secureMessageAttributesParameters.getProperty("padding"),
 																   this.secureMessageAttributesParameters.getProperty("inthash"),
-																   this.secureMessageAttributesParameters.getProperty("macks"));
+																   this.secureMessageAttributesParameters.getProperty("mac"),
+																   Integer.parseInt(this.secureMessageAttributesParameters.getProperty("macks")));
 		
 		this.secureMessageHeader = new SecureMessageHeader(VersionNumber.VERSION_01.getVersionNumber(),
 														   this.secureMessageAttributesParameters.getProperty("sid"),
@@ -156,11 +159,13 @@ public class SecureMessage {
 			System.out.println("PASSSOU 2");
 			
 			this.secureMessagePayload.buildIntegrityControlHashedSerialized();
+			System.out.println("AHAHAHAAH");
 			this.secureMessagePayload.buildSecureMessagePayloadSerialized();
+			System.out.println("AHAHAHAHAHAHAHAH");
 			this.secureMessagePayload.buildSecureMessagePayloadSerializedSymmetricEncryptionCiphered();
 			byte[] secureMessagePayloadSerialized = 
 					this.secureMessagePayload.getSecureMessagePayloadSerialized();
-			
+			System.out.println("AHAHAHAHAHAHAHAHAHAHAHAHAHAHAH");
 			this.sizeOfSecureMessagePayload = this.secureMessagePayload.getSecureMessagePayloadSerialized().length;
 			byte[] sizeOfSecureMessagePayloadSerialized = 
 					CommonUtils.fromIntToByteArray(this.sizeOfSecureMessagePayload);

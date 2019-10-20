@@ -104,7 +104,7 @@ public class SecureMulticastSocket extends MulticastSocket {
 		this.secureRandom = new SecureRandom();
 		
 		this.secureMulticastChatSessionParameters = secureMulticastChatSessionParameters;
-		
+		System.out.println(this.secureMulticastChatSessionParameters != null ? "SIIIIIIIIIM2X" : "NAAAAAAAAAAAAO2X");
 		this.firstMessage = true;
 	}
 	
@@ -188,6 +188,8 @@ public class SecureMulticastSocket extends MulticastSocket {
 		}
 		
 		System.out.println("VOU CONSTRUIR A MENSAGEEEEEEEEEEEEEEEEEM");
+		
+		System.out.println(this.secureMulticastChatSessionParameters != null ? "SIIIIIIIIIM3X" : "NAAAAAAAAAAAAO3X");
 		
 		FinalSecureMessage finalSecureMessageToSend = new FinalSecureMessage(secureMessageDatagramPacketToSend,
 				                                                             this.fromPeerID, this.secureMulticastChatSessionParameters,

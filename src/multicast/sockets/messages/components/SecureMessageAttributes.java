@@ -18,6 +18,8 @@ public class SecureMessageAttributes {
 	
 	private String symmetricEncryptionAlgorithm;
 	
+	private int symmetricEncryptionAlgorithmKeySize;
+	
 	private String symmetricEncryptionMode;
 	
 	private String paddingMethod;
@@ -25,6 +27,8 @@ public class SecureMessageAttributes {
 	private String integrityControlCryptographicHashFunctionConstructionMethod;
 
 	private String fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethod;
+	
+	private int fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethodKeySize;
 
 	/**
 	 * The (Secure) Multicast Chat Session's Parameters,
@@ -48,24 +52,30 @@ public class SecureMessageAttributes {
 	
 	public SecureMessageAttributes(String sessionID, String sessionName, 
 								   String symmetricEncryptionAlgorithm,
+								   int symmetricEncryptionAlgorithmKeySize,
 								   String symmetricEncryptionMode, 
 								   String paddingMethod,
 								   String integrityControlCryptographicHashFunctionConstructionMethod,
-								   String fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethod) {
+								   String fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethod,
+								   int fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethodKeySize) {
 		
 		this.sessionID = sessionID;
 		this.sessionName = sessionName;
 		
 		this.symmetricEncryptionAlgorithm = symmetricEncryptionAlgorithm;
+		this.symmetricEncryptionAlgorithmKeySize = symmetricEncryptionAlgorithmKeySize;
 		this.symmetricEncryptionMode = symmetricEncryptionMode;
 		
 		this.paddingMethod = paddingMethod;
 		
 		this.integrityControlCryptographicHashFunctionConstructionMethod = integrityControlCryptographicHashFunctionConstructionMethod;
 		this.fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethod = fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethod;
+		this.fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethodKeySize = fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethodKeySize;
 		
 		this.isSecureMessageAttributesSerialized = false;
 		this.isSecureMessageAttributesSerializedHashed = false;
+		
+		this.secureMessageAttributesParameters = null;
 	}
 	
 	public SecureMessageAttributes(byte[] finalSecureMessageAttributesSerializedHashed,
@@ -211,12 +221,14 @@ public class SecureMessageAttributes {
 				System.out.println(this.secureMessageAttributesParameters == null ? "O PROPERTIES ESTA MALLL OS ALFACINHAS NAO PERCEBEM NADA DISTO" : "ISTO ESTA FIXINHOOOO MEU");
 				
 				// The Initialization Vector and its Parameter's Specifications
+				
+				
 				Key secureMessageAttributesSerializationHashKey = 
-						CommonUtils.createKeyForAES(Integer.parseInt(this.secureMessageAttributesParameters.getProperty("macks")),
+						CommonUtils.createKeyForAES(this.fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethodKeySize,
 													secureRandom);
 				System.out.println("BORAAAA CAMARADAAAAAAAAA");
 				//Key secureMessageAttributesSerializationHashKey = null;  // TODO
-				Mac mac = Mac.getInstance(this.secureMessageAttributesParameters.getProperty("mac"));
+				Mac mac = Mac.getInstance(this.fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethod);
 				mac.init(secureMessageAttributesSerializationHashKey);
 				mac.update(secureMessageAttributesSerialized);
 				
