@@ -19,6 +19,7 @@ package multicast.sockets;
 import java.net.DatagramPacket;
 import java.io.IOException;
 import java.net.MulticastSocket;
+import java.net.SocketTimeoutException;
 import java.security.SecureRandom;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -234,6 +235,10 @@ public class SecureMulticastSocket extends MulticastSocket {
 		System.out.println("RECEBI QQ COISA");
 		try {
 			super.receive(secureMessageDatagramPacketReceived);
+		}
+		catch(SocketTimeoutException socketTimeoutException) {
+			//We don't need to do anything, it is expected behaviour
+			//so a loopback may be done.
 		}
 		catch (IOException inputOutputException) {
 			System.err.println("Error occurred during the receiving process of the Final Secure Message:");
