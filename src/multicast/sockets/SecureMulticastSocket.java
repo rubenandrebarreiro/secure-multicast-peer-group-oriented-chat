@@ -21,12 +21,19 @@ import java.io.IOException;
 import java.net.MulticastSocket;
 import java.net.SocketTimeoutException;
 import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 import multicast.common.MessageType;
+import multicast.common.VersionNumber;
 import multicast.sockets.messages.FinalSecureMessage;
+import multicast.sockets.messages.components.FastSecureMessageCheck;
+import multicast.sockets.messages.components.SecureMessage;
+import multicast.sockets.messages.components.SecureMessageHeader;
 import multicast.sockets.messages.utils.SecureMulticastChatSessionParameters;
 import multicast.sockets.services.SecureMulticastSocketCleaningRandomNoncesService;
 
@@ -233,23 +240,48 @@ public class SecureMulticastSocket extends MulticastSocket {
 			System.err.println("- Input/Output error occurred!!!");
 			inputOutputException.printStackTrace();
 		}
-
-		System.out.println(this.sequenceNumber);
+//
+//		System.out.println(this.sequenceNumber);
 		FinalSecureMessage finalSecureMessage = new FinalSecureMessage(secureMessageDatagramPacketReceived);
 		finalSecureMessage.buildFinalSecureMessageComponents();
-
-		if(this.firstMessage) {	
-			// This must be always true in the reception of the First Message
-			if(this.randomNoncesMap.isEmpty()) {
-				System.out.println(this.sequenceNumber);
+		
+		FastSecureMessageCheck fastSecureMessageCheck = finalSecureMessage.getFastSecureMessageCheck();
+		
+		if(fastSecureMessageCheck.checkIfIsSecureMessageSerializedHashedValid()) {
+			SecureMessage secureMessage = finalSecureMessage.getSecureMessage();
+			secureMessage.buildSecureMessageComponents();
+			
+			SecureMessageHeader secureMessageHeader = secureMessage.getSecureMessageHeader();
+			
+			if(secureMessageHeader.isVersionNumberAndMessageTypeSupported()) {
+				// TODO Verificar SSAtributes
+				// TODO Verificar Hash do Payload
+				// TODO Nonce do Payload
+				// TODO SeqNum do Payload
 			}
-
-			this.firstMessage = false;
 		}
-		else {
-
+		
+		SecureMessageHeader secureMessageHeader = finalSecureMessage.getSecureMessage().getSecureMessageHeader();
+		
+		if(secureMessageHeader.isVersionNumberAndMessageTypeSupported()) {
+			
 		}
-
-		this.randomNoncesMap.put(0, System.currentTimeMillis());
+		
+//		if(this.firstMessage) {	
+//			// This must be always true in the reception of the First Message
+//			if(this.randomNoncesMap.isEmpty()) {
+//				System.out.println(this.sequenceNumber);
+//			}
+//
+//			this.firstMessage = false;
+//		}
+//		else {
+//
+//		}
+//
+//		this.randomNoncesMap.put(0, System.currentTimeMillis());
 	}
+	
+	
+	
 }
