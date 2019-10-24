@@ -56,6 +56,16 @@ public class FastSecureMessageCheck {
 	private boolean isSecureMessageSerializedHashed;
 	
 	/**
+	 * TODO
+	 */
+	private boolean isFastSecureMessageCheckValid;
+	
+	/**
+	 * TODO
+	 */
+	private boolean isFastSecureMessageCheckDone;
+	
+	/**
 	 * Properties Reader from file
 	 */
 	private SecureMulticastChatSessionParameters propertiesReader;
@@ -89,6 +99,7 @@ public class FastSecureMessageCheck {
 		this.secureMessageSerialized = secureMessageSerialized;
 		
 		this.isSecureMessageSerializedHashed = false;
+		this.isFastSecureMessageCheckDone = false;
 		
 		this.propertiesReader = new SecureMulticastChatSessionParameters(propertiesFilename);
 		
@@ -110,6 +121,8 @@ public class FastSecureMessageCheck {
 		this.secureMessageSerializedHashed = secureMessageSerializedHashed;
 		
 		this.isSecureMessageSerializedHashed = true;
+		this.isFastSecureMessageCheckValid = false;
+		this.isFastSecureMessageCheckDone = false;
 		
 		this.propertiesReader = new SecureMulticastChatSessionParameters(propertiesFilename);
 		
@@ -184,47 +197,60 @@ public class FastSecureMessageCheck {
 	 * 		   comparing it with the Secure Message serialized hashed received and false, otherwise
 	 */
 	public boolean checkIfIsSecureMessageSerializedHashedValid() {
-		
-		// TODO
-		if(this.isSecureMessageSerializedHashed) {			
+		if(!this.isFastSecureMessageCheckDone) {
 			// TODO
-			byte[] secureMessageSerializedHashedToCompare = this.secureMessageSerialized;
-			
-			// Starts the MAC Hash process over the Secure Message serialized received (applying the HMAC or CMAC operation),
-			// comparing it with Secure Message serialized hashed received (the MAC Hash process related to the Fast Secure Message Check)
-			try {
-			
-				// The Initialization Vector and its Parameter's Specifications
-				Key secureMessageSerializedMACKey = CommonUtils
-						.convertStringToKey(keystoreInterface.load(propertiesReader.getProperty("ip")));
+			if(this.isSecureMessageSerializedHashed) {			
+				// TODO
+				byte[] secureMessageSerializedHashedToCompare = this.secureMessageSerialized;
 				
-				// The configuration, initialization and update of the MAC Hash process
-				Mac mac = Mac.getInstance(this.propertiesReader.getProperty("mac"));
-				mac.init(secureMessageSerializedMACKey);
-				mac.update(secureMessageSerializedHashedToCompare);
+				// Starts the MAC Hash process over the Secure Message serialized received (applying the HMAC or CMAC operation),
+				// comparing it with Secure Message serialized hashed received (the MAC Hash process related to the Fast Secure Message Check)
+				try {
 				
-				// Performs the final operation of MAC Hash process over the Secure Message serialized
-				// (applying the HMAC or CMAC operation)
-				secureMessageSerializedHashedToCompare = mac.doFinal();
-			}
-			catch (NoSuchAlgorithmException noSuchAlgorithmException) {
-				System.err.println("Error occurred during the Hashing Function over the Secure Message's Attributes:");
-				System.err.println("- Cryptographic Algorithm not found!!!");
-				noSuchAlgorithmException.printStackTrace();
-			}
-			catch (InvalidKeyException invalidKeyException) {
-				System.err.println("Error occurred during the Hashing Function over the Secure Message's Attributes:");
-				System.err.println("- Invalid Secret Key!!!");
-				invalidKeyException.printStackTrace();
+					// The Initialization Vector and its Parameter's Specifications
+					Key secureMessageSerializedMACKey = CommonUtils
+							.convertStringToKey(keystoreInterface.load(propertiesReader.getProperty("ip")));
+					
+					// The configuration, initialization and update of the MAC Hash process
+					Mac mac = Mac.getInstance(this.propertiesReader.getProperty("mac"));
+					mac.init(secureMessageSerializedMACKey);
+					mac.update(secureMessageSerializedHashedToCompare);
+					
+					// Performs the final operation of MAC Hash process over the Secure Message serialized
+					// (applying the HMAC or CMAC operation)
+					secureMessageSerializedHashedToCompare = mac.doFinal();
+				}
+				catch (NoSuchAlgorithmException noSuchAlgorithmException) {
+					System.err.println("Error occurred during the Hashing Function over the Secure Message's Attributes:");
+					System.err.println("- Cryptographic Algorithm not found!!!");
+					noSuchAlgorithmException.printStackTrace();
+				}
+				catch (InvalidKeyException invalidKeyException) {
+					System.err.println("Error occurred during the Hashing Function over the Secure Message's Attributes:");
+					System.err.println("- Invalid Secret Key!!!");
+					invalidKeyException.printStackTrace();
+				}
+				
+				this.isFastSecureMessageCheckValid = (this.isSecureMessageSerializedHashed &&
+														   CommonUtils.fromByteArrayToHexadecimalFormat(secureMessageSerializedHashed)
+														   .equals(CommonUtils.fromByteArrayToHexadecimalFormat(secureMessageSerializedHashedToCompare))) ? 
+																   true : false;
+				
+				if(!this.isFastSecureMessageCheckValid) {
+					System.err.println("The Fast Secure Message Check it's not valid!!!");
+				}
+				
+				this.isFastSecureMessageCheckDone = true;
+				
+				// Returns true if the hash performed/computed over Secure Message serialized received its valid,
+				// comparing it with the Secure Message serialized hashed received and false, otherwise
+				return this.isFastSecureMessageCheckValid;	
 			}
 			
-			// Returns true if the hash performed/computed over Secure Message serialized received its valid,
-			// comparing it with the Secure Message serialized hashed received and false, otherwise
-			return (this.isSecureMessageSerializedHashed &&
-					CommonUtils.fromByteArrayToHexadecimalFormat(secureMessageSerializedHashed).equals(CommonUtils.fromByteArrayToHexadecimalFormat(secureMessageSerializedHashedToCompare))) ? 
-							true : false;	
+			return false;
 		}
-		
-		return false;
+		else {
+			return this.isFastSecureMessageCheckValid;
+		}
 	}
 }

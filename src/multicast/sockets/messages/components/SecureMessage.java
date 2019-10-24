@@ -89,6 +89,10 @@ public class SecureMessage {
 		this.isSecureMessageSerialized = false;
 	}
 	
+	public SecureMessage(byte[] secureMessageSerialized) {
+		this.secureMessageSerialized = secureMessageSerialized;
+		this.isSecureMessageSerialized = true;
+	}
 	
 	// Methods:
 	/**
@@ -206,5 +210,19 @@ public class SecureMessage {
 			// The Secure Message have already its serialization done
 			this.isSecureMessageSerialized = true;
 		}
+	}
+	
+	public void buildSecureMessageComponents() {
+
+		
+		this.secureMessageHeader.buildSecureMessageHeaderParts();
+		
+		
+		//this.sizeOfSecureMessagePayload; //TODO
+		this.secureMessagePayload.checkIfIsIntegrityControlHashedSerializedValid();
+	}
+	
+	public boolean checkIf() {
+		return this.secureMessageAttributes.checkIfIsSecureMessageAttributesSerializedHashedValid();
 	}
 }

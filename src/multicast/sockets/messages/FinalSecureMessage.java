@@ -202,29 +202,42 @@ public class FinalSecureMessage {
 							 secureMessageMetaHeaderSerialized, 0, secureMessageMetaHeaderSerialized.length);
 			serializationOffset += secureMessageMetaHeaderSerialized.length;
 			
+			
+			
 			this.secureMessageMetaHeader = new SecureMessageMetaHeader(secureMessageMetaHeaderSerialized);
 			this.secureMessageMetaHeader.buildSizesOfSecureMessageComponents();
 			
+			
+			
 			int sizeOfSecureMessage = this.secureMessageMetaHeader.getSizeOfSecureMessage();
+						
+			byte[] secureMessageSerialized = new byte[sizeOfSecureMessage];
+			
+			// Fills the byte array of the Final Secure Message with the Secure Message,
+			// From the initial position to the corresponding to the length of Secure Message
+			System.arraycopy(this.finalSecureMessageSerialized, serializationOffset,
+							 secureMessageSerialized, 0, secureMessageSerialized.length);
+			serializationOffset += secureMessageSerialized.length;
+						
+			
 			
 			int sizeOfFastSecureMessageCheck = this.secureMessageMetaHeader.getSizeOfFastSecureMessageCheck();
 			
-			byte[] secureMessage = new byte[sizeOfSecureMessage];
 			byte[] fastSecureMessageCheck = new byte[sizeOfFastSecureMessageCheck];			
-			
-			// Fills the byte array of the Final Secure Message with the Secure Message's Meta-Header,
-			// From the initial position to the corresponding to the length of Secure Message's Meta-Header
-			System.arraycopy(this.finalSecureMessageSerialized, serializationOffset,
-							 secureMessage, 0, secureMessage.length);
-			serializationOffset += secureMessage.length;
-			
-			// Fills the byte array of the Final Secure Message with the Secure Message's Meta-Header,
+
+			// Fills the byte array of the Final Secure Message with the Fast Secure Message Check,
 			// From the initial position to the corresponding to the length of Secure Message's Meta-Header
 			System.arraycopy(this.finalSecureMessageSerialized, serializationOffset,
 							 fastSecureMessageCheck, 0, fastSecureMessageCheck.length);
 			serializationOffset += fastSecureMessageCheck.length;
 			
-			this.fastSecureMessageCheck = new FastSecureMessageCheck(secureMessage, fastSecureMessageCheck);
+			this.fastSecureMessageCheck = new FastSecureMessageCheck(secureMessageSerialized, fastSecureMessageCheck);
+			
+			if(this.fastSecureMessageCheck.checkIfIsSecureMessageSerializedHashedValid()) {
+				this.secureMessage = new SecureMessage(secureMessageSerialized);
+				
+				this.isFinalSecureMessageSerialized = false;
+			}
 		}
 	}
 	
@@ -235,5 +248,29 @@ public class FinalSecureMessage {
 	 */
 	public byte[] getFinalSecureMessageSerialized() {
 		return this.isFinalSecureMessageSerialized ? this.finalSecureMessageSerialized : null;
+	}
+	
+	/**
+	 * TODO
+	 * @return
+	 */
+	public SecureMessageMetaHeader getSecureMessageMetaHeader() {
+		return this.isFinalSecureMessageSerialized ? null : this.secureMessageMetaHeader;
+	}
+	
+	/**
+	 * TODO
+	 * @return
+	 */
+	public SecureMessage getSecureMessage() {
+		return this.isFinalSecureMessageSerialized ? null : this.secureMessage;
+	}
+	
+	/**
+	 * TODO
+	 * @return
+	 */
+	public FastSecureMessageCheck getFastSecureMessageCheck() {
+		return this.isFinalSecureMessageSerialized ? null : this.fastSecureMessageCheck;
 	}
 }

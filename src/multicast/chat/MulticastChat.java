@@ -414,9 +414,10 @@ public class MulticastChat extends Thread {
 				// only proceeds if the (Secure) Multicast Chat Magic Numbers of respectively both,
 				// the Operation Message and (Secure) Multicast Chat itself are different
 				if(secureMulticastChatMagicNumber != CommonUtils.SECURE_MULTICAST_CHAT_MAGIC_NUMBER) {
+					//TODO Check what is going on here!
 					continue;
 				} 
-				
+
 				// The code related to the 
 				int operationMessageCode = dataInputStream.readInt();
         

@@ -1,5 +1,8 @@
 package multicast.sockets.messages.components;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 
  * Secure Multicast Peer Group Oriented Chat - Phase #1
@@ -17,6 +20,8 @@ package multicast.sockets.messages.components;
  */
 
 import multicast.common.CommonUtils;
+import multicast.common.MessageType;
+import multicast.common.VersionNumber;
 
 /**
  * 
@@ -181,10 +186,10 @@ public class SecureMessageHeader {
 	}
 	
 	/**
-	 * Builds the several parts of the Secure Message's Head from
+	 * Builds the several parts of the Secure Message's Header from
 	 * the Secure Message's Header serialized.
 	 */
-	public void buildSecureMessageParts() {
+	public void buildSecureMessageHeaderParts() {
 		
 		// This process it's only made if the Secure Message's Header is serialized
 		if(this.isSecureMessageHeaderSerialized) {
@@ -218,5 +223,65 @@ public class SecureMessageHeader {
 	 */
 	public byte[] getSecureMessageHeaderSerialized() {
 		return this.isSecureMessageHeaderSerialized ? this.secureMessageHeaderSerialized : null;
+	}
+	
+	/**
+	 * TODO
+	 * @return
+	 */
+	public boolean isVersionNumberSupported() {
+		if(!this.isSecureMessageHeaderSerialized) {
+			List<Byte> versionNumbersProtocolList = new ArrayList<Byte>();
+			
+			for(VersionNumber versionNumberProtocolAvailable : VersionNumber.values()) {
+				versionNumbersProtocolList.add(versionNumberProtocolAvailable.getVersionNumber());
+			}
+			
+			return versionNumbersProtocolList.contains(this.versionNumber);
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * TODO
+	 * @return
+	 */
+	public boolean isMessageTypeSupported() {
+		if(!this.isSecureMessageHeaderSerialized) {
+			List<Byte> messageTypeProtocolList = new ArrayList<Byte>();
+			
+			for(MessageType messageTypeProtocolAvailable : MessageType.values()) {
+				messageTypeProtocolList.add(messageTypeProtocolAvailable.getMessageType());
+			}
+			
+			return messageTypeProtocolList.contains(this.messageType);
+		}
+		
+		return false;
+	}
+	
+	
+	public boolean isVersionNumberAndMessageTypeSupported() {
+		if(!this.isSecureMessageHeaderSerialized) {
+			boolean isVersionNumberSupported = this.isVersionNumberSupported();
+			boolean isMessageTypeSupported = this.isMessageTypeSupported();
+			
+			if(!isVersionNumberSupported) {
+				System.err.println("The Version Number of the Secure Message Protocol it's not supported!!!");
+				
+				return false;
+			}
+			
+			if(!isMessageTypeSupported) {
+				System.err.println("The Message Type of the Secure Message Protocol it's not supported!!!");
+			
+				return false;
+			}
+			
+			return true;
+		}
+		
+		return false;
 	}
 }
