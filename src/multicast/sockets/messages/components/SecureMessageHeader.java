@@ -127,9 +127,7 @@ public class SecureMessageHeader {
 	 * Builds the Secure Message's Header serialized.
 	 */
 	public void buildMessageHeaderSerialized() {
-		
-		System.out.println("EU");
-		
+				
 		// This process it's only made if the Secure Message's Header is not serialized
 		if(!this.isSecureMessageHeaderSerialized) {
 			
@@ -150,9 +148,7 @@ public class SecureMessageHeader {
 			
 			// The creation of the Secure Message's Header serialized
 			this.secureMessageHeaderSerialized = new byte[sizeOfMessageHeaderSerialized];
-			
-			System.out.println("TU");
-			
+						
 			// Operations to Fill a Byte Array, with the following parameters:
 			// 1) src - The source of the array to be copied
 			// 2) srcPos - The position from the array to be copied, representing the first element to be copied
@@ -168,9 +164,7 @@ public class SecureMessageHeader {
 			// From the position corresponding to the length of the byte of the Version's Number
 			System.arraycopy(versionNumberSerialized, 0, this.secureMessageHeaderSerialized, 0, CommonUtils.BYTE_LENGTH);
 			serializationOffset += CommonUtils.BYTE_LENGTH;
-			
-			System.out.println("ELE");
-			
+						
 			// Fills the byte array of the Secure Message Header with the serialization of the Session's ID,
 			// From the position corresponding to the length of the byte array of the Session's ID
 			System.arraycopy(sessionIDSerialized, 0, this.secureMessageHeaderSerialized, serializationOffset, sessionIDSerialized.length);

@@ -85,32 +85,9 @@ public class FinalSecureMessage {
 				                               sequenceNumber, randomNonce, messageType);
 		
 		this.secureMessage.buildSecureMessageSerialized();
-		
-		System.out.println("OLE");
-		
+				
 		this.fastSecureMessageCheck = new FastSecureMessageCheck(this.secureMessage.getSecureMessageSerialized());
 		this.fastSecureMessageCheck.buildSecureMessageSerializedHashed();
-		
-		System.out.println("OLEEEEE");
-		
-		System.out.println(this.secureMessage.getSecureMessageHeader() != null ? "PASSOU" : "FALHOU");
-		
-		System.out.println(this.secureMessage.getSecureMessageAttributes() != null ? "PASSOU" : "FALHOU");
-		
-		System.out.println(this.secureMessage.getSecureMessagePayload() != null ? "PASSOU" : "FALHOU");
-
-		System.out.println(this.fastSecureMessageCheck.getSecureMessageSerializedHashed() != null ? "PASSOU" : "FALHOU");
-
-		
-		System.out.println("2º TESTEEEEEEEEEEE");
-		
-		System.out.println(this.secureMessage.getSecureMessageHeader().getSecureMessageHeaderSerialized() != null ? "PASSOU" : "FALHOU");
-		
-		System.out.println(this.secureMessage.getSecureMessageAttributes().getSecureMessageAttributesSerialized() != null ? "PASSOU" : "FALHOU");
-		
-		System.out.println(this.secureMessage.getSecureMessagePayload().getSecureMessagePayloadSerialized() != null ? "PASSOU" : "FALHOU");
-
-		System.out.println(this.fastSecureMessageCheck.getSecureMessageSerializedHashed() != null ? "PASSOU" : "FALHOU");
 		
 		this.secureMessageMetaHeader = new SecureMessageMetaHeader(this.secureMessage.getSecureMessageHeader().getSecureMessageHeaderSerialized().length,
 																   this.secureMessage.getSecureMessageAttributes().getSecureMessageAttributesSerializedHashed().length, 
@@ -119,7 +96,6 @@ public class FinalSecureMessage {
 		
 		this.isFinalSecureMessageSerialized = false;
 		
-		System.out.println("OLEEEEEEEEEE");
 	}
 	
 	/**
@@ -129,7 +105,6 @@ public class FinalSecureMessage {
 	 */
 	public FinalSecureMessage(DatagramPacket datagramPacketReceived) {
 		this.finalSecureMessageSerialized = datagramPacketReceived.getData();
-		System.out.println("RECEBI FINALLLLLLLLLLLLLLLLLLLLL");
 		this.isFinalSecureMessageSerialized = true;
 	}
 	
@@ -139,17 +114,13 @@ public class FinalSecureMessage {
 	public void buildFinalSecureMessageSerialized() {
 		
 		if(!this.isFinalSecureMessageSerialized) {
-			
-			System.out.println("ENTREI NO FINAL");
-			
+						
 			// META-HEADER
 			
 			this.secureMessageMetaHeader.buildMessageMetaHeaderSerialized();
 			byte[] secureMessageMetaHeaderSerialized = 
 					this.secureMessageMetaHeader.getSecureMessageMetaHeaderSerialized();
-			
-			System.out.println(secureMessageMetaHeader.getSecureMessageMetaHeaderSerialized() != null ? "metaheader serial nao null" : "metaheader serial null");
-			
+						
 			// SECURE MESSAGE
 			this.secureMessage.buildSecureMessageSerialized();
 			byte[] secureMessageSerialized = 
@@ -162,13 +133,7 @@ public class FinalSecureMessage {
 			 
 			this.finalSecureMessageSerialized = new byte[( secureMessageMetaHeaderSerialized.length 
 													     + secureMessageSerialized.length 
-					                                     + fastSecureMessageCheckSerializedHashed.length )];
-			
-			System.out.println(secureMessageMetaHeaderSerialized != null ? "PASSOU METAHEADER" : "NAO PASSOU METAHEADER");
-			System.out.println(secureMessageSerialized != null ? "PASSOU MESSAGE" : "NAO PASSOU MESSAGE");
-			System.out.println(fastSecureMessageCheckSerializedHashed != null ? "PASSOU FAST" : "NAO PASSOU FAST");
-			System.out.println(finalSecureMessageSerialized != null ? "PASSOU FINAL" : "NAO PASSOU FINAL");
-			
+					                                     + fastSecureMessageCheckSerializedHashed.length )];			
 			
 			// Operations to Fill a Byte Array, with the following parameters:
 			// 1) src - The source of the array to be copied
@@ -242,23 +207,10 @@ public class FinalSecureMessage {
 			
 			int sizeOfSecureMessage = this.secureMessageMetaHeader.getSizeOfSecureMessage();
 			
-			System.out.println("SIZES:");
-			System.out.println("- HEADER: " + this.secureMessageMetaHeader.getSizeOfSecureMessageHeader());
-			System.out.println("- ATRIBUTES: " + this.secureMessageMetaHeader.getSizeOfSecureMessageAttributes());
-			//System.out.println("- HEADER: " + this.secureMessageMetaHeader.getSizeOfSecureMessageHeader());
-			System.out.println("- PAYLOAD: " + this.secureMessageMetaHeader.getSizeOfSecureMessagePayload());
-			
 			int sizeOfFastSecureMessageCheck = this.secureMessageMetaHeader.getSizeOfFastSecureMessageCheck();
 			
 			byte[] secureMessage = new byte[sizeOfSecureMessage];
-			byte[] fastSecureMessageCheck = new byte[sizeOfFastSecureMessageCheck];
-			
-			System.out.println("O MESSAGE TEM TAMANHO:");
-			System.out.println(sizeOfSecureMessage);
-			
-			System.out.println("O FAST TEM TAMANHO:");
-			System.out.println(sizeOfFastSecureMessageCheck);
-			
+			byte[] fastSecureMessageCheck = new byte[sizeOfFastSecureMessageCheck];			
 			
 			// Fills the byte array of the Final Secure Message with the Secure Message's Meta-Header,
 			// From the initial position to the corresponding to the length of Secure Message's Meta-Header
@@ -273,7 +225,6 @@ public class FinalSecureMessage {
 			serializationOffset += fastSecureMessageCheck.length;
 			
 			this.fastSecureMessageCheck = new FastSecureMessageCheck(secureMessage, fastSecureMessageCheck);
-			System.out.println(this.fastSecureMessageCheck.checkIfIsSecureMessageSerializedHashedValid() ? "VALIDO" : "INVALIDO");
 		}
 	}
 	

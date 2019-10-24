@@ -142,10 +142,6 @@ public class FastSecureMessageCheck {
 	 */
 	public void buildSecureMessageSerializedHashed() {
 		
-		System.out.println("VOU FAZER O FAST HASH");
-		System.out.println("TAMANHO DO MESSAGE");
-		System.out.println(secureMessageSerialized.length);
-		
 		if(!this.isSecureMessageSerializedHashed) {
 			
 			// Starts the MAC Hash process over the Secure Message serialized (applying the HMAC or CMAC operation),
@@ -190,9 +186,7 @@ public class FastSecureMessageCheck {
 	public boolean checkIfIsSecureMessageSerializedHashedValid() {
 		
 		// TODO
-		if(this.isSecureMessageSerializedHashed) {
-			System.out.println("VAI VERIFICAR O HASH");
-			
+		if(this.isSecureMessageSerializedHashed) {			
 			// TODO
 			byte[] secureMessageSerializedHashedToCompare = this.secureMessageSerialized;
 			
@@ -223,18 +217,6 @@ public class FastSecureMessageCheck {
 				System.err.println("- Invalid Secret Key!!!");
 				invalidKeyException.printStackTrace();
 			}
-
-			System.out.println();
-			System.out.println();
-			System.out.println("TAMANHO DOS HASHES:");
-			System.out.println(secureMessageSerializedHashedToCompare.length);
-			System.out.println(secureMessageSerializedHashed.length);
-			System.out.println();
-			System.out.println();
-
-			System.out.println("CONTEUDO DOS HASHES:");
-			System.out.println(CommonUtils.fromByteArrayToHexadecimalFormat(secureMessageSerializedHashedToCompare));
-			System.out.println(CommonUtils.fromByteArrayToHexadecimalFormat(secureMessageSerializedHashed));
 			
 			// Returns true if the hash performed/computed over Secure Message serialized received its valid,
 			// comparing it with the Secure Message serialized hashed received and false, otherwise

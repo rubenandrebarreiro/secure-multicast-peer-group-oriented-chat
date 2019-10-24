@@ -188,20 +188,13 @@ public class SecureMessageMetaHeader {
 		if(!this.isSecureMessageMetaHeaderSerialized) {
 			
 			// The size of the Secure Message's Header serialized
-			System.out.println("VER INT <-> BYTE");
 			this.sizeOfSecureMessageHeaderSerialized = CommonUtils.fromIntToByteArray(sizeOfSecureMessageHeader);
-			System.out.println(sizeOfSecureMessageHeader);
-			System.out.println(CommonUtils.fromByteArrayToInt(sizeOfSecureMessageHeaderSerialized));
 			
 			// The size of the Secure Message's Attributes serialized
 			this.sizeOfSecureMessageAttributesHashedSerialized = CommonUtils.fromIntToByteArray(sizeOfSecureMessageAttributes);
-			System.out.println(sizeOfSecureMessageAttributes);
-			System.out.println(CommonUtils.fromByteArrayToInt(sizeOfSecureMessageAttributesHashedSerialized));
 			
 			// The size of the Secure Message's Payload serialized
 			this.sizeOfSecureMessagePayloadSerialized = CommonUtils.fromIntToByteArray(sizeOfSecureMessagePayload);
-			System.out.println(sizeOfSecureMessagePayload);
-			System.out.println(CommonUtils.fromByteArrayToInt(sizeOfSecureMessagePayloadSerialized));
 			
 			// The size of the Fast Secure Message's Check serialized
 			this.sizeOfFastSecureMessageCheckSerialized = CommonUtils.fromIntToByteArray(sizeOfFastSecureMessageCheck);
@@ -214,9 +207,7 @@ public class SecureMessageMetaHeader {
 			
 			// The creation of the Secure Message's Meta-Header serialized
 			this.secureMessageMetaHeaderSerialized = new byte[ sizeOfSecureMessageMetaHeaderSerialized ];
-			
-			System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZ");
-			
+						
 			// The separators of the Secure Message's Meta-Header serialized
 			byte[] outsideSeparator = new byte[] {0x00, 0x00};
 			byte[] insideSeparator = new byte[] {0x00};
@@ -237,18 +228,14 @@ public class SecureMessageMetaHeader {
 			// From the position corresponding to the length of 2 (outside separator)			
 			System.arraycopy(outsideSeparator, 0, this.secureMessageMetaHeaderSerialized, serializationOffset, CommonUtils.META_HEADER_OUTSIDE_SEPARATORS_LENGTH);
 			serializationOffset += CommonUtils.META_HEADER_OUTSIDE_SEPARATORS_LENGTH;
-			
-			System.out.println("DOGGGGGGGGGGGGGGGGGGGGGG");
-			
+						
 			// Fills the byte array of the Secure Message Meta-Header with the serialization of
 			// The size of the Secure Message Header, from the position corresponding to the length of
 			// The byte array of the size of the Secure Message Header
 			System.arraycopy(this.sizeOfSecureMessageHeaderSerialized, 0, this.secureMessageMetaHeaderSerialized,
 					         serializationOffset, this.sizeOfSecureMessageHeaderSerialized.length);
 			serializationOffset += CommonUtils.INTEGER_IN_BYTES_LENGTH;
-			
-			System.out.println(this.sizeOfSecureMessageHeaderSerialized);
-			
+						
 			// Fills the byte array of the Secure Message Meta-Header with an outside separator,
 			// From the position corresponding to the length of 1 (inside separator)
 			System.arraycopy(insideSeparator, 0, this.secureMessageMetaHeaderSerialized, serializationOffset, CommonUtils.META_HEADER_INSIDE_SEPARATORS_LENGTH);
@@ -289,9 +276,6 @@ public class SecureMessageMetaHeader {
 			// From the position corresponding to the length of 2 (outside separator)
 			System.arraycopy(outsideSeparator, 0, this.secureMessageMetaHeaderSerialized, serializationOffset, CommonUtils.META_HEADER_OUTSIDE_SEPARATORS_LENGTH);
 			serializationOffset += CommonUtils.META_HEADER_OUTSIDE_SEPARATORS_LENGTH;
-			
-			System.out.println("BIRDDDDDDDDDDDD");
-			System.out.println(CommonUtils.fromByteArrayToInt(secureMessageMetaHeaderSerialized));
 			
 			// The Secure Message's Meta-Header have already its serialization done
 			this.isSecureMessageMetaHeaderSerialized = true;

@@ -41,52 +41,52 @@ import multicast.sockets.services.SecureMulticastSocketCleaningRandomNoncesServi
  *
  */
 public class SecureMulticastSocket extends MulticastSocket {
-	
+
 	// Global Instance Variables:
 	/**
 	 * The Username of the User (Client) using this (Secure) Multicast Socket
 	 */
 	private String fromPeerID;
-	
+
 	/**
 	 * The Sequence Number, which will be sent or receive
 	 */
 	private int sequenceNumber;
-	
+
 	/**
 	 * The Secure Random seed, to generate Random Nonces
 	 */
 	private SecureRandom secureRandom;
-	
+
 	/**
 	 * The current Random Nonce, which will be sent or received
 	 */
 	private int randomNonce;
-	
+
 	/**
 	 * The Map of Random Nonces
 	 */
 	private Map<Integer, Long> randomNoncesMap;
-	
+
 	/**
 	 * The Secure Multicast Socket Cleaning Random Nonces Service
 	 */
 	private SecureMulticastSocketCleaningRandomNoncesService secureMulticastSocketCleaningRandomNoncesService;
-	
+
 	/**
 	 * The (Secure) Multicast Chat Session's Parameters,
 	 * loaded from the User (Client) using this (Secure) Multicast Socket
 	 */
 	private SecureMulticastChatSessionParameters secureMulticastChatSessionParameters;
-	
+
 	/**
 	 * The boolean value to keep the information about if
 	 * it's the first Message sent/received
 	 */
 	private boolean firstMessage;
-	
-	
-	
+
+
+
 	// Constructors:
 	/**
 	 * Constructor #1:
@@ -96,26 +96,25 @@ public class SecureMulticastSocket extends MulticastSocket {
 	 * @throws IOException an Input/Output Exception occurred
 	 */
 	public SecureMulticastSocket(String fromPeerID, int port,
-								 SecureMulticastChatSessionParameters secureMulticastChatSessionParameters) throws IOException {
-		
+			SecureMulticastChatSessionParameters secureMulticastChatSessionParameters) throws IOException {
+
 		super(port);
-		
+
 		this.fromPeerID = fromPeerID;
-		
+
 		this.secureRandom = new SecureRandom();
-		
+
 		this.randomNoncesMap = new LinkedHashMap<>();
-		
+
 		this.secureMulticastSocketCleaningRandomNoncesService = 
-						new SecureMulticastSocketCleaningRandomNoncesService(randomNoncesMap);
-		
+				new SecureMulticastSocketCleaningRandomNoncesService(randomNoncesMap);
+
 		new Thread(this.secureMulticastSocketCleaningRandomNoncesService).start();
-		
+
 		this.secureMulticastChatSessionParameters = secureMulticastChatSessionParameters;
-		System.out.println(this.secureMulticastChatSessionParameters != null ? "SIIIIIIIIIM2X" : "NAAAAAAAAAAAAO2X");
 		this.firstMessage = true;
 	}
-	
+
 	/**
 	 * Constructor #2:
 	 * - TODO Socket to receive
@@ -126,19 +125,17 @@ public class SecureMulticastSocket extends MulticastSocket {
 	 */
 	public SecureMulticastSocket(Properties properties) throws IOException {
 		super();
-		
-		System.out.println("ESTOU PRONTO PARA RECEBER");
-		
+
 		this.randomNoncesMap = new LinkedHashMap<>();
-		
+
 		this.secureMulticastSocketCleaningRandomNoncesService = 
-						new SecureMulticastSocketCleaningRandomNoncesService(randomNoncesMap);
-		
+				new SecureMulticastSocketCleaningRandomNoncesService(randomNoncesMap);
+
 		new Thread(this.secureMulticastSocketCleaningRandomNoncesService).start();
-		
+
 		this.firstMessage = true;
 	}
-	
+
 	// Methods:
 	/**
 	 * Returns the current Random Nonce, which will be sent or received.
@@ -148,7 +145,7 @@ public class SecureMulticastSocket extends MulticastSocket {
 	public int getRandomNonce() {
 		return this.randomNonce;
 	}
-	
+
 	/**
 	 * Returns the Map of Random Nonces.
 	 * 
@@ -157,18 +154,18 @@ public class SecureMulticastSocket extends MulticastSocket {
 	public Map<Integer, Long> getRandomNoncesMap() {
 		return this.randomNoncesMap;
 	}
-	
+
 	/**
 	 * Returns the Secure Multicast Socket Cleaning Random Nonces Service.
 	 * 
 	 * @return the Secure Multicast Socket Cleaning Random Nonces Service
 	 */
 	public SecureMulticastSocketCleaningRandomNoncesService 
-				getSecureMulticastSocketCleaningRandomNoncesService() {
-		
+	getSecureMulticastSocketCleaningRandomNoncesService() {
+
 		return this.secureMulticastSocketCleaningRandomNoncesService;
 	}
-	
+
 	/**
 	 * The boolean value to keep the information about if
 	 * it's the first Message sent/received
@@ -176,7 +173,7 @@ public class SecureMulticastSocket extends MulticastSocket {
 	public boolean isFirstMessage() {
 		return this.firstMessage;
 	}	
-	
+
 	/**
 	 * TODO
 	 * @param secureMulticastChatSessionParameters 
@@ -185,36 +182,28 @@ public class SecureMulticastSocket extends MulticastSocket {
 	 */
 	@Override
 	public void send(DatagramPacket secureMessageDatagramPacketToSend) {
-				
+
 		this.randomNonce = secureRandom.nextInt();
-		
+
 		if(this.firstMessage) {
 			this.sequenceNumber = 1;
-			
+
 			this.firstMessage = false;
 		}
 		else {
 			this.sequenceNumber++;
 		}
-		
-		System.out.println("VOU CONSTRUIR A MENSAGEEEEEEEEEEEEEEEEEM");
-		
-		System.out.println(this.secureMulticastChatSessionParameters != null ? "SIIIIIIIIIM3X" : "NAAAAAAAAAAAAO3X");
-		
+
 		FinalSecureMessage finalSecureMessageToSend = new FinalSecureMessage(secureMessageDatagramPacketToSend,
-				                                                             this.fromPeerID, this.secureMulticastChatSessionParameters,
-				                                                             this.sequenceNumber, this.randomNonce,
-				                                                             MessageType.MESSAGE_TYPE_1.getMessageType());
-		System.out.println("AQUIIIIIIIIIIIII VAIIIIIIIIIIIIIIII");
-		
+				this.fromPeerID, this.secureMulticastChatSessionParameters,
+				this.sequenceNumber, this.randomNonce,
+				MessageType.MESSAGE_TYPE_1.getMessageType());		
 		try {
-			System.out.println("AAAAAAAABBBBBBBCCCCCCCCCC");
 			finalSecureMessageToSend.buildFinalSecureMessageSerialized();
-			System.out.println(finalSecureMessageToSend.getFinalSecureMessageSerialized() != null ? "Objecto final serial nao null" : "objeto final serial null");
-			
+
 			byte[] finalSecureMessageToSendSerialized = finalSecureMessageToSend.getFinalSecureMessageSerialized();
 			secureMessageDatagramPacketToSend.setData(finalSecureMessageToSendSerialized);
-			
+
 			super.send(secureMessageDatagramPacketToSend);
 		}
 		catch (IOException inputOutputException) {
@@ -223,7 +212,7 @@ public class SecureMulticastSocket extends MulticastSocket {
 			inputOutputException.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * TODO
 	 * 
@@ -231,8 +220,7 @@ public class SecureMulticastSocket extends MulticastSocket {
 	 */
 	@Override
 	public void receive(DatagramPacket secureMessageDatagramPacketReceived) {
-		
-		System.out.println("RECEBI QQ COISA");
+
 		try {
 			super.receive(secureMessageDatagramPacketReceived);
 		}
@@ -245,25 +233,23 @@ public class SecureMulticastSocket extends MulticastSocket {
 			System.err.println("- Input/Output error occurred!!!");
 			inputOutputException.printStackTrace();
 		}
-		
+
 		System.out.println(this.sequenceNumber);
 		FinalSecureMessage finalSecureMessage = new FinalSecureMessage(secureMessageDatagramPacketReceived);
 		finalSecureMessage.buildFinalSecureMessageComponents();
-		
+
 		if(this.firstMessage) {	
 			// This must be always true in the reception of the First Message
 			if(this.randomNoncesMap.isEmpty()) {
 				System.out.println(this.sequenceNumber);
 			}
-			
+
 			this.firstMessage = false;
 		}
 		else {
-			
+
 		}
-			
-			
-			
-			this.randomNoncesMap.put(0, System.currentTimeMillis());
+
+		this.randomNoncesMap.put(0, System.currentTimeMillis());
 	}
 }

@@ -122,35 +122,25 @@ public class MulticastChat extends Thread {
 	    this.secureMulticastChatEventListener = secureMulticastChatEventListener;
 	    
 	    this.isSecureMulticastChatActive = true;
-	    
-	    System.out.println("HHHHHHHHHHHHHH");
-	    
+	    	    
 	    // Create and Configure the Multicast Chat Socket
 	    //this.multicastChatSocket = new MulticastSocket(port);
 	    //this.multicastChatSocket.setSoTimeout(CommonUtils.DEFAULT_MULTICAST_SOCKET_TIMEOUT_MILLIS);
 	    //this.multicastChatSocket.setTimeToLive(timeToLive);
 	    //this.multicastChatSocket.joinGroup(ipMulticastGroup);
-	    
-	    System.out.println(this.secureMulticastChatSessionParameters != null ? "SIIIIIIIIIM" : "NAAAAAAAAAAAAO");
-	    
+	    	    
 	    // Create and Configure the Secure Multicast Chat Socket
 	    this.secureMulticastChatSocket = new SecureMulticastSocket(this.userUsername, port, this.secureMulticastChatSessionParameters);
-	    
-	    System.out.println("JJJJJJJJJJJJKNK");
-	    
+	    	    
 	    this.secureMulticastChatSocket.setSoTimeout(CommonUtils.DEFAULT_SECURE_MULTICAST_SOCKET_TIMEOUT_MILLIS);
 	    this.secureMulticastChatSocket.setTimeToLive(timeToLive);
 	    this.secureMulticastChatSocket.joinGroup(ipMulticastGroup);
 	
 	    // Start the Receiving Operation Messages' Thread
 	    this.start();
-	    
-	    System.out.println("AAAAAAAAAAAAAAAAAAAAADKNFJBNAJFBAJ");
-	    
+	    	    
 	    // Sends the JOIN Operation Message by the (Secure) Multicast communication
 	    this.sendJoinOperationMessage();
-	    
-	    System.out.println("sdlgjfdobjofdgjmod");
 	}
 	
 	/**
@@ -212,9 +202,7 @@ public class MulticastChat extends Thread {
 		DatagramPacket datagramPacketToBeSent = new DatagramPacket(byteArrayData, byteArrayData.length,
 																   this.ipMulticastGroup, 
     										   		               this.secureMulticastChatSocket.getLocalPort());
-		
-		System.out.println("AQUIIIIIIIIIIIIIIIIIIIIIIIIII");
-		
+				
 		// Sends the final Datagram Packet through the (Secure) Multicast Chat Socket previously created
 		this.secureMulticastChatSocket.send(datagramPacketToBeSent);
 	} 

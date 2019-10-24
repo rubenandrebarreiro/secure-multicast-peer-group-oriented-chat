@@ -484,12 +484,10 @@ public class SecureMessagePayload {
 				// The parameter specifications for the Initialization Vector
 				IvParameterSpec initializationVectorParameterSpecifications = new IvParameterSpec(initialisingVectorBytes);
 				
-				System.out.println("VOU PROCURAR O PROVIDER");
 				Cipher secureMessagePayloadSerializationSymmetricEncryptionCipher = 
 							Cipher.getInstance(String.format("%s/%s/%s",
 											   symmetricEncryptionAlgorithm, symmetricEncryptionMode, symmetricEncryptionPadding), 
 									           provider);
-				System.out.println("ENCONTREI O PROVIDER");
 				// TODO verificar se o modo em uso necessita de IV
 				secureMessagePayloadSerializationSymmetricEncryptionCipher
 									.init(Cipher.ENCRYPT_MODE, secretKeySpecifications, initializationVectorParameterSpecifications);

@@ -652,13 +652,9 @@ public class MulticastChatClient extends JFrame implements SecureMulticastChatEv
 			// Sets the Frame/Window of the (Secure) Multicast Chat,
 			// previously defined, as visible
 			secureMulticastChatClient.setVisible(true);
-			
-			System.out.println("AAAAAAAAAAAAAAAAAAAAAA");
-			
+						
 			// Performs the JOIN Message Operation by the User (Client) on the (Secure) Multicast Chat's Session
 			secureMulticastChatClient.joinOperationToTheMulticastChatSession(userUsername, ipMulticastGroup, port, timeToLive);
-			
-			System.out.println("BBBBBBBBBBBBBBBB");
 		}
 		catch (Throwable throwableException) {
 			
