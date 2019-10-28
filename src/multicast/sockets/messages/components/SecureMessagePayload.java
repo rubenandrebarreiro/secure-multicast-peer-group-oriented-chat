@@ -145,7 +145,7 @@ public class SecureMessagePayload {
 	 * 		  the Secure Message's Payload
 	 */
 	public SecureMessagePayload(String fromPeerID, int sequenceNumber, int randomNonce,
-								byte[] messageSerialized) {
+								byte[] messageSerialized, SecureMulticastChatSessionParameters secureMessageAttributesParameters) {
 		
 		this.fromPeerID = fromPeerID;
 		this.sequenceNumber = sequenceNumber;
@@ -156,7 +156,7 @@ public class SecureMessagePayload {
 		this.isSecureMessagePayloadSerialized = false;
 		this.isSecureMessagePayloadSerializedSymmetricEncryptionCiphered = false;
 		
-		this.secureMessageAttributesParameters = new SecureMulticastChatSessionParameters(propertiesFilename);
+		this.secureMessageAttributesParameters = secureMessageAttributesParameters;
 	
 		this.keystoreInterface = new KeyStoreInterface(keystoreFilename, "CSNS1920");
 	}
@@ -484,8 +484,8 @@ public class SecureMessagePayload {
 //													 0x01, 0x23, 0x45, 0x67, (byte)0x89, (byte)0xab,(byte)0xcd, (byte)0xef };
 				
 				System.out.println("[SecureMessagePayload] Read ip: " + secureMessageAttributesParameters.getProperty("ip") +
-						" and port as: " + secureMessageAttributesParameters.getProperty("port")
-);
+						" and port as: " + secureMessageAttributesParameters.getProperty("port"));
+						System.out.println("[SecureMessagePayload] Read block mode as: " + this.secureMessageAttributesParameters.getProperty("mode"));
 				
 				byte[] secretKeyBytes = keystoreInterface.load(
 						secureMessageAttributesParameters.getProperty("ip") 
