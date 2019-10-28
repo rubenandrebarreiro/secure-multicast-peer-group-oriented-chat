@@ -500,6 +500,7 @@ public class SecureMessagePayload {
 					// Algorithms that do not need IVs: ECB
 					// The parameter specifications for the Initialization Vector				
 					System.out.println("[SecureMessagePayload.ENCRYPT] Block mode needs IV");
+					//TODO Generate IV
 					byte[] initialisingVectorBytes = new byte[] { 0x08, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00 ,
 				                         						   0x08, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00 };
 					IvParameterSpec initializationVectorParameterSpecifications = new IvParameterSpec(initialisingVectorBytes);
@@ -592,6 +593,7 @@ public class SecureMessagePayload {
 					// Algorithms that do not need IVs: ECB
 					// The parameter specifications for the Initialization Vector	
 					System.out.println("[SecureMessagePayload.DECRYPT] Block mode needs IV");
+					//TODO Use IV generated from sender
 					byte[] initialisingVectorBytes = new byte[] { 0x08, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00 ,
 				                         						   0x08, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00 };
 					IvParameterSpec initializationVectorParameterSpecifications = new IvParameterSpec(initialisingVectorBytes);
