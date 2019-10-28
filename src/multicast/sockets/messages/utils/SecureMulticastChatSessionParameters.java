@@ -192,10 +192,10 @@ public class SecureMulticastChatSessionParameters {
 		String propertyKey, propertyValue;
 		int indexEndOfFirstPropertyName, indexStartOfSecondPropertyName;
 //		System.out.println("Property Key -> Property Value");
-		while( !(line = br.readLine()).equals(stopString) ) {
+		while( !(line = br.readLine().trim()).equals(stopString) ) {
 			indexEndOfFirstPropertyName = line.indexOf(">");
 			indexStartOfSecondPropertyName = line.indexOf("<", indexEndOfFirstPropertyName);
-			propertyKey = line.substring(2, indexEndOfFirstPropertyName).toLowerCase();
+			propertyKey = line.substring(1, indexEndOfFirstPropertyName).toLowerCase();
 			propertyValue = line.substring(indexEndOfFirstPropertyName + 1, indexStartOfSecondPropertyName);
 //			System.out.println(propertyKey + " -> " + propertyValue);
 			sessionProperties.put(propertyKey, propertyValue);
