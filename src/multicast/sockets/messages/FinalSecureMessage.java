@@ -22,6 +22,7 @@ import multicast.common.CommonUtils;
 import multicast.sockets.messages.components.FastSecureMessageCheck;
 import multicast.sockets.messages.components.SecureMessage;
 import multicast.sockets.messages.components.SecureMessageMetaHeader;
+import multicast.sockets.messages.components.SecureMessagePayload;
 import multicast.sockets.messages.utils.SecureMulticastChatSessionParameters;
 
 /**
@@ -89,9 +90,14 @@ public class FinalSecureMessage {
 		this.fastSecureMessageCheck = new FastSecureMessageCheck(this.secureMessage.getSecureMessageSerialized());
 		this.fastSecureMessageCheck.buildSecureMessageSerializedHashed();
 		
+		SecureMessagePayload secureMessagePayload = this.secureMessage.getSecureMessagePayload();
+		
 		this.secureMessageMetaHeader = new SecureMessageMetaHeader(this.secureMessage.getSecureMessageHeader().getSecureMessageHeaderSerialized().length,
 																   this.secureMessage.getSecureMessageAttributes().getSecureMessageAttributesSerializedHashed().length, 
-																   this.secureMessage.getSecureMessagePayload().getSecureMessagePayloadSerialized().length, 
+																   this.secureMessage.getSecureMessagePayload().getSecureMessagePayloadSerialized().length,
+																   CommonUtils.fromStringToByteArray(secureMessagePayload.getFromPeerID()).length,
+																   secureMessagePayload.getMessageSerialized().length,
+																   secureMessagePayload.getIntegrityControlSerialiazedHashed().length,
 																   this.fastSecureMessageCheck.getSecureMessageSerializedHashed().length);
 		
 		this.isFinalSecureMessageSerialized = false;
