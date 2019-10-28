@@ -469,10 +469,6 @@ public class SecureMessagePayload {
 													 0x01, 0x23, 0x45, 0x67, (byte)0x89, (byte)0xab,(byte)0xcd, (byte)0xef,
 													 0x01, 0x23, 0x45, 0x67, (byte)0x89, (byte)0xab,(byte)0xcd, (byte)0xef };
 				
-		        // The Initialization Vector bytes to be used (with 128-bit size)
-				byte[] initialisingVectorBytes = new byte[] { 0x08, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00 ,
-			                         						   0x08, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00 };
-				
 				String symmetricEncryptionAlgorithm = this.secureMessageAttributesParameters.getProperty("sea");
 		 	    String symmetricEncryptionMode = this.secureMessageAttributesParameters.getProperty("mode");
 		 	    String symmetricEncryptionPadding = this.secureMessageAttributesParameters.getProperty("padding");
@@ -490,12 +486,14 @@ public class SecureMessagePayload {
 				if(requiresIV(symmetricEncryptionMode)) {
 					// Algorithms that do not need IVs: ECB
 					// The parameter specifications for the Initialization Vector				
-					System.out.println("[SecureMessagePayload] Algorithm needs IV");
+					System.out.println("[SecureMessagePayload] Block mode needs IV");
+					byte[] initialisingVectorBytes = new byte[] { 0x08, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00 ,
+				                         						   0x08, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00 };
 					IvParameterSpec initializationVectorParameterSpecifications = new IvParameterSpec(initialisingVectorBytes);
 					secureMessagePayloadSerializationSymmetricEncryptionCipher
 						.init(Cipher.ENCRYPT_MODE, secretKeySpecifications, initializationVectorParameterSpecifications);
 				} else {
-					System.out.println("[SecureMessagePayload] Algorithm does not needs IV");
+					System.out.println("[SecureMessagePayload] Block mode does not needs IV");
 					secureMessagePayloadSerializationSymmetricEncryptionCipher
 						.init(Cipher.ENCRYPT_MODE, secretKeySpecifications);
 				}
@@ -565,12 +563,8 @@ public class SecureMessagePayload {
 				byte[] secretKeyBytes = new byte[] { 0x01, 0x23, 0x45, 0x67, (byte)0x89, (byte)0xab,(byte)0xcd, (byte)0xef, 
 													 0x01, 0x23, 0x45, 0x67, (byte)0x89, (byte)0xab,(byte)0xcd, (byte)0xef, 
 													 0x01, 0x23, 0x45, 0x67, (byte)0x89, (byte)0xab,(byte)0xcd, (byte)0xef ,
-													 0x01, 0x23, 0x45, 0x67, (byte)0x89, (byte)0xab,(byte)0xcd, (byte)0xef };
-				
-		        // The Initialization Vector bytes to be used (with 128-bit size)
-				byte[] initialisingVectorBytes = new byte[] { 0x08, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00 ,
-			                         						   0x08, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00 };
-				
+													 0x01, 0x23, 0x45, 0x67, (byte)0x89, (byte)0xab,(byte)0xcd, (byte)0xef };	
+
 				String symmetricEncryptionAlgorithm = this.secureMessageAttributesParameters.getProperty("sea");
 		 	    String symmetricEncryptionMode = this.secureMessageAttributesParameters.getProperty("mode");
 		 	    String symmetricEncryptionPadding = this.secureMessageAttributesParameters.getProperty("padding");
@@ -586,11 +580,15 @@ public class SecureMessagePayload {
 				
 				if(requiresIV(symmetricEncryptionMode)) {
 					// Algorithms that do not need IVs: ECB
-					// The parameter specifications for the Initialization Vector				
+					// The parameter specifications for the Initialization Vector	
+					System.out.println("[SecureMessagePayload] Block mode needs IV");
+					byte[] initialisingVectorBytes = new byte[] { 0x08, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00 ,
+				                         						   0x08, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00 };
 					IvParameterSpec initializationVectorParameterSpecifications = new IvParameterSpec(initialisingVectorBytes);
 					secureMessagePayloadSerializationSymmetricEncryptionDecipher
 						.init(Cipher.ENCRYPT_MODE, secretKeySpecifications, initializationVectorParameterSpecifications);
 				} else {
+					System.out.println("[SecureMessagePayload] Block mode does not needs IV");
 					secureMessagePayloadSerializationSymmetricEncryptionDecipher
 						.init(Cipher.ENCRYPT_MODE, secretKeySpecifications);
 				}
