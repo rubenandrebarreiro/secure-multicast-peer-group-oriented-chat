@@ -457,6 +457,7 @@ public class SecureMessagePayload {
 		  !this.isSecureMessagePayloadSerializedSymmetricEncryptionCiphered) {
 			
 			byte[] secureMessagePayloadSerialized = this.getSecureMessagePayloadSerialized();
+			int secureMessagePayloadSerializedLength = 0;
 			
 			try {
 				
@@ -481,17 +482,25 @@ public class SecureMessagePayload {
 		 		// using the AES (Advanced Encryption Standard - Rijndael) Symmetric Encryption
 		 	    SecretKeySpec secretKeySpecifications = new SecretKeySpec(secretKeyBytes, symmetricEncryptionAlgorithm);
 		 	    
-				// The parameter specifications for the Initialization Vector
-				IvParameterSpec initializationVectorParameterSpecifications = new IvParameterSpec(initialisingVectorBytes);
 				
 				Cipher secureMessagePayloadSerializationSymmetricEncryptionCipher = 
 							Cipher.getInstance(String.format("%s/%s/%s",
 											   symmetricEncryptionAlgorithm, symmetricEncryptionMode, symmetricEncryptionPadding), 
 									           provider);
-				// TODO verificar se o modo em uso necessita de IV
-				secureMessagePayloadSerializationSymmetricEncryptionCipher
-									.init(Cipher.ENCRYPT_MODE, secretKeySpecifications, initializationVectorParameterSpecifications);
-				
+
+				if(requiresIV(symmetricEncryptionMode)) {
+					// Algorithms that do not need IVs: ECB
+					// The parameter specifications for the Initialization Vector				
+					System.out.println("[SecureMessagePayload] Algorithm needs IV");
+					IvParameterSpec initializationVectorParameterSpecifications = new IvParameterSpec(initialisingVectorBytes);
+					secureMessagePayloadSerializationSymmetricEncryptionCipher
+						.init(Cipher.ENCRYPT_MODE, secretKeySpecifications, initializationVectorParameterSpecifications);
+				} else {
+					System.out.println("[SecureMessagePayload] Algorithm does not needs IV");
+					secureMessagePayloadSerializationSymmetricEncryptionCipher
+						.init(Cipher.ENCRYPT_MODE, secretKeySpecifications);
+				}
+								
 				this.secureMessagePayloadSerializedSymmetricEncryptionCiphered = 
 									secureMessagePayloadSerializationSymmetricEncryptionCipher.doFinal(secureMessagePayloadSerialized);
 			
@@ -571,18 +580,22 @@ public class SecureMessagePayload {
 		 		// using the AES (Advanced Encryption Standard - Rijndael) Symmetric Encryption
 		 	    SecretKeySpec secretKeySpecifications = new SecretKeySpec(secretKeyBytes, symmetricEncryptionAlgorithm);
 
-				// The parameter specifications for the Initialization Vector
-				IvParameterSpec initializationVectorParameterSpecifications = new IvParameterSpec(initialisingVectorBytes);
-				
 		 	    Cipher secureMessagePayloadSerializationSymmetricEncryptionDecipher = 
 		 	    			Cipher.getInstance(String.format("%s/%s/%s",
 										   	   symmetricEncryptionAlgorithm, symmetricEncryptionMode, symmetricEncryptionPadding), 
 								               provider);
 				
-				// TODO verificar se o modo em uso necessita de IV
-				secureMessagePayloadSerializationSymmetricEncryptionDecipher
-									.init(Cipher.DECRYPT_MODE, secretKeySpecifications, initializationVectorParameterSpecifications);
-		     
+				if(requiresIV(symmetricEncryptionMode)) {
+					// Algorithms that do not need IVs: ECB
+					// The parameter specifications for the Initialization Vector				
+					IvParameterSpec initializationVectorParameterSpecifications = new IvParameterSpec(initialisingVectorBytes);
+					secureMessagePayloadSerializationSymmetricEncryptionDecipher
+						.init(Cipher.ENCRYPT_MODE, secretKeySpecifications, initializationVectorParameterSpecifications);
+				} else {
+					secureMessagePayloadSerializationSymmetricEncryptionDecipher
+						.init(Cipher.ENCRYPT_MODE, secretKeySpecifications);
+				}
+				
 				int sizeOfSecureMessagePayloadSerializedSymmetricEncryptionCiphered = 
 									this.secureMessagePayloadSerializedSymmetricEncryptionCiphered.length;
 				
@@ -656,4 +669,15 @@ public class SecureMessagePayload {
 		return this.isSecureMessagePayloadSerializedSymmetricEncryptionCiphered ?
 					this.secureMessagePayloadSerializedSymmetricEncryptionCiphered : null;
 	}
+	
+	/**
+	 * Used to check if a block mode needs an IV or not.
+	 * The only block mode that does not need an IV is ECB.
+	 * @param mode string of the block to compare to.
+	 * @return true if it needs, false if not (ECB)
+	 */
+	private boolean requiresIV(String mode) {
+		return !mode.equalsIgnoreCase("ECB");
+	}
+	
 }
