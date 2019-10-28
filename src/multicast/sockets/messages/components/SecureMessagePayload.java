@@ -499,14 +499,14 @@ public class SecureMessagePayload {
 				if(requiresIV(symmetricEncryptionMode)) {
 					// Algorithms that do not need IVs: ECB
 					// The parameter specifications for the Initialization Vector				
-					System.out.println("[SecureMessagePayload] Block mode needs IV");
+					System.out.println("[SecureMessagePayload.ENCRYPT] Block mode needs IV");
 					byte[] initialisingVectorBytes = new byte[] { 0x08, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00 ,
 				                         						   0x08, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00 };
 					IvParameterSpec initializationVectorParameterSpecifications = new IvParameterSpec(initialisingVectorBytes);
 					secureMessagePayloadSerializationSymmetricEncryptionCipher
 						.init(Cipher.ENCRYPT_MODE, secretKeySpecifications, initializationVectorParameterSpecifications);
 				} else {
-					System.out.println("[SecureMessagePayload] Block mode does not needs IV");
+					System.out.println("[SecureMessagePayload.ENCRYPT] Block mode does not needs IV");
 					secureMessagePayloadSerializationSymmetricEncryptionCipher
 						.init(Cipher.ENCRYPT_MODE, secretKeySpecifications);
 				}
@@ -591,16 +591,16 @@ public class SecureMessagePayload {
 				if(requiresIV(symmetricEncryptionMode)) {
 					// Algorithms that do not need IVs: ECB
 					// The parameter specifications for the Initialization Vector	
-					System.out.println("[SecureMessagePayload] Block mode needs IV");
+					System.out.println("[SecureMessagePayload.DECRYPT] Block mode needs IV");
 					byte[] initialisingVectorBytes = new byte[] { 0x08, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00 ,
 				                         						   0x08, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00 };
 					IvParameterSpec initializationVectorParameterSpecifications = new IvParameterSpec(initialisingVectorBytes);
 					secureMessagePayloadSerializationSymmetricEncryptionDecipher
-						.init(Cipher.ENCRYPT_MODE, secretKeySpecifications, initializationVectorParameterSpecifications);
+						.init(Cipher.DECRYPT_MODE, secretKeySpecifications, initializationVectorParameterSpecifications);
 				} else {
-					System.out.println("[SecureMessagePayload] Block mode does not needs IV");
+					System.out.println("[SecureMessagePayload.DECRYPT] Block mode does not needs IV");
 					secureMessagePayloadSerializationSymmetricEncryptionDecipher
-						.init(Cipher.ENCRYPT_MODE, secretKeySpecifications);
+						.init(Cipher.DECRYPT_MODE, secretKeySpecifications);
 				}
 				
 				int sizeOfSecureMessagePayloadSerializedSymmetricEncryptionCiphered = 
