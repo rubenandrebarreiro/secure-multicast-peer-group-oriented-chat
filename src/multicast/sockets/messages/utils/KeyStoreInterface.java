@@ -17,7 +17,16 @@ import java.util.Enumeration;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
-
+/**
+ * 
+ * Class to read, modify and save keystores.
+ * 
+ * @supervisor Prof. Henrique Joao Domingos - hj@fct.unl.pt
+ * 
+ * @author Eduardo Bras Silva (no. 41798) - emf.silva@campus.fct.unl.pt
+ * @author Ruben Andre Barreiro (no. 42648) - r.barreiro@campus.fct.unl.pt
+ *
+ */
 public class KeyStoreInterface {
 
 	KeyStore ks;
@@ -89,6 +98,11 @@ public class KeyStoreInterface {
 		new KeyStoreInterface();
 	}
 	
+	/**
+	 * TODO
+	 * @param filename
+	 * @param password
+	 */
 	public void open(String filename, char[] password) {
 		try {
 			ks = KeyStore.getInstance("JCEKS");
@@ -105,6 +119,11 @@ public class KeyStoreInterface {
 
 	}
 	
+	/**
+	 * 
+	 * @param entry
+	 * @return
+	 */
 	public  String load(String entry) {
 	    KeyStore.SecretKeyEntry pkEntry = null;
 		try {
@@ -132,6 +151,11 @@ public class KeyStoreInterface {
 	        return encodedKey;
 	}
 	
+	/**
+	 * 
+	 * @param alias
+	 * @param key
+	 */
 	public void save(String alias, String key) {
 		byte[] decodedKey = Base64.getDecoder().decode(key);
 		SecretKey mySecretKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES"); 
@@ -145,6 +169,9 @@ public class KeyStoreInterface {
 		}
 	}
 
+	/**
+	 * 
+	 */
 	public void close() {
 		if(ks != null) {
 		    FileOutputStream fos = null;
@@ -181,6 +208,10 @@ public class KeyStoreInterface {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param alias
+	 */
 	public void delete(String alias) {
 		try {
 			ks.deleteEntry(alias);
@@ -190,6 +221,9 @@ public class KeyStoreInterface {
 		}
 	}
 	
+	/**
+	 * 
+	 */
 	public void list() {
         Enumeration<String> enumeration = null;
 		try {

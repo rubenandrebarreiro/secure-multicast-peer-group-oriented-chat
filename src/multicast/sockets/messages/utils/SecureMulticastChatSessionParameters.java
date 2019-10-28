@@ -98,9 +98,9 @@ public class SecureMulticastChatSessionParameters {
 	}
 	
 	/**
-	 * TODO
-	 * @param filename
-	 * @param sessionID
+	 * Starts a reader for the SecureMulticastChatSessionParameters data.
+	 * @param filename file to read from.
+	 * @param sessionID session name to be used when getting properties.
 	 */
 	public SecureMulticastChatSessionParameters(String filename, String sessionID) {
 		
@@ -125,32 +125,33 @@ public class SecureMulticastChatSessionParameters {
 	}
 
 	/**
-	 * TODO
-	 * @param key
-	 * @return
+	 * Get saved property.
+	 * @param key property to get.
+	 * @return value from key.
 	 */
 	public String getProperty(String key) {
 		return propertiesMap.get(currentSessionID).get(key);
 	}
 
 	/**
-	 * TODO
-	 * @param sessionID
+	 * Sets a new session name to be used when getting properties.
+	 * @param sessionID session name to be used when getting properties.
 	 */
 	public void setSessionID(String sessionID) {
 		currentSessionID = sessionID;
 	}
+	
 	/**
-	 * TODO
-	 * @param message
+	 * Prints an error with this class name for identification purposes.
+	 * @param message message to print as error.
 	 */
 	private void printError(String message) {
 		System.err.println("[" + this.getClass().getCanonicalName() + "]: " + message);
 	}
 	
 	/**
-	 * TODO
-	 * @param br
+	 * Read every sessionID available in a file.
+	 * @param br bufferedReader already initialized with a file
 	 * @throws IOException
 	 */
 	private void readSessionID(BufferedReader br) throws IOException {
@@ -177,10 +178,10 @@ public class SecureMulticastChatSessionParameters {
 	}
 	
 	/**
-	 * TODO
-	 * @param br
-	 * @param sessionID
-	 * @param sessionProperties
+	 * Read all session properties of a given sessionID.
+	 * @param br bufferedReader already initialized with a file.
+	 * @param sessionID sessionID for the properties to be saved to.
+	 * @param sessionProperties Map where to save the session properties.
 	 * @throws IOException
 	 */
 	private void readSessionIDProperties(BufferedReader br, String sessionID , Map<String, String> sessionProperties) throws IOException {
