@@ -28,6 +28,9 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.ShortBufferException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+
+import org.bouncycastle.util.encoders.Hex;
+
 import multicast.common.CommonUtils;
 import multicast.sockets.messages.utils.KeyStoreInterface;
 import multicast.sockets.messages.utils.SecureMulticastChatSessionParameters;
@@ -473,26 +476,12 @@ public class SecureMessagePayload {
 			byte[] secureMessagePayloadSerialized = this.getSecureMessagePayloadSerialized();
 			
 			try {
-				
-				// TODO - Retirar/Mudar depois
-				// The byte stream input to generate a Secret Key
-				// ( 4 x 8 = 32 bytes = 32 x 8 = 256 bits ),
-				// because 1 byte is equal to 8 bits 
-//				byte[] secretKeyBytes = new byte[] { 0x01, 0x23, 0x45, 0x67, (byte)0x89, (byte)0xab,(byte)0xcd, (byte)0xef, 
-//													 0x01, 0x23, 0x45, 0x67, (byte)0x89, (byte)0xab,(byte)0xcd, (byte)0xef, 
-//													 0x01, 0x23, 0x45, 0x67, (byte)0x89, (byte)0xab,(byte)0xcd, (byte)0xef,
-//													 0x01, 0x23, 0x45, 0x67, (byte)0x89, (byte)0xab,(byte)0xcd, (byte)0xef };
-				
-				System.out.println("[SecureMessagePayload] Read ip: " + secureMessageAttributesParameters.getProperty("ip") +
-						" and port as: " + secureMessageAttributesParameters.getProperty("port"));
-						System.out.println("[SecureMessagePayload] Read block mode as: " + this.secureMessageAttributesParameters.getProperty("mode"));
-				
-				byte[] secretKeyBytes = keystoreInterface.load(
+				byte[] secretKeyBytes = Hex.decodeStrict(keystoreInterface.load(
 						secureMessageAttributesParameters.getProperty("ip") 
 						+ ":" +
 						secureMessageAttributesParameters.getProperty("port")
-						).getBytes();
-				
+						));
+
 				String symmetricEncryptionAlgorithm = this.secureMessageAttributesParameters.getProperty("sea");
 		 	    String symmetricEncryptionMode = this.secureMessageAttributesParameters.getProperty("mode");
 		 	    String symmetricEncryptionPadding = this.secureMessageAttributesParameters.getProperty("padding");
@@ -580,20 +569,11 @@ public class SecureMessagePayload {
 		   this.isSecureMessagePayloadSerializedSymmetricEncryptionCiphered) {
 			
 			try {
-				// TODO - Retirar/Mudar depois
-				// The byte stream input to generate a Secret Key
-				// ( 4 x 8 = 32 bytes = 32 x 8 = 256 bits ),
-				// because 1 byte is equal to 8 bits 
-//				byte[] secretKeyBytes = new byte[] { 0x01, 0x23, 0x45, 0x67, (byte)0x89, (byte)0xab,(byte)0xcd, (byte)0xef, 
-//													 0x01, 0x23, 0x45, 0x67, (byte)0x89, (byte)0xab,(byte)0xcd, (byte)0xef, 
-//													 0x01, 0x23, 0x45, 0x67, (byte)0x89, (byte)0xab,(byte)0xcd, (byte)0xef ,
-//													 0x01, 0x23, 0x45, 0x67, (byte)0x89, (byte)0xab,(byte)0xcd, (byte)0xef };	
-
-				byte[] secretKeyBytes = keystoreInterface.load(
+				byte[] secretKeyBytes = Hex.decodeStrict(keystoreInterface.load(
 						secureMessageAttributesParameters.getProperty("ip") 
 						+ ":" +
 						secureMessageAttributesParameters.getProperty("port")
-						).getBytes();
+						));
 				
 				String symmetricEncryptionAlgorithm = this.secureMessageAttributesParameters.getProperty("sea");
 		 	    String symmetricEncryptionMode = this.secureMessageAttributesParameters.getProperty("mode");
