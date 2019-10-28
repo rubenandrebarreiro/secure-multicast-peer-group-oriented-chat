@@ -483,6 +483,10 @@ public class SecureMessagePayload {
 //													 0x01, 0x23, 0x45, 0x67, (byte)0x89, (byte)0xab,(byte)0xcd, (byte)0xef,
 //													 0x01, 0x23, 0x45, 0x67, (byte)0x89, (byte)0xab,(byte)0xcd, (byte)0xef };
 				
+				System.out.println("[SecureMessagePayload] Read ip: " + secureMessageAttributesParameters.getProperty("ip") +
+						" and port as: " + secureMessageAttributesParameters.getProperty("port")
+);
+				
 				byte[] secretKeyBytes = keystoreInterface.load(
 						secureMessageAttributesParameters.getProperty("ip") 
 						+ ":" +
