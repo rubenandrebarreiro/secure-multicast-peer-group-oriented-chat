@@ -51,6 +51,11 @@ public class SecureMessagePayload {
 	private String fromPeerID;
 	
 	/**
+	 * The size of fromPeerID when serialized
+	 */
+	private int sizeOfFromPeerIDSerialized;
+	
+	/**
 	 * The Sequence Number of the Secure Message's Payload
 	 */
 	private int sequenceNumber;
@@ -67,9 +72,20 @@ public class SecureMessagePayload {
 	private byte[] messageSerialized;
 	
 	/**
+	 * The size of the message when serialized
+	 */
+	private int sizeOfMessageSerialized;
+	
+	/**
 	 * The Integrity Control Hashed serialized of the Secure Message's Payload
 	 */
 	private byte[] integrityControlHashedSerialized;
+	
+	
+	/**
+	 * The size of integrityControlHashedSerialized
+	 */
+	private int sizeOfIntegrityControlSerialized;
 	
 	/**
 	 * The boolean to keep the value to check if
@@ -157,9 +173,16 @@ public class SecureMessagePayload {
 	 * @param secureMessagePayloadSerializedSymmetricEncryptionCiphered the Secure Message's Payload serialized
 	 *        and Symmetric Encryption Ciphered 
 	 */
-	public SecureMessagePayload(byte[] secureMessagePayloadSerializedSymmetricEncryptionCiphered) {
+	public SecureMessagePayload(byte[] secureMessagePayloadSerializedSymmetricEncryptionCiphered,
+			int sizeOfFromPeerIDSerialized,
+			int sizeOfMessageSerialized,
+			int sizeOfIntegrityControlSerialized ) {
 		this.secureMessagePayloadSerializedSymmetricEncryptionCiphered = 
 						secureMessagePayloadSerializedSymmetricEncryptionCiphered;
+		
+		this.sizeOfFromPeerIDSerialized = sizeOfFromPeerIDSerialized;
+		this.sizeOfMessageSerialized = sizeOfMessageSerialized;
+		this.sizeOfIntegrityControlSerialized = sizeOfIntegrityControlSerialized;
 		
 		this.isIntegrityControlHashedSerialized = true;
 		this.isSecureMessagePayloadSerialized = true;
