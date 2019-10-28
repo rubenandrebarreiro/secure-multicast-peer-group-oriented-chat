@@ -29,6 +29,7 @@ import javax.crypto.ShortBufferException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import multicast.common.CommonUtils;
+import multicast.sockets.messages.utils.KeyStoreInterface;
 import multicast.sockets.messages.utils.SecureMulticastChatSessionParameters;
 
 /**
@@ -110,10 +111,19 @@ public class SecureMessagePayload {
 	private SecureMulticastChatSessionParameters secureMessageAttributesParameters;
 	
 	/**
+	 * Keystore interface
+	 */
+	private KeyStoreInterface keystoreInterface;
+	
+	/**
 	 * Filename of Properties' file
 	 */
 	private static final String propertiesFilename = "./res/SMCP.conf";
 	
+	/**
+	 * Filename of Keystore file
+	 */
+	private static final String keystoreFilename = "./res/SMCPKeystore.jecks";
 
 	
 	
@@ -147,6 +157,8 @@ public class SecureMessagePayload {
 		this.isSecureMessagePayloadSerializedSymmetricEncryptionCiphered = false;
 		
 		this.secureMessageAttributesParameters = new SecureMulticastChatSessionParameters(propertiesFilename);
+	
+		this.keystoreInterface = new KeyStoreInterface(keystoreFilename, "CSNS1920");
 	}
 	
 	/**
@@ -164,6 +176,8 @@ public class SecureMessagePayload {
 		this.isIntegrityControlHashedSerialized = true;
 		this.isSecureMessagePayloadSerialized = true;
 		this.isSecureMessagePayloadSerializedSymmetricEncryptionCiphered = true;
+		
+		this.keystoreInterface = new KeyStoreInterface(keystoreFilename, "CSNS1920");
 	}
 	
 	
@@ -464,10 +478,16 @@ public class SecureMessagePayload {
 				// The byte stream input to generate a Secret Key
 				// ( 4 x 8 = 32 bytes = 32 x 8 = 256 bits ),
 				// because 1 byte is equal to 8 bits 
-				byte[] secretKeyBytes = new byte[] { 0x01, 0x23, 0x45, 0x67, (byte)0x89, (byte)0xab,(byte)0xcd, (byte)0xef, 
-													 0x01, 0x23, 0x45, 0x67, (byte)0x89, (byte)0xab,(byte)0xcd, (byte)0xef, 
-													 0x01, 0x23, 0x45, 0x67, (byte)0x89, (byte)0xab,(byte)0xcd, (byte)0xef,
-													 0x01, 0x23, 0x45, 0x67, (byte)0x89, (byte)0xab,(byte)0xcd, (byte)0xef };
+//				byte[] secretKeyBytes = new byte[] { 0x01, 0x23, 0x45, 0x67, (byte)0x89, (byte)0xab,(byte)0xcd, (byte)0xef, 
+//													 0x01, 0x23, 0x45, 0x67, (byte)0x89, (byte)0xab,(byte)0xcd, (byte)0xef, 
+//													 0x01, 0x23, 0x45, 0x67, (byte)0x89, (byte)0xab,(byte)0xcd, (byte)0xef,
+//													 0x01, 0x23, 0x45, 0x67, (byte)0x89, (byte)0xab,(byte)0xcd, (byte)0xef };
+				
+				byte[] secretKeyBytes = keystoreInterface.load(
+						secureMessageAttributesParameters.getProperty("ip") 
+						+ ":" +
+						secureMessageAttributesParameters.getProperty("port")
+						).getBytes();
 				
 				String symmetricEncryptionAlgorithm = this.secureMessageAttributesParameters.getProperty("sea");
 		 	    String symmetricEncryptionMode = this.secureMessageAttributesParameters.getProperty("mode");
@@ -560,11 +580,17 @@ public class SecureMessagePayload {
 				// The byte stream input to generate a Secret Key
 				// ( 4 x 8 = 32 bytes = 32 x 8 = 256 bits ),
 				// because 1 byte is equal to 8 bits 
-				byte[] secretKeyBytes = new byte[] { 0x01, 0x23, 0x45, 0x67, (byte)0x89, (byte)0xab,(byte)0xcd, (byte)0xef, 
-													 0x01, 0x23, 0x45, 0x67, (byte)0x89, (byte)0xab,(byte)0xcd, (byte)0xef, 
-													 0x01, 0x23, 0x45, 0x67, (byte)0x89, (byte)0xab,(byte)0xcd, (byte)0xef ,
-													 0x01, 0x23, 0x45, 0x67, (byte)0x89, (byte)0xab,(byte)0xcd, (byte)0xef };	
+//				byte[] secretKeyBytes = new byte[] { 0x01, 0x23, 0x45, 0x67, (byte)0x89, (byte)0xab,(byte)0xcd, (byte)0xef, 
+//													 0x01, 0x23, 0x45, 0x67, (byte)0x89, (byte)0xab,(byte)0xcd, (byte)0xef, 
+//													 0x01, 0x23, 0x45, 0x67, (byte)0x89, (byte)0xab,(byte)0xcd, (byte)0xef ,
+//													 0x01, 0x23, 0x45, 0x67, (byte)0x89, (byte)0xab,(byte)0xcd, (byte)0xef };	
 
+				byte[] secretKeyBytes = keystoreInterface.load(
+						secureMessageAttributesParameters.getProperty("ip") 
+						+ ":" +
+						secureMessageAttributesParameters.getProperty("port")
+						).getBytes();
+				
 				String symmetricEncryptionAlgorithm = this.secureMessageAttributesParameters.getProperty("sea");
 		 	    String symmetricEncryptionMode = this.secureMessageAttributesParameters.getProperty("mode");
 		 	    String symmetricEncryptionPadding = this.secureMessageAttributesParameters.getProperty("padding");
