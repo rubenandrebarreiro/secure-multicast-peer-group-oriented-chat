@@ -457,7 +457,6 @@ public class SecureMessagePayload {
 		  !this.isSecureMessagePayloadSerializedSymmetricEncryptionCiphered) {
 			
 			byte[] secureMessagePayloadSerialized = this.getSecureMessagePayloadSerialized();
-			int secureMessagePayloadSerializedLength = 0;
 			
 			try {
 				
