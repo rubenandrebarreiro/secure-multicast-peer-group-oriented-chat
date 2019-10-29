@@ -295,13 +295,17 @@ public class SecureMessage {
 			// From the position corresponding to the length of size of Secure Message's Payload to
 			// the corresponding to the length of Secure Message's Payload
 			System.arraycopy(this.secureMessageSerialized, serializationOffset,
-							 secureMessagePayloadSerialized, serializationOffset, secureMessagePayloadSerialized.length);
+							 secureMessagePayloadSerialized, 0, secureMessagePayloadSerialized.length);
 			serializationOffset += secureMessagePayloadSerialized.length;
 			
 			this.secureMessageAttributes = new SecureMessageAttributes(secureMessageAttributesSerializedHashed, null /*TODO Attributes*/);
 			
+			System.out.println("[SecureMessage] " + this.secureMessageAttributes.checkIfIsSecureMessageAttributesSerializedHashedValid());
+			
 			if(this.secureMessageAttributes.checkIfIsSecureMessageAttributesSerializedHashedValid()) {
 				int sizeOfSecureMessagePayloadReceived = CommonUtils.fromByteArrayToInt(sizeOfSecureMessagePayloadSerialized);
+				
+				this.secureMessageHeader = new SecureMessageHeader(secureMessageHeaderSerialized);
 				
 				this.secureMessagePayload = 
 							new SecureMessagePayload(secureMessagePayloadSerialized, sizeOfSecureMessagePayloadReceived,

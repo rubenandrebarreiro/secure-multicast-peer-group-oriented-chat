@@ -19,6 +19,8 @@ package multicast.sockets.messages.components;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+
 import javax.crypto.Mac;
 import multicast.common.CommonUtils;
 import multicast.sockets.messages.utils.KeyStoreInterface;
@@ -235,8 +237,8 @@ public class FastSecureMessageCheck {
 				}
 				
 				this.isFastSecureMessageCheckValid = (this.isSecureMessageSerializedHashed &&
-														   secureMessageSerializedHashed
-														   .equals(secureMessageSerializedHashedToCompare)) ? 
+													  Arrays.equals(secureMessageSerializedHashedToCompare, 
+															  secureMessageSerializedHashed)) ? 
 																   true : false;
 				
 				if(!this.isFastSecureMessageCheckValid) {

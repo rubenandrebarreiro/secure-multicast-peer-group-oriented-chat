@@ -367,6 +367,11 @@ public class SecureMessageMetaHeader {
 	        				 serializationOffset, this.sizeOfIntegrityControlSerialized.length);
 			serializationOffset += CommonUtils.INTEGER_IN_BYTES_LENGTH;
 			
+			// Fills the byte array of the Secure Message Meta-Header with an outside separator,
+			// From the position corresponding to the length of 1 (inside separator)
+			System.arraycopy(insideSeparator, 0, this.secureMessageMetaHeaderSerialized, serializationOffset, CommonUtils.META_HEADER_INSIDE_SEPARATORS_LENGTH);
+			serializationOffset += CommonUtils.META_HEADER_INSIDE_SEPARATORS_LENGTH;
+			
 			// Fills the byte array of the Secure Message Meta-Header with the serialization of
 			// The size of the Fast Secure Message Check, from the position corresponding to the length of
 			// The byte array of the size of the Fast Secure Message Check		
