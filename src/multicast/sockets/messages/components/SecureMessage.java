@@ -101,15 +101,7 @@ public class SecureMessage {
 				   this.secureMessageAttributesParameters.getProperty("sid"),
 				   messageType);
 
-		this.secureMessageAttributes = new SecureMessageAttributes(this.secureMessageAttributesParameters.getProperty("sid"),
-																   this.secureMessageAttributesParameters.getProperty("sid"),
-																   this.secureMessageAttributesParameters.getProperty("sea"),
-																   Integer.parseInt(this.secureMessageAttributesParameters.getProperty("seaks")),
-																   this.secureMessageAttributesParameters.getProperty("mode"),
-																   this.secureMessageAttributesParameters.getProperty("padding"),
-																   this.secureMessageAttributesParameters.getProperty("inthash"),
-																   this.secureMessageAttributesParameters.getProperty("mac"),
-																   Integer.parseInt(this.secureMessageAttributesParameters.getProperty("macks")));
+		this.secureMessageAttributes = new SecureMessageAttributes(secureMessageAttributesParameters);
 		
 		this.secureMessagePayload = new SecureMessagePayload(fromPeerID, sequenceNumber, randomNonce, datagramPacket.getData(), this.secureMessageAttributesParameters);
 		
@@ -303,9 +295,7 @@ public class SecureMessage {
 			serializationOffset += secureMessagePayloadSerialized.length;
 			
 			this.secureMessageAttributes = new SecureMessageAttributes(secureMessageAttributesSerializedHashed, secureMessageAttributesParameters);
-			
-			System.out.println("[SecureMessage] " + this.secureMessageAttributes.checkIfIsSecureMessageAttributesSerializedHashedValid());
-			
+						
 			if(this.secureMessageAttributes.checkIfIsSecureMessageAttributesSerializedHashedValid()) {
 				int sizeOfSecureMessagePayloadReceived = CommonUtils.fromByteArrayToInt(sizeOfSecureMessagePayloadSerialized);
 				

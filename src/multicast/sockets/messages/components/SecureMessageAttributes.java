@@ -2,9 +2,11 @@ package multicast.sockets.messages.components;
 
 import java.security.InvalidKeyException;
 import java.security.Key;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
+import java.util.Arrays;
 
 import javax.crypto.Mac;
 
@@ -50,35 +52,26 @@ public class SecureMessageAttributes {
 	private boolean isSecureMessageAttributesCheckDone;
 	
 	
-	public SecureMessageAttributes(String sessionID, String sessionName, 
-								   String symmetricEncryptionAlgorithm,
-								   int symmetricEncryptionAlgorithmKeySize,
-								   String symmetricEncryptionMode, 
-								   String paddingMethod,
-								   String integrityControlCryptographicHashFunctionConstructionMethod,
-								   String fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethod,
-								   int fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethodKeySize) {
+	public SecureMessageAttributes(SecureMulticastChatSessionParameters secureMessageAttributesParameters) {
 		
-		this.sessionID = sessionID;
-		this.sessionName = sessionName;
+		this.secureMessageAttributesParameters = secureMessageAttributesParameters;
 		
-		this.symmetricEncryptionAlgorithm = symmetricEncryptionAlgorithm;
-		this.symmetricEncryptionAlgorithmKeySize = symmetricEncryptionAlgorithmKeySize;
-		this.symmetricEncryptionMode = symmetricEncryptionMode;
+		this.sessionID = this.secureMessageAttributesParameters.getProperty("sid");
+		this.sessionName = this.secureMessageAttributesParameters.getProperty("sid");
 		
-		this.paddingMethod = paddingMethod;
+		this.symmetricEncryptionAlgorithm = this.secureMessageAttributesParameters.getProperty("sea");
+		this.symmetricEncryptionMode = this.secureMessageAttributesParameters.getProperty("mode");
+		this.paddingMethod = this.secureMessageAttributesParameters.getProperty("padding");
 		
-		this.integrityControlCryptographicHashFunctionConstructionMethod = integrityControlCryptographicHashFunctionConstructionMethod;
-		this.fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethod = fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethod;
-		this.fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethodKeySize = fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethodKeySize;
-		
+		this.integrityControlCryptographicHashFunctionConstructionMethod = this.secureMessageAttributesParameters.getProperty("inthash");
+		this.fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethod = this.secureMessageAttributesParameters.getProperty("mac");
+				
 		this.isSecureMessageAttributesSerialized = false;
 		this.isSecureMessageAttributesSerializedHashed = false;
 		
 		this.isSecureMessageAttributesCheckValid = false;
 		this.isSecureMessageAttributesCheckDone = false;
 		
-		this.secureMessageAttributesParameters = null;
 	}
 	
 	public SecureMessageAttributes(byte[] secureMessageAttributesSerializedHashed,
@@ -206,38 +199,15 @@ public class SecureMessageAttributes {
 						
 			// HASHING Process
 			try {
-				// The Source/Seed of a Secure Random
-				SecureRandom secureRandom = new SecureRandom();
-												
-				// The Initialization Vector and its Parameter's Specifications
 				
-				Key secureMessageAttributesSerializationHashKey = 
-						CommonUtils.createKeyForAES(this.fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethodKeySize,
-													secureRandom);
-				//Key secureMessageAttributesSerializationHashKey = null;  // TODO
-				Mac mac = Mac.getInstance(this.fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethod);
-				mac.init(secureMessageAttributesSerializationHashKey);
-				mac.update(secureMessageAttributesSerialized);
-				
-				this.secureMessageAttributesSerializedHashed = mac.doFinal();
-			}
-			catch (NoSuchAlgorithmException noSuchAlgorithmException) {
-				System.err.println("Error occurred during the Hashing Function over the Secure Message's Attributes:");
-				System.err.println("- Cryptographic Algorithm not found!!!");
-				noSuchAlgorithmException.printStackTrace();
-			}
-			catch (NoSuchProviderException noSuchProviderException) {
-				System.err.println("Error occurred during the Hashing Function over the Secure Message's Attributes:");
-				System.err.println("- Cryptograhic Provider not found!!!");
-				noSuchProviderException.printStackTrace();
-			}
-			catch (InvalidKeyException invalidKeyException) {
-				System.err.println("Error occurred during the Hashing Function over the Secure Message's Attributes:");
-				System.err.println("- Invalid Secret Key!!!");
-				invalidKeyException.printStackTrace();
+				MessageDigest hashFunctionAlgorithm = MessageDigest.getInstance(this.secureMessageAttributesParameters.getProperty("inthash"));
+				this.secureMessageAttributesSerializedHashed = hashFunctionAlgorithm.digest(this.secureMessageAttributesSerialized);
+				this.isSecureMessageAttributesSerializedHashed = true;
+
+			} catch (Exception e) {
+				// TODO: handle exception
 			}
 		
-			this.isSecureMessageAttributesSerializedHashed = true;
 		}
 	}
 	
@@ -260,42 +230,95 @@ public class SecureMessageAttributes {
 				this.fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethod = this.secureMessageAttributesParameters.getProperty("mac");
 				
 				
+				
+				
+				byte[] sessionIDSerialized = CommonUtils.fromStringToByteArray(this.sessionID);
+				
+				byte[] sessionNameSerialized = CommonUtils.fromStringToByteArray(this.sessionName);
+				
+				byte[] symmetricEncryptionAlgorithmSerialized = CommonUtils.fromStringToByteArray(this.symmetricEncryptionAlgorithm);
+				
+				byte[] symmetricEncryptionModeSerialized = CommonUtils.fromStringToByteArray(this.symmetricEncryptionMode);
+				
+				byte[] paddingMethodSerialized = CommonUtils.fromStringToByteArray(this.paddingMethod);
+				
+				byte[] integrityControlCryptographicHashFunctionConstructionMethodSerialized = 
+																CommonUtils.fromStringToByteArray(this.integrityControlCryptographicHashFunctionConstructionMethod);
+				
+				byte[] fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethodSerialized = 
+																CommonUtils.fromStringToByteArray(this.fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethod);
+				
+				
+				int sizeOfSecureMessageAtrributesSerialized = ( sessionIDSerialized.length + sessionNameSerialized.length + 
+						                                        symmetricEncryptionAlgorithmSerialized.length + symmetricEncryptionModeSerialized.length + paddingMethodSerialized.length + 
+						                                        integrityControlCryptographicHashFunctionConstructionMethodSerialized.length + 
+						                                        fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethodSerialized.length );
+							
+				this.secureMessageAttributesSerialized = new byte[sizeOfSecureMessageAtrributesSerialized];
+				
+				int serializationOffset = 0;
+
+				// Fills the byte array of the Secure Message Attributes with the serialization of the Session's ID,
+				// From the position corresponding to the length of the byte array of the Session's ID			
+				System.arraycopy(sessionIDSerialized, 0, this.secureMessageAttributesSerialized, 0, sessionIDSerialized.length);
+				serializationOffset += sessionIDSerialized.length;
+				
+				// Fills the byte array of the Secure Message Attributes with the serialization of the Session's Name,
+				// From the position corresponding to the length of the byte array of the Session's Name
+				System.arraycopy(sessionNameSerialized, 0, this.secureMessageAttributesSerialized, serializationOffset, sessionNameSerialized.length);
+				serializationOffset += sessionNameSerialized.length;
+				
+				// Fills the byte array of the Secure Message Attributes with the serialization of the name of Symmetric Encryption Algorithm in use,
+				// From the position corresponding to the length of the byte array of the name of Symmetric Encryption Algorithm in use
+				System.arraycopy(symmetricEncryptionAlgorithmSerialized, 0, this.secureMessageAttributesSerialized, serializationOffset, symmetricEncryptionAlgorithmSerialized.length);
+				serializationOffset += symmetricEncryptionAlgorithmSerialized.length;
+							
+				// Fills the byte array of the Secure Message Attributes with the serialization of the name of Symmetric Encryption Mode in use,
+				// From the position corresponding to the length of the byte array of the name of Symmetric Encryption Mode in use
+				System.arraycopy(symmetricEncryptionModeSerialized, 0, this.secureMessageAttributesSerialized, serializationOffset, symmetricEncryptionModeSerialized.length);
+				serializationOffset += symmetricEncryptionModeSerialized.length;
+				
+				// Fills the byte array of the Secure Message Attributes with the serialization of the name of Padding Mode in use,
+				// From the position corresponding to the length of the byte array of the name of Symmetric Padding Mode in use
+				System.arraycopy(paddingMethodSerialized, 0, this.secureMessageAttributesSerialized, serializationOffset, paddingMethodSerialized.length);
+				serializationOffset += paddingMethodSerialized.length;
+				
+				// Fills the byte array of the Secure Message Attributes with the serialization of the name of Integrity Control Construction Mode in use,
+				// From the position corresponding to the length of the byte array of the name of Integrity Control Construction Mode in use		
+				System.arraycopy(integrityControlCryptographicHashFunctionConstructionMethodSerialized, 0, this.secureMessageAttributesSerialized, serializationOffset,
+						         integrityControlCryptographicHashFunctionConstructionMethodSerialized.length);
+				serializationOffset += integrityControlCryptographicHashFunctionConstructionMethodSerialized.length;
+							
+				// Fills the byte array of the Secure Message Attributes with the serialization of the name of Fast Secure Payload Check Construction Mode in use,
+				// From the position corresponding to the length of the byte array of the name of Fast Secure Payload Check Construction Mode in use
+				System.arraycopy(fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethodSerialized, 0, this.secureMessageAttributesSerialized, serializationOffset,
+								 fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethodSerialized.length);
+				serializationOffset += fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethodSerialized.length;
+				
+				
+				
+				
+				byte[] secureMessageAttributesSerializedHashedToCompare = null;
+				
+
 				// HASHING Process
+
+				// The configuration, initialization and update of the Integrity Control Hash process
 				try {
-					// The Source/Seed of a Secure Random
-					SecureRandom secureRandom = new SecureRandom();
-					
-					// The Initialization Vector and its Parameter's Specifications
-					Key secureMessageAttributesSerializationHashKey = 
-							CommonUtils.createKeyForAES(Integer.parseInt(this.secureMessageAttributesParameters.getProperty("macks")),
-														secureRandom);
-					
-					Mac mac = Mac.getInstance(this.secureMessageAttributesParameters.getProperty("mac"));
-					mac.init(secureMessageAttributesSerializationHashKey);
-					mac.update(this.secureMessageAttributesSerializedHashedToCompare);
-					
-					secureMessageAttributesSerializedHashedToCompare = mac.doFinal();
+					MessageDigest hashFunctionAlgorithmn = MessageDigest.getInstance(this.secureMessageAttributesParameters.getProperty("inthash"));
+					secureMessageAttributesSerializedHashedToCompare = hashFunctionAlgorithmn.digest(this.secureMessageAttributesSerialized);
+				} catch (NoSuchAlgorithmException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-				catch (NoSuchAlgorithmException noSuchAlgorithmException) {
-					System.err.println("Error occurred during the Hashing Function over the Secure Message's Attributes:");
-					System.err.println("- Cryptographic Algorithm not found!!!");
-					noSuchAlgorithmException.printStackTrace();
-				}
-				catch (NoSuchProviderException noSuchProviderException) {
-					System.err.println("Error occurred during the Hashing Function over the Secure Message's Attributes:");
-					System.err.println("- Cryptograhic Provider not found!!!");
-					noSuchProviderException.printStackTrace();
-				}
-				catch (InvalidKeyException invalidKeyException) {
-					System.err.println("Error occurred during the Hashing Function over the Secure Message's Attributes:");
-					System.err.println("- Invalid Secret Key!!!");
-					invalidKeyException.printStackTrace();
-				}
-				
+
+				// Performs the final operation of Integrity Control Hash process over the Message serialized
+
+
 				this.isSecureMessageAttributesCheckValid = (this.isSecureMessageAttributesSerializedHashed &&
-						this.secureMessageAttributesSerializedHashed.equals(secureMessageAttributesSerializedHashedToCompare)) ? 
+						Arrays.equals(this.secureMessageAttributesSerializedHashed, secureMessageAttributesSerializedHashedToCompare)) ? 
 								true : false;
-				
+
 				if(!this.isSecureMessageAttributesCheckValid) {
 					System.err.println("The Secure Message's Attributes for the current Session aren't valid:");
 					System.err.println("- The Secure Message will be ignored!!!");
