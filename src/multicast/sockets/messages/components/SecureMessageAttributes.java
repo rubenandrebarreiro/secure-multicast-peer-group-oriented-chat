@@ -81,10 +81,10 @@ public class SecureMessageAttributes {
 		this.secureMessageAttributesParameters = null;
 	}
 	
-	public SecureMessageAttributes(byte[] finalSecureMessageAttributesSerializedHashed,
+	public SecureMessageAttributes(byte[] secureMessageAttributesSerializedHashed,
 								   SecureMulticastChatSessionParameters secureMessageAttributesParameters) {
 		
-		this.secureMessageAttributesSerializedHashed = finalSecureMessageAttributesSerializedHashed;
+		this.secureMessageAttributesSerializedHashed = secureMessageAttributesSerializedHashed;
 		
 		this.isSecureMessageAttributesSerialized = true;
 		this.isSecureMessageAttributesSerializedHashed = true;
@@ -274,7 +274,7 @@ public class SecureMessageAttributes {
 					mac.init(secureMessageAttributesSerializationHashKey);
 					mac.update(this.secureMessageAttributesSerializedHashedToCompare);
 					
-					this.secureMessageAttributesSerializedHashedToCompare = mac.doFinal();
+					secureMessageAttributesSerializedHashedToCompare = mac.doFinal();
 				}
 				catch (NoSuchAlgorithmException noSuchAlgorithmException) {
 					System.err.println("Error occurred during the Hashing Function over the Secure Message's Attributes:");
