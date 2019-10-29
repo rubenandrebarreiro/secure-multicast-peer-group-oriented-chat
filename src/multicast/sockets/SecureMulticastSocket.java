@@ -21,19 +21,17 @@ import java.io.IOException;
 import java.net.MulticastSocket;
 import java.net.SocketTimeoutException;
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 import multicast.common.MessageType;
-import multicast.common.VersionNumber;
 import multicast.sockets.messages.FinalSecureMessage;
 import multicast.sockets.messages.components.FastSecureMessageCheck;
 import multicast.sockets.messages.components.SecureMessage;
+import multicast.sockets.messages.components.SecureMessageAttributes;
 import multicast.sockets.messages.components.SecureMessageHeader;
+import multicast.sockets.messages.components.SecureMessagePayload;
 import multicast.sockets.messages.utils.SecureMulticastChatSessionParameters;
 import multicast.sockets.services.SecureMulticastSocketCleaningRandomNoncesService;
 
@@ -253,34 +251,44 @@ public class SecureMulticastSocket extends MulticastSocket {
 			SecureMessageHeader secureMessageHeader = secureMessage.getSecureMessageHeader();
 			
 			if(secureMessageHeader.isVersionNumberAndMessageTypeSupported()) {
-				// TODO Verificar SSAtributes
-				// TODO Verificar Hash do Payload
-				// TODO Nonce do Payload
-				// TODO SeqNum do Payload
+				// TODO Verificar SSAtributes - Feito/Verificar
+				// TODO Nonce do Payload - Feito/Verificar
+				// TODO SeqNum do Payload - Feito/Verificar
+				// TODO Descifra do Payload - Feito/Verificar
+				// TODO size do Payload - Feito/Verificar
+				// TODO hash do Message Content do Payload - Feito/Verificar
+				// TODO contruir fromPeerID, Nonce, SeqNum, Message Content - Feito/Verificar
+				SecureMessageAttributes secureMessageAttributes = secureMessage.getSecureMessageAttributes();
+				
+				if(secureMessageAttributes.checkIfIsSecureMessageAttributesSerializedHashedValid()) {
+					SecureMessagePayload secureMessagePayload = secureMessage.getSecureMessagePayload();
+					secureMessagePayload.buildSecureMessagePayloadSerializationSymmetricEncryptionDeciphered();
+					
+					if(secureMessagePayload.checkIfIsSecureMessagePayloadSerializedSizeValid()) {
+						secureMessagePayload.buildSecureMessagePayloadComponents();
+						
+						if(secureMessagePayload.checkIfIsIntegrityControlHashedSerializedValid()) {
+							if(secureMessagePayload.getSequenceNumber() != ++this.sequenceNumber) {
+								System.err.println("Not received a Secure Message with the expected Sequence Number:");
+								System.err.println("- The Secure Message will be ignored!!!");
+							}
+							else {
+								int receivedRandomNonce = secureMessagePayload.getRandomNonce();
+								
+								if(!this.randomNoncesMap.containsKey(receivedRandomNonce)) {
+									System.err.println("Received a Secure Message with a duplicate Random Nonce, in a short period time:");
+									System.err.println("- The Secure Message will be ignored!!!");
+								}
+								else {
+									this.randomNoncesMap.put(receivedRandomNonce, System.currentTimeMillis());
+									
+									secureMessageDatagramPacketReceived.setData(secureMessagePayload.getMessageSerialized());
+								}
+							}
+						}
+					}
+				}
 			}
 		}
-		
-		SecureMessageHeader secureMessageHeader = finalSecureMessage.getSecureMessage().getSecureMessageHeader();
-		
-		if(secureMessageHeader.isVersionNumberAndMessageTypeSupported()) {
-			
-		}
-		
-//		if(this.firstMessage) {	
-//			// This must be always true in the reception of the First Message
-//			if(this.randomNoncesMap.isEmpty()) {
-//				System.out.println(this.sequenceNumber);
-//			}
-//
-//			this.firstMessage = false;
-//		}
-//		else {
-//
-//		}
-//
-//		this.randomNoncesMap.put(0, System.currentTimeMillis());
 	}
-	
-	
-	
 }
