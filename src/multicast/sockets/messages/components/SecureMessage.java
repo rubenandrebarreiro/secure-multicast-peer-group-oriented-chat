@@ -197,7 +197,7 @@ public class SecureMessage {
 			byte[] secureMessagePayloadSerializedCiphered = 
 					this.secureMessagePayload.getSecureMessagePayloadSerializedCiphered();
 						
-			this.sizeOfSecureMessagePayload = this.secureMessagePayload.getSecureMessagePayloadSerialized().length;
+			this.sizeOfSecureMessagePayload = this.secureMessagePayload.getSecureMessagePayloadSerializedCiphered().length;
 			byte[] sizeOfSecureMessagePayloadSerialized = 
 					CommonUtils.fromIntToByteArray(this.sizeOfSecureMessagePayload);
 			
