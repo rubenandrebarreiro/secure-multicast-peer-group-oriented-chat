@@ -19,8 +19,6 @@ package multicast.sockets.messages.components;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.SecureRandom;
 import javax.crypto.Mac;
 import multicast.common.CommonUtils;
 import multicast.sockets.messages.utils.KeyStoreInterface;
