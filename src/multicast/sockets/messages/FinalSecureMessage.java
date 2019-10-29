@@ -101,10 +101,12 @@ public class FinalSecureMessage {
 		this.secureMessageMetaHeader = new SecureMessageMetaHeader(this.secureMessage.getSecureMessageHeader().getSecureMessageHeaderSerialized().length,
 																   this.secureMessage.getSecureMessageAttributes().getSecureMessageAttributesSerializedHashed().length, 
 																   this.secureMessage.getSecureMessagePayload().getSecureMessagePayloadSerialized().length,
-																   CommonUtils.fromStringToByteArray(secureMessagePayload.getFromPeerID()).length,
+																   CommonUtils.fromStringToByteArray(fromPeerID).length,
 																   secureMessagePayload.getMessageSerialized().length,
 																   secureMessagePayload.getIntegrityControlSerialiazedHashed().length,
 																   this.fastSecureMessageCheck.getSecureMessageSerializedHashed().length);
+		
+		int a = this.fastSecureMessageCheck.getSecureMessageSerializedHashed().length;
 		
 		this.isFinalSecureMessageSerialized = false;
 		
@@ -113,10 +115,12 @@ public class FinalSecureMessage {
 	/**
 	 * 
 	 * 
+	 * @param secureMulticastChatSessionParameters
 	 * @param datagramPacketToBeSent
 	 */
-	public FinalSecureMessage(DatagramPacket datagramPacketReceived) {
+	public FinalSecureMessage(DatagramPacket datagramPacketReceived, SecureMulticastChatSessionParameters secureMulticastChatSessionParameters) {
 		this.finalSecureMessageSerialized = datagramPacketReceived.getData();
+		this.secureMulticastChatSessionParameters = secureMulticastChatSessionParameters;
 		this.isFinalSecureMessageSerialized = true;
 	}
 	
@@ -293,6 +297,6 @@ public class FinalSecureMessage {
 	 * @return
 	 */
 	public FastSecureMessageCheck getFastSecureMessageCheck() {
-		return this.isFinalSecureMessageSerialized ? null : this.fastSecureMessageCheck;
+		return this.fastSecureMessageCheck;
 	}
 }

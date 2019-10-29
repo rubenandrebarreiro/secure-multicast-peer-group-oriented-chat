@@ -238,7 +238,7 @@ public class SecureMessagePayload {
 	 * 		   which sent the Secure Message Payload
 	 */
 	public String getFromPeerID() {
-		return this.isSecureMessagePayloadSerialized ? null : this.fromPeerID;
+		return this.fromPeerID;
 	}
 	
 	/**
@@ -247,7 +247,7 @@ public class SecureMessagePayload {
 	 * @return the Sequence Number of the Secure Message's Payload
 	 */
 	public int getSequenceNumber() {
-		return this.isSecureMessagePayloadSerialized ? null : this.sequenceNumber;
+		return this.sequenceNumber;
 	}
 	
 	/**
@@ -256,7 +256,7 @@ public class SecureMessagePayload {
 	 * @return the Random Nonce of the Secure Message's Payload
 	 */
 	public int getRandomNonce() {
-		return this.isSecureMessagePayloadSerialized ? null : this.randomNonce;
+		return this.randomNonce;
 	}
 	
 	/**
@@ -267,7 +267,7 @@ public class SecureMessagePayload {
 	 * 		   the Secure Message's Payload
 	 */
 	public byte[] getMessageSerialized() {
-		return this.isSecureMessagePayloadSerialized ? null : this.messageSerialized;
+		return this.messageSerialized;
 	}
 	
 	/**
