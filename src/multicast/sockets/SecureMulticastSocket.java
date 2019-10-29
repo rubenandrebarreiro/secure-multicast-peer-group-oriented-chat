@@ -269,7 +269,7 @@ public class SecureMulticastSocket extends MulticastSocket {
 						secureMessagePayload.buildSecureMessagePayloadComponents();
 						
 						if(secureMessagePayload.checkIfIsIntegrityControlHashedSerializedValid()) {
-							if(secureMessagePayload.getSequenceNumber() != ++this.sequenceNumber) {
+							if(secureMessagePayload.getSequenceNumber() != this.sequenceNumber++) {
 								System.err.println("Not received a Secure Message with the expected Sequence Number:");
 								System.err.println("- The Secure Message will be ignored!!!");
 							}
