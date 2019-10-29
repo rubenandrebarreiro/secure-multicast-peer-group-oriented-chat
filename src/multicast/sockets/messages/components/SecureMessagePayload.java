@@ -29,6 +29,7 @@ import javax.crypto.ShortBufferException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.bouncycastle.util.Arrays;
 import org.bouncycastle.util.encoders.Hex;
 
 import multicast.common.CommonUtils;
@@ -340,8 +341,8 @@ public class SecureMessagePayload {
 				}
 		
 				this.isIntegrityControlCheckValid = (this.isIntegrityControlHashedSerialized &&
-													 this.integrityControlHashedSerialized
-													 .equals(messageSerializedHashedToCompare)) ? 
+													 Arrays.areEqual(this.integrityControlHashedSerialized, 
+															 messageSerializedHashedToCompare)) ? 
 															 true : false;
 				if(!this.isIntegrityControlCheckValid) {
 					System.err.println("The Integrity Control it's not valid:");
