@@ -44,9 +44,7 @@ public class SecureMessageAttributes {
 	private byte[] secureMessageAttributesSerializedHashed;
 	
 	private boolean isSecureMessageAttributesSerializedHashed;
-	
-	private byte[] secureMessageAttributesSerializedHashedToCompare;
-	
+		
 	private boolean isSecureMessageAttributesCheckValid;
 	
 	private boolean isSecureMessageAttributesCheckDone;
@@ -86,10 +84,10 @@ public class SecureMessageAttributes {
 	public SecureMessageAttributes(byte[] finalSecureMessageAttributesSerializedHashed,
 								   SecureMulticastChatSessionParameters secureMessageAttributesParameters) {
 		
-		this.secureMessageAttributesSerializedHashedToCompare = finalSecureMessageAttributesSerializedHashed;
+		this.secureMessageAttributesSerializedHashed = finalSecureMessageAttributesSerializedHashed;
 		
-		this.isSecureMessageAttributesSerialized = false;
-		this.isSecureMessageAttributesSerializedHashed = false;
+		this.isSecureMessageAttributesSerialized = true;
+		this.isSecureMessageAttributesSerializedHashed = true;
 		
 		this.secureMessageAttributesParameters = secureMessageAttributesParameters;
 	}

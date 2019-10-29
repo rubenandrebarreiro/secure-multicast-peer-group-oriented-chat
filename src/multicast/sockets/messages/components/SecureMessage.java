@@ -5,6 +5,7 @@ import java.net.DatagramPacket;
 
 import multicast.common.CommonUtils;
 import multicast.common.VersionNumber;
+import multicast.sockets.messages.utils.SecureMessageEncryptionHashingParameters;
 import multicast.sockets.messages.utils.SecureMulticastChatSessionParameters;
 
 public class SecureMessage {
@@ -119,7 +120,8 @@ public class SecureMessage {
 	public SecureMessage(byte[] secureMessageSerialized, int sizeOfSecureMessageHeader,
 						 int sizeOfSecureMessageAttributes, int sizeOfSecureMessagePayload,
 						 int sizeOfFromPeerIDSerialized, int sizeOfMessageSerialized,
-						 int sizeOfIntegrityControlHashedSerialized) {
+						 int sizeOfIntegrityControlHashedSerialized,
+						 SecureMulticastChatSessionParameters secureMessageAttributesParameters) {
 		
 		this.secureMessageSerialized = secureMessageSerialized;
 		
@@ -132,6 +134,8 @@ public class SecureMessage {
 		this.sizeOfIntegrityControlHashedSerialized = sizeOfIntegrityControlHashedSerialized;
 		
 		this.isSecureMessageSerialized = true;
+		
+		this.secureMessageAttributesParameters = secureMessageAttributesParameters;
 	}
 	
 	// Methods:
@@ -298,7 +302,7 @@ public class SecureMessage {
 							 secureMessagePayloadSerialized, 0, secureMessagePayloadSerialized.length);
 			serializationOffset += secureMessagePayloadSerialized.length;
 			
-			this.secureMessageAttributes = new SecureMessageAttributes(secureMessageAttributesSerializedHashed, null /*TODO Attributes*/);
+			this.secureMessageAttributes = new SecureMessageAttributes(secureMessageAttributesSerializedHashed, secureMessageAttributesParameters);
 			
 			System.out.println("[SecureMessage] " + this.secureMessageAttributes.checkIfIsSecureMessageAttributesSerializedHashedValid());
 			

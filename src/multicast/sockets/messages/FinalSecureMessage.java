@@ -260,7 +260,8 @@ public class FinalSecureMessage {
 				
 				this.secureMessage = new SecureMessage(secureMessageSerialized, sizeOfSecureMessageHeader,
 						                               sizeOfSecureMessageAttributes, sizeOfSecureMessagePayload,
-						                               sizeOfFromPeerID, sizeOfMessage, sizeOfIntegrityControl);
+						                               sizeOfFromPeerID, sizeOfMessage, sizeOfIntegrityControl,
+						                               secureMulticastChatSessionParameters);
 				
 				this.isFinalSecureMessageSerialized = false;
 			}
