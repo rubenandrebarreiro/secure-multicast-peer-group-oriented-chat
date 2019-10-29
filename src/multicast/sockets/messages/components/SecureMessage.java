@@ -194,15 +194,15 @@ public class SecureMessage {
 			this.secureMessagePayload.buildIntegrityControlHashedSerialized();
 			this.secureMessagePayload.buildSecureMessagePayloadSerialized();
 			this.secureMessagePayload.buildSecureMessagePayloadSerializedSymmetricEncryptionCiphered();
-			byte[] secureMessagePayloadSerialized = 
-					this.secureMessagePayload.getSecureMessagePayloadSerialized();
+			byte[] secureMessagePayloadSerializedCiphered = 
+					this.secureMessagePayload.getSecureMessagePayloadSerializedCiphered();
 						
 			this.sizeOfSecureMessagePayload = this.secureMessagePayload.getSecureMessagePayloadSerialized().length;
 			byte[] sizeOfSecureMessagePayloadSerialized = 
 					CommonUtils.fromIntToByteArray(this.sizeOfSecureMessagePayload);
 			
 			this.secureMessageSerialized = new byte[( secureMessageHeaderSerialized.length + secureMessageAttributesSerializedHashed.length
-					                                + sizeOfSecureMessagePayloadSerialized.length + secureMessagePayloadSerialized.length )];
+					                                + sizeOfSecureMessagePayloadSerialized.length + secureMessagePayloadSerializedCiphered.length )];
 			
 			// Operations to Fill a Byte Array, with the following parameters:
 			// 1) src - The source of the array to be copied
@@ -238,9 +238,9 @@ public class SecureMessage {
 			// Fills the byte array of the Final Secure Message with the Secure Message's Payload,
 			// From the position corresponding to the length of size of Secure Message's Payload to
 			// the corresponding to the length of Secure Message's Payload
-			System.arraycopy(secureMessagePayloadSerialized, 0,
-							 this.secureMessageSerialized, serializationOffset, secureMessagePayloadSerialized.length);
-			serializationOffset += secureMessagePayloadSerialized.length;
+			System.arraycopy(secureMessagePayloadSerializedCiphered, 0,
+							 this.secureMessageSerialized, serializationOffset, secureMessagePayloadSerializedCiphered.length);
+			serializationOffset += secureMessagePayloadSerializedCiphered.length;
 						
 			// The Secure Message have already its serialization done
 			this.isSecureMessageSerialized = true;

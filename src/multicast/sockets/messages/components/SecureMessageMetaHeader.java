@@ -44,7 +44,7 @@ public class SecureMessageMetaHeader {
 	/**
 	 * The size of the Secure Message's Payload
 	 */
-	private int sizeOfSecureMessagePayload;
+	private int sizeOfSecureMessagePayloadCiphered;
 	
 	/**
 	 * The size of the String for From Peer ID
@@ -91,7 +91,7 @@ public class SecureMessageMetaHeader {
 	/**
 	 * The size of the Secure Message's Payload serialized
 	 */
-	private byte[] sizeOfSecureMessagePayloadSerialized;
+	private byte[] sizeOfSecureMessagePayloadSerializedCiphered;
 	
 	private byte[] sizeOfFromPeerIDSerialized;
 	
@@ -117,13 +117,13 @@ public class SecureMessageMetaHeader {
 	 * 
 	 * @param sizeOfSecureMessageAttributes the size of the Secure Message's Attribute
 	 * 
-	 * @param sizeOfSecureMessagePayload the size of the Secure Message's Payload
+	 * @param sizeOfSecureMessagePayloadCiphered the size of the Secure Message's Payload
 	 * 
 	 * @param sizeOfFastSecureMessageCheck the size of the Fast Secure Message's Check
 	 */
 	public SecureMessageMetaHeader(int sizeOfSecureMessageHeader,
 			                       int sizeOfSecureMessageAttributes,
-			                       int sizeOfSecureMessagePayload,
+			                       int sizeOfSecureMessagePayloadCiphered,
 			                       int sizeOfFromPeerID,
 			                       int sizeOfMessage,
 			                       int sizeOfIntegrityControl,
@@ -131,7 +131,7 @@ public class SecureMessageMetaHeader {
 		
 		this.sizeOfSecureMessageHeader = sizeOfSecureMessageHeader;
 		this.sizeOfSecureMessageAttributes = sizeOfSecureMessageAttributes;
-		this.sizeOfSecureMessagePayload = sizeOfSecureMessagePayload;
+		this.sizeOfSecureMessagePayloadCiphered = sizeOfSecureMessagePayloadCiphered;
 		this.sizeOfFromPeerID = sizeOfFromPeerID;
 		this.sizeOfMessage = sizeOfMessage;
 		this.sizeOfIntegrityControl = sizeOfIntegrityControl;
@@ -153,7 +153,7 @@ public class SecureMessageMetaHeader {
 		
 		this.sizeOfSecureMessageHeaderSerialized = new byte[CommonUtils.INTEGER_IN_BYTES_LENGTH];
 		this.sizeOfSecureMessageAttributesHashedSerialized = new byte[CommonUtils.INTEGER_IN_BYTES_LENGTH];
-		this.sizeOfSecureMessagePayloadSerialized = new byte[CommonUtils.INTEGER_IN_BYTES_LENGTH];
+		this.sizeOfSecureMessagePayloadSerializedCiphered = new byte[CommonUtils.INTEGER_IN_BYTES_LENGTH];
 		this.sizeOfFromPeerIDSerialized = new byte[CommonUtils.INTEGER_IN_BYTES_LENGTH];
 		this.sizeOfMessageSerialized = new byte[CommonUtils.INTEGER_IN_BYTES_LENGTH];
 		this.sizeOfIntegrityControlSerialized = new byte[CommonUtils.INTEGER_IN_BYTES_LENGTH];
@@ -189,7 +189,7 @@ public class SecureMessageMetaHeader {
 	 * @return the size of the Secure Message's Payload
 	 */
 	public int getSizeOfSecureMessagePayload() {
-		return this.isSecureMessageMetaHeaderSerialized ? null : this.sizeOfSecureMessagePayload;
+		return this.isSecureMessageMetaHeaderSerialized ? null : this.sizeOfSecureMessagePayloadCiphered;
 	}
 	
 
@@ -229,7 +229,7 @@ public class SecureMessageMetaHeader {
 	 */
 	public int getSizeOfSecureMessage() {
 		return this.isSecureMessageMetaHeaderSerialized ? null 
-				: (this.sizeOfSecureMessageHeader + this.sizeOfSecureMessageAttributes + CommonUtils.INTEGER_IN_BYTES_LENGTH + this.sizeOfSecureMessagePayload);
+				: (this.sizeOfSecureMessageHeader + this.sizeOfSecureMessageAttributes + CommonUtils.INTEGER_IN_BYTES_LENGTH + this.sizeOfSecureMessagePayloadCiphered);
 	}
 	
 	/**
@@ -250,25 +250,25 @@ public class SecureMessageMetaHeader {
 		if(!this.isSecureMessageMetaHeaderSerialized) {
 			
 			// The size of the Secure Message's Header serialized
-			this.sizeOfSecureMessageHeaderSerialized = CommonUtils.fromIntToByteArray(sizeOfSecureMessageHeader);
+			this.sizeOfSecureMessageHeaderSerialized = CommonUtils.fromIntToByteArray(this.sizeOfSecureMessageHeader);
 			
 			// The size of the Secure Message's Attributes serialized
-			this.sizeOfSecureMessageAttributesHashedSerialized = CommonUtils.fromIntToByteArray(sizeOfSecureMessageAttributes);
+			this.sizeOfSecureMessageAttributesHashedSerialized = CommonUtils.fromIntToByteArray(this.sizeOfSecureMessageAttributes);
 			
 			// The size of the Secure Message's Payload serialized
-			this.sizeOfSecureMessagePayloadSerialized = CommonUtils.fromIntToByteArray(sizeOfSecureMessagePayload);
+			this.sizeOfSecureMessagePayloadSerializedCiphered = CommonUtils.fromIntToByteArray(this.sizeOfSecureMessagePayloadCiphered);
 			
 			// The size of the Fast Secure Message's Check serialized
-			this.sizeOfFromPeerIDSerialized = CommonUtils.fromIntToByteArray(sizeOfFromPeerID);
+			this.sizeOfFromPeerIDSerialized = CommonUtils.fromIntToByteArray(this.sizeOfFromPeerID);
 			
 			// The size of the Fast Secure Message's Check serialized
-			this.sizeOfMessageSerialized = CommonUtils.fromIntToByteArray(sizeOfMessage);
+			this.sizeOfMessageSerialized = CommonUtils.fromIntToByteArray(this.sizeOfMessage);
 			
 			// The size of the Fast Secure Message's Check serialized
-			this.sizeOfIntegrityControlSerialized = CommonUtils.fromIntToByteArray(sizeOfIntegrityControl);
+			this.sizeOfIntegrityControlSerialized = CommonUtils.fromIntToByteArray(this.sizeOfIntegrityControl);
 			
 			// The size of the Fast Secure Message's Check serialized
-			this.sizeOfFastSecureMessageCheckSerialized = CommonUtils.fromIntToByteArray(sizeOfFastSecureMessageCheck);
+			this.sizeOfFastSecureMessageCheckSerialized = CommonUtils.fromIntToByteArray(this.sizeOfFastSecureMessageCheck);
 			
 			
 			// The size of the Secure Message's Meta-Header serialized
@@ -327,8 +327,8 @@ public class SecureMessageMetaHeader {
 			// Fills the byte array of the Secure Message Meta-Header with the serialization of
 			// The size of the Secure Message Payload, from the position corresponding to the length of
 			// The byte array of the size of the Secure Message Payload
-			System.arraycopy(this.sizeOfSecureMessagePayloadSerialized, 0, this.secureMessageMetaHeaderSerialized,
-	        				 serializationOffset, this.sizeOfSecureMessagePayloadSerialized.length);
+			System.arraycopy(this.sizeOfSecureMessagePayloadSerializedCiphered, 0, this.secureMessageMetaHeaderSerialized,
+	        				 serializationOffset, this.sizeOfSecureMessagePayloadSerializedCiphered.length);
 			serializationOffset += CommonUtils.INTEGER_IN_BYTES_LENGTH;
 			
 			// Fills the byte array of the Secure Message Meta-Header with an outside separator,
@@ -420,7 +420,7 @@ public class SecureMessageMetaHeader {
 			// the byte array of the Secure Message Meta-Header serialized
 			offsetSecureMessageMetaHeaderSerializedParts += CommonUtils.META_HEADER_INSIDE_SEPARATORS_LENGTH;
 			System.arraycopy(this.secureMessageMetaHeaderSerialized, offsetSecureMessageMetaHeaderSerializedParts,
-					 		 this.sizeOfSecureMessagePayloadSerialized, 0, CommonUtils.INTEGER_IN_BYTES_LENGTH);
+					 		 this.sizeOfSecureMessagePayloadSerializedCiphered, 0, CommonUtils.INTEGER_IN_BYTES_LENGTH);
 			offsetSecureMessageMetaHeaderSerializedParts += CommonUtils.INTEGER_IN_BYTES_LENGTH;
 
 			// Fills the byte array of the size of the Secure Message's Payload from
@@ -454,7 +454,7 @@ public class SecureMessageMetaHeader {
 			// Inverse process of serialization of the several parts of the Secure Message's Parts
 			this.sizeOfSecureMessageHeader = CommonUtils.fromByteArrayToInt(sizeOfSecureMessageHeaderSerialized);
 			this.sizeOfSecureMessageAttributes = CommonUtils.fromByteArrayToInt(sizeOfSecureMessageAttributesHashedSerialized);
-			this.sizeOfSecureMessagePayload = CommonUtils.fromByteArrayToInt(sizeOfSecureMessagePayloadSerialized);
+			this.sizeOfSecureMessagePayloadCiphered = CommonUtils.fromByteArrayToInt(sizeOfSecureMessagePayloadSerializedCiphered);
 			this.sizeOfFromPeerID = CommonUtils.fromByteArrayToInt(sizeOfFromPeerIDSerialized);
 			this.sizeOfMessage = CommonUtils.fromByteArrayToInt(sizeOfMessageSerialized);
 			this.sizeOfIntegrityControl = CommonUtils.fromByteArrayToInt(sizeOfIntegrityControlSerialized);

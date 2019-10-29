@@ -100,7 +100,7 @@ public class FinalSecureMessage {
 		
 		this.secureMessageMetaHeader = new SecureMessageMetaHeader(this.secureMessage.getSecureMessageHeader().getSecureMessageHeaderSerialized().length,
 																   this.secureMessage.getSecureMessageAttributes().getSecureMessageAttributesSerializedHashed().length, 
-																   this.secureMessage.getSecureMessagePayload().getSecureMessagePayloadSerialized().length,
+																   this.secureMessage.getSecureMessagePayload().getSecureMessagePayloadSerializedCiphered().length,
 																   CommonUtils.fromStringToByteArray(fromPeerID).length,
 																   secureMessagePayload.getMessageSerialized().length,
 																   secureMessagePayload.getIntegrityControlSerialiazedHashed().length,

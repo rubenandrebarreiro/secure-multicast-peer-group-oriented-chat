@@ -116,13 +116,13 @@ public class SecureMessagePayload {
 	/**
 	 * The Secure Message's Payload serialized and Symmetric Encryption Ciphered 
 	 */
-	private byte[] secureMessagePayloadSerializedSymmetricEncryptionCiphered;
+	private byte[] secureMessagePayloadSerializedCiphered;
 	
 	/**
 	 * The boolean to keep the value to check if
 	 * the Secure Message's Payload is serialized and Symmetric Encryption Ciphered
 	 */
-	private boolean isSecureMessagePayloadSerializedSymmetricEncryptionCiphered;
+	private boolean isSecureMessagePayloadSerializedCiphered;
 	
 	/**
 	 * Encryption provider
@@ -179,7 +179,7 @@ public class SecureMessagePayload {
 		
 		this.isIntegrityControlHashedSerialized = false;
 		this.isSecureMessagePayloadSerialized = false;
-		this.isSecureMessagePayloadSerializedSymmetricEncryptionCiphered = false;
+		this.isSecureMessagePayloadSerializedCiphered = false;
 		
 		this.isSizeOfSecureMessagePayloadCheckValid = false;
 		this.isSizeOfSecureMessagePayloadCheckDone = false;
@@ -206,7 +206,7 @@ public class SecureMessagePayload {
 								int sizeOfIntegrityControlSerialized,
 								SecureMulticastChatSessionParameters secureMessageAttributesParameters) {
 							
-		this.secureMessagePayloadSerializedSymmetricEncryptionCiphered = 
+		this.secureMessagePayloadSerializedCiphered = 
 						secureMessagePayloadSerializedSymmetricEncryptionCiphered;
 		
 		this.sizeOfSecureMessagePayloadSerialized = sizeOfSecureMessagePayloadSerialized;
@@ -217,7 +217,7 @@ public class SecureMessagePayload {
 		
 		this.isIntegrityControlHashedSerialized = true;
 		this.isSecureMessagePayloadSerialized = true;
-		this.isSecureMessagePayloadSerializedSymmetricEncryptionCiphered = true;
+		this.isSecureMessagePayloadSerializedCiphered = true;
 		
 		this.isSizeOfSecureMessagePayloadCheckValid = false;
 		this.isSizeOfSecureMessagePayloadCheckDone = false;
@@ -382,7 +382,7 @@ public class SecureMessagePayload {
 		// (i.e., the real content of the Message) of the Secure Message's Payload it's done and
 		// the Secure Message's Payload is not serialized
 		if(this.isIntegrityControlHashedSerialized && !this.isSecureMessagePayloadSerialized &&
-				  !this.isSecureMessagePayloadSerializedSymmetricEncryptionCiphered) {
+				  !this.isSecureMessagePayloadSerializedCiphered) {
 			
 			// The ID of the Sender's Peer, which sent the Secure Message Payload serialized
 			byte[] fromPeerIDSerialized = this.fromPeerID.getBytes();
@@ -453,7 +453,7 @@ public class SecureMessagePayload {
 		// (i.e., the real content of the Message) of the Secure Message's Payload is done,
 		// the Secure Message's Payload is serialized and its Symmetric Encryption Cipher it's undone
 		if(this.isIntegrityControlHashedSerialized && this.isSecureMessagePayloadSerialized &&
-		  !this.isSecureMessagePayloadSerializedSymmetricEncryptionCiphered) {
+		  !this.isSecureMessagePayloadSerializedCiphered) {
 			
 			// The ID of the Sender's Peer, which sent the Secure Message Payload serialized TODO
 			byte[] fromPeerIDSerialized = new byte[this.sizeOfFromPeerIDSerialized];
@@ -537,7 +537,7 @@ public class SecureMessagePayload {
 		// (i.e., the real content of the Message) of the Secure Message's Payload is done,
 		// the Secure Message's Payload is serialized and its Symmetric Encryption Cipher it's not done
 		if(this.isIntegrityControlHashedSerialized && this.isSecureMessagePayloadSerialized &&
-		  !this.isSecureMessagePayloadSerializedSymmetricEncryptionCiphered) {
+		  !this.isSecureMessagePayloadSerializedCiphered) {
 			
 			byte[] secureMessagePayloadSerialized = this.getSecureMessagePayloadSerialized();
 			
@@ -578,12 +578,12 @@ public class SecureMessagePayload {
 						.init(Cipher.ENCRYPT_MODE, secretKeySpecifications);
 				}
 								
-				this.secureMessagePayloadSerializedSymmetricEncryptionCiphered = 
+				this.secureMessagePayloadSerializedCiphered = 
 									secureMessagePayloadSerializationSymmetricEncryptionCipher.doFinal(secureMessagePayloadSerialized);
 			
 				
 				// The Secure Message's Payload have already its serialization and its Symmetric Encryption Cipher done
-				this.isSecureMessagePayloadSerializedSymmetricEncryptionCiphered = true;
+				this.isSecureMessagePayloadSerializedCiphered = true;
 			}
 			catch (NoSuchAlgorithmException noSuchAlgorithmException) {
 				System.err.println("Error occurred during the Symmetric Encryption over the Secure Message's Payload:");
@@ -633,7 +633,7 @@ public class SecureMessagePayload {
 		// (i.e., the real content of the Message) of the Secure Message's Payload is done,
 		// the Secure Message's Payload is serialized and its Symmetric Encryption Cipher it's done
 		if(this.isIntegrityControlHashedSerialized && this.isSecureMessagePayloadSerialized &&
-		   this.isSecureMessagePayloadSerializedSymmetricEncryptionCiphered) {
+		   this.isSecureMessagePayloadSerializedCiphered) {
 			
 			try {
 				byte[] secretKeyBytes = Hex.decodeStrict(keystoreInterface.load(
@@ -672,14 +672,14 @@ public class SecureMessagePayload {
 				}
 				
 				int sizeOfSecureMessagePayloadSerializedSymmetricEncryptionCiphered = 
-									this.secureMessagePayloadSerializedSymmetricEncryptionCiphered.length;
+									this.secureMessagePayloadSerializedCiphered.length;
 				
 		      	// The Plain Text of the bytes of the data input received through the communication channel
 		      	this.secureMessagePayloadSerialized = new byte[secureMessagePayloadSerializationSymmetricEncryptionDecipher
 		      	                                   .getOutputSize(sizeOfSecureMessagePayloadSerializedSymmetricEncryptionCiphered)];
 		        
 		      	int sizeOfSecureMessagePayloadSerialized = secureMessagePayloadSerializationSymmetricEncryptionDecipher
-		      									   .update(this.secureMessagePayloadSerializedSymmetricEncryptionCiphered, 
+		      									   .update(this.secureMessagePayloadSerializedCiphered, 
 		      											   0, sizeOfSecureMessagePayloadSerializedSymmetricEncryptionCiphered,
 		      											   this.secureMessagePayloadSerialized, 0);
 		      	
@@ -688,7 +688,7 @@ public class SecureMessagePayload {
 		        
 
 				// The Secure Message's Payload have already its serialization and its Symmetric Encryption Cipher undone
-				this.isSecureMessagePayloadSerializedSymmetricEncryptionCiphered = false;
+				this.isSecureMessagePayloadSerializedCiphered = false;
 			}
 			catch (NoSuchAlgorithmException noSuchAlgorithmException) {
 				System.err.println("Error occurred during the Symmetric Encryption over the Secure Message's Payload:");
@@ -740,14 +740,14 @@ public class SecureMessagePayload {
 	 * @return the Symmetric Encryption's Cipher on the Secure Message's Payload serialized,
 	 *         resulting to the final Secure Message's Payload Ciphered component
 	 */
-	public byte[] SecureMessagePayloadSerializationSymmetricEncryptionCiphered() {
-		return this.isSecureMessagePayloadSerializedSymmetricEncryptionCiphered ?
-					this.secureMessagePayloadSerializedSymmetricEncryptionCiphered : null;
+	public byte[] getSecureMessagePayloadSerializedCiphered() {
+		return this.isSecureMessagePayloadSerializedCiphered ?
+					this.secureMessagePayloadSerializedCiphered : null;
 	}
 	
 	public boolean checkIfIsSecureMessagePayloadSerializedSizeValid() {
 		if(!this.isSizeOfSecureMessagePayloadCheckDone) {
-			if(!this.isSecureMessagePayloadSerializedSymmetricEncryptionCiphered && this.isSecureMessagePayloadSerialized) {
+			if(!this.isSecureMessagePayloadSerializedCiphered && this.isSecureMessagePayloadSerialized) {
 				this.isSizeOfSecureMessagePayloadCheckValid = 
 						( this.sizeOfSecureMessagePayloadSerialized == this.secureMessagePayloadSerialized.length );
 				
