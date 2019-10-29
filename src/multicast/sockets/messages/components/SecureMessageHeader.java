@@ -200,10 +200,19 @@ public class SecureMessageHeader {
 			// The Session's ID serialized, using the Secure Message's Protocol
 			byte[] sessionIDSerialized = new byte[ (secureMessageHeaderSerialized.length - ( 2 * CommonUtils.BYTE_LENGTH ) ) ];
 			
+
+			// Operations to Fill a Byte Array, with the following parameters:
+			// 1) src - The source of the array to be copied
+			// 2) srcPos - The position from the array to be copied, representing the first element to be copied
+			// 3) dest - The destination of the array to be copied
+			// 4) destPos - The position of the array where will be placed the new copy,
+			//              representing the first element where new data will be placed
+			// 5) length - The length of the data to be copied from the source array to the destination array
+			
 			// Fills the byte array of the Session's ID, using the Secure Message's Protocol from
 			// the byte array of the Secure Message Header serialized
 			System.arraycopy(secureMessageHeaderSerialized, CommonUtils.BYTE_LENGTH,
-							 sessionIDSerialized, 0, ( secureMessageHeaderSerialized.length - CommonUtils.BYTE_LENGTH ));
+							 sessionIDSerialized, 0, ( secureMessageHeaderSerialized.length - ( 2 * CommonUtils.BYTE_LENGTH )));
 
 			// The Session's ID, using the Secure Message's Protocol
 			this.sessionID = CommonUtils.fromByteArrayToString(sessionIDSerialized);

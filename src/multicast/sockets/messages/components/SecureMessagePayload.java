@@ -203,7 +203,8 @@ public class SecureMessagePayload {
 								int sizeOfSecureMessagePayloadSerialized,
 								int sizeOfFromPeerIDSerialized,
 								int sizeOfMessageSerialized,
-								int sizeOfIntegrityControlSerialized ) {
+								int sizeOfIntegrityControlSerialized,
+								SecureMulticastChatSessionParameters secureMessageAttributesParameters) {
 							
 		this.secureMessagePayloadSerializedSymmetricEncryptionCiphered = 
 						secureMessagePayloadSerializedSymmetricEncryptionCiphered;
@@ -223,6 +224,8 @@ public class SecureMessagePayload {
 		
 		this.isIntegrityControlCheckValid = false;
 		this.isIntegrityControlCheckDone = false;
+		
+		this.secureMessageAttributesParameters = secureMessageAttributesParameters;
 		
 		this.keystoreInterface = new KeyStoreInterface(keystoreFilename, "CSNS1920");
 	}

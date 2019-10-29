@@ -304,7 +304,8 @@ public class SecureMessage {
 				this.secureMessagePayload = 
 							new SecureMessagePayload(secureMessagePayloadSerialized, sizeOfSecureMessagePayloadReceived,
 													 this.sizeOfFromPeerIDSerialized, this.sizeOfMessageSerialized,
-													 this.sizeOfIntegrityControlHashedSerialized);				
+													 this.sizeOfIntegrityControlHashedSerialized,
+													 secureMessageAttributesParameters);				
 			}
 			
 			this.isSecureMessageSerialized = false;

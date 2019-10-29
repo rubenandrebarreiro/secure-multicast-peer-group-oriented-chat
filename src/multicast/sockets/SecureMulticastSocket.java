@@ -249,6 +249,7 @@ public class SecureMulticastSocket extends MulticastSocket {
 			secureMessage.buildSecureMessageComponents();
 			
 			SecureMessageHeader secureMessageHeader = secureMessage.getSecureMessageHeader();
+			secureMessageHeader.buildSecureMessageHeaderComponents();
 			
 			if(secureMessageHeader.isVersionNumberAndMessageTypeSupported()) {
 				// TODO Verificar SSAtributes - Feito/Verificar
