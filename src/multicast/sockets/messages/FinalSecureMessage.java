@@ -106,8 +106,6 @@ public class FinalSecureMessage {
 																   secureMessagePayload.getIntegrityControlSerialiazedHashed().length,
 																   this.fastSecureMessageCheck.getSecureMessageSerializedHashed().length);
 		
-		int a = this.fastSecureMessageCheck.getSecureMessageSerializedHashed().length;
-		
 		this.isFinalSecureMessageSerialized = false;
 		
 	}
