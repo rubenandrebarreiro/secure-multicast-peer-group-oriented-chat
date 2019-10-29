@@ -1,6 +1,11 @@
 package multicast.sockets.messages.components;
 
 import java.net.DatagramPacket;
+import java.security.InvalidKeyException;
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
+
+import javax.crypto.Mac;
 
 import multicast.common.CommonUtils;
 import multicast.common.VersionNumber;
@@ -9,6 +14,12 @@ import multicast.sockets.messages.utils.SecureMulticastChatSessionParameters;
 public class SecureMessage {
 	
 	// Global Instance Variables:
+	
+	/**
+	 * The size of the Secure Message's Header
+	 */
+	private int sizeOfSecureMessageHeader;
+	
 	/**
 	 * The Secure Message's Header
 	 */
@@ -20,6 +31,11 @@ public class SecureMessage {
 	 * which will be used in the Secure Message's Attributes
 	 */
 	private SecureMulticastChatSessionParameters secureMessageAttributesParameters;
+	
+	/**
+	 * The size of the Secure Message's Payload
+	 */
+	private int sizeOfSecureMessageAttributes;
 	
 	/**
 	 * The Secure Message's Attributes
@@ -36,6 +52,14 @@ public class SecureMessage {
 	 */
 	private SecureMessagePayload secureMessagePayload;
 	
+	private int sizeOfFromPeerIDSerialized;
+	
+	private int sizeOfMessageSerialized;
+	
+	private int sizeOfIntegrityControlHashedSerialized;
+	
+	
+	
 	/**
 	 * The Secure Message serialized
 	 */
@@ -46,6 +70,12 @@ public class SecureMessage {
 	 * the Secure Message is serialized
 	 */
 	private boolean isSecureMessageSerialized;
+
+
+	
+
+	private byte[] secureMessageAttributesSerializedHashed;
+	
 	
 	
 	// Constructors:
@@ -86,11 +116,25 @@ public class SecureMessage {
 		
 		this.secureMessagePayload = new SecureMessagePayload(fromPeerID, sequenceNumber, randomNonce, datagramPacket.getData());
 		
+		
 		this.isSecureMessageSerialized = false;
 	}
 	
-	public SecureMessage(byte[] secureMessageSerialized) {
+	public SecureMessage(byte[] secureMessageSerialized, int sizeOfSecureMessageHeader,
+						 int sizeOfSecureMessageAttributes, int sizeOfSecureMessagePayload,
+						 int sizeOfFromPeerIDSerialized, int sizeOfMessageSerialized,
+						 int sizeOfIntegrityControlHashedSerialized) {
+		
 		this.secureMessageSerialized = secureMessageSerialized;
+		
+		this.sizeOfSecureMessageHeader = sizeOfSecureMessageHeader;
+		this.sizeOfSecureMessageAttributes = sizeOfSecureMessageAttributes;
+		this.sizeOfSecureMessagePayload = sizeOfSecureMessagePayload;
+		
+		this.sizeOfFromPeerIDSerialized = sizeOfFromPeerIDSerialized;
+		this.sizeOfMessageSerialized = sizeOfMessageSerialized;
+		this.sizeOfIntegrityControlHashedSerialized = sizeOfIntegrityControlHashedSerialized;
+		
 		this.isSecureMessageSerialized = true;
 	}
 	
@@ -145,7 +189,6 @@ public class SecureMessage {
 	 */
 	public void buildSecureMessageSerialized() {
 		if(!this.isSecureMessageSerialized) {			
-			
 			
 			this.secureMessageHeader.buildMessageHeaderSerialized();
 			byte[] secureMessageHeaderSerialized = 
@@ -213,16 +256,64 @@ public class SecureMessage {
 	}
 	
 	public void buildSecureMessageComponents() {
-
-		
-		this.secureMessageHeader.buildSecureMessageHeaderParts();
-		
-		
-		//this.sizeOfSecureMessagePayload; //TODO
-		this.secureMessagePayload.checkIfIsIntegrityControlHashedSerializedValid();
-	}
-	
-	public boolean checkIf() {
-		return this.secureMessageAttributes.checkIfIsSecureMessageAttributesSerializedHashedValid();
+		if(this.isSecureMessageSerialized) {
+			
+			byte[] secureMessageHeaderSerialized = new byte[this.sizeOfSecureMessageHeader];
+			this.secureMessageAttributesSerializedHashed = new byte[this.sizeOfSecureMessageAttributes];
+			byte[] sizeOfSecureMessagePayloadSerialized = new byte[CommonUtils.INTEGER_IN_BYTES_LENGTH];
+			byte[] secureMessagePayloadSerialized = new byte[this.sizeOfSecureMessagePayload];
+			
+			
+			// Operations to Fill a Byte Array, with the following parameters:
+			// 1) src - The source of the array to be copied
+			// 2) srcPos - The position from the array to be copied, representing the first element to be copied
+			// 3) dest - The destination of the array to be copied
+			// 4) destPos - The position of the array where will be placed the new copy,
+			//              representing the first element where new data will be placed
+			// 5) length - The length of the data to be copied from the source array to the destination array
+			
+			// The offset related to fulfillment of the serialization process
+			int serializationOffset = 0;
+			
+			// Fills the byte array of the Secure Message with the Secure Message's Header,
+			// From the initial position to the corresponding to the length of Secure Message's Header
+			System.arraycopy(this.secureMessageSerialized, serializationOffset,
+							 secureMessageHeaderSerialized, 0, secureMessageHeaderSerialized.length);
+			serializationOffset += secureMessageHeaderSerialized.length;
+			
+			// Fills the byte array of the Secure Message with the Secure Message's Attributes,
+			// From the position corresponding to the length of Secure Message's Header to
+			// the corresponding to the length of Secure Message's Attributes
+			System.arraycopy(this.secureMessageSerialized, serializationOffset,
+							 secureMessageAttributesSerializedHashed, 0, secureMessageAttributesSerializedHashed.length);
+			serializationOffset += secureMessageAttributesSerializedHashed.length;
+			
+			// Fills the byte array of the Final Secure Message with the size of Secure Message's Payload,
+			// From the position corresponding to the length of Secure Message's Attributes to
+			// the corresponding to the length of size of Secure Message's Payload
+			System.arraycopy(this.secureMessageSerialized, serializationOffset,
+							 sizeOfSecureMessagePayloadSerialized, 0, sizeOfSecureMessagePayloadSerialized.length);
+			serializationOffset += sizeOfSecureMessagePayloadSerialized.length;
+						
+			// Fills the byte array of the Final Secure Message with the Secure Message's Payload,
+			// From the position corresponding to the length of size of Secure Message's Payload to
+			// the corresponding to the length of Secure Message's Payload
+			System.arraycopy(this.secureMessageSerialized, serializationOffset,
+							 secureMessagePayloadSerialized, serializationOffset, secureMessagePayloadSerialized.length);
+			serializationOffset += secureMessagePayloadSerialized.length;
+			
+			this.secureMessageAttributes = new SecureMessageAttributes(secureMessageAttributesSerializedHashed, null /*TODO Attributes*/);
+			
+			if(this.secureMessageAttributes.checkIfIsSecureMessageAttributesSerializedHashedValid()) {
+				int sizeOfSecureMessagePayloadReceived = CommonUtils.fromByteArrayToInt(sizeOfSecureMessagePayloadSerialized);
+				
+				this.secureMessagePayload = 
+							new SecureMessagePayload(secureMessagePayloadSerialized, sizeOfSecureMessagePayloadReceived,
+													 this.sizeOfFromPeerIDSerialized, this.sizeOfMessageSerialized,
+													 this.sizeOfIntegrityControlHashedSerialized);				
+			}
+			
+			this.isSecureMessageSerialized = false;
+		}
 	}
 }

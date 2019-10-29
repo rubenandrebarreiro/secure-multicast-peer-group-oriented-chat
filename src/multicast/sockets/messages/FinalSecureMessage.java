@@ -43,6 +43,8 @@ public class FinalSecureMessage {
 	 */
 	private SecureMessageMetaHeader secureMessageMetaHeader;
 	
+	
+	
 	/**
 	 * The Secure Message
 	 */
@@ -239,8 +241,18 @@ public class FinalSecureMessage {
 			
 			this.fastSecureMessageCheck = new FastSecureMessageCheck(secureMessageSerialized, fastSecureMessageCheck);
 			
-			if(this.fastSecureMessageCheck.checkIfIsSecureMessageSerializedHashedValid()) {
-				this.secureMessage = new SecureMessage(secureMessageSerialized);
+			if(this.fastSecureMessageCheck.isFastSecureMessageCheckValid()) {
+				
+				int sizeOfSecureMessageHeader = this.secureMessageMetaHeader.getSizeOfSecureMessageHeader();
+				int sizeOfSecureMessageAttributes = this.secureMessageMetaHeader.getSizeOfSecureMessageAttributes();
+				int sizeOfSecureMessagePayload = this.secureMessageMetaHeader.getSizeOfSecureMessagePayload();
+				int sizeOfFromPeerID = this.secureMessageMetaHeader.getSizeOfFromPeerID();
+				int sizeOfMessage = this.secureMessageMetaHeader.getSizeOfMessage();
+				int sizeOfIntegrityControl = this.secureMessageMetaHeader.getSizeOfIntegrityControl();
+				
+				this.secureMessage = new SecureMessage(secureMessageSerialized, sizeOfSecureMessageHeader,
+						                               sizeOfSecureMessageAttributes, sizeOfSecureMessagePayload,
+						                               sizeOfFromPeerID, sizeOfMessage, sizeOfIntegrityControl);
 				
 				this.isFinalSecureMessageSerialized = false;
 			}

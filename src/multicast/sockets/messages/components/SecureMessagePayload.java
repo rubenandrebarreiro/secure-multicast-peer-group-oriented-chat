@@ -99,6 +99,11 @@ public class SecureMessagePayload {
 	private byte[] secureMessagePayloadSerialized;
 	
 	/**
+	 * The size of the Secure Message's Payload serialized
+	 */
+	private int sizeOfSecureMessagePayloadSerialized;
+	
+	/**
 	 * The boolean to keep the value to check if
 	 * the Secure Message's Payload is serialized
 	 */
@@ -130,8 +135,9 @@ public class SecureMessagePayload {
 	 */
 	private static final String propertiesFilename = "./res/SMCP.conf";
 	
-
+	private boolean isSecureMessagePayloadCheckValid;
 	
+	private boolean isSecureMessagePayloadCheckDone;
 	
 	
 	// Constructors:
@@ -162,6 +168,9 @@ public class SecureMessagePayload {
 		this.isSecureMessagePayloadSerialized = false;
 		this.isSecureMessagePayloadSerializedSymmetricEncryptionCiphered = false;
 		
+		this.isSecureMessagePayloadCheckValid = false;
+		this.isSecureMessagePayloadCheckDone = false;
+		
 		this.secureMessageAttributesParameters = new SecureMulticastChatSessionParameters(propertiesFilename);
 	}
 	
@@ -174,11 +183,15 @@ public class SecureMessagePayload {
 	 *        and Symmetric Encryption Ciphered 
 	 */
 	public SecureMessagePayload(byte[] secureMessagePayloadSerializedSymmetricEncryptionCiphered,
-			int sizeOfFromPeerIDSerialized,
-			int sizeOfMessageSerialized,
-			int sizeOfIntegrityControlSerialized ) {
+								int sizeOfSecureMessagePayloadSerialized,
+								int sizeOfFromPeerIDSerialized,
+								int sizeOfMessageSerialized,
+								int sizeOfIntegrityControlSerialized ) {
+							
 		this.secureMessagePayloadSerializedSymmetricEncryptionCiphered = 
 						secureMessagePayloadSerializedSymmetricEncryptionCiphered;
+		
+		this.sizeOfSecureMessagePayloadSerialized = sizeOfSecureMessagePayloadSerialized;
 		
 		this.sizeOfFromPeerIDSerialized = sizeOfFromPeerIDSerialized;
 		this.sizeOfMessageSerialized = sizeOfMessageSerialized;
@@ -187,6 +200,9 @@ public class SecureMessagePayload {
 		this.isIntegrityControlHashedSerialized = true;
 		this.isSecureMessagePayloadSerialized = true;
 		this.isSecureMessagePayloadSerializedSymmetricEncryptionCiphered = true;
+		
+		this.isSecureMessagePayloadCheckValid = false;
+		this.isSecureMessagePayloadCheckDone = false;
 	}
 	
 	
@@ -678,5 +694,28 @@ public class SecureMessagePayload {
 	public byte[] SecureMessagePayloadSerializationSymmetricEncryptionCiphered() {
 		return this.isSecureMessagePayloadSerializedSymmetricEncryptionCiphered ?
 					this.secureMessagePayloadSerializedSymmetricEncryptionCiphered : null;
+	}
+	
+	public boolean checkIfIsSecureMessagePayloadSerializedSizeValid() {
+		if(!this.isSecureMessagePayloadCheckDone) {
+			if(!this.isSecureMessagePayloadSerializedSymmetricEncryptionCiphered && this.isSecureMessagePayloadSerialized) {
+				this.isSecureMessagePayloadCheckValid = 
+						( this.sizeOfSecureMessagePayloadSerialized == this.secureMessagePayloadSerialized.length );
+				
+				if(!this.isSecureMessagePayloadCheckValid) {
+					System.err.println("The size of the Secure Message's Payload it's not correct:");
+					System.err.println("- The Secure Message will be ignored!!!");
+				}
+				
+				this.isSecureMessagePayloadCheckDone = true;
+				
+				return this.isSecureMessagePayloadCheckValid;
+			}
+			
+			return false;
+		}
+		else {
+			return this.isSecureMessagePayloadCheckValid;
+		}
 	}
 }

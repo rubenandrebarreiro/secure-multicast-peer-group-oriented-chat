@@ -99,6 +99,8 @@ public class FastSecureMessageCheck {
 		this.secureMessageSerialized = secureMessageSerialized;
 		
 		this.isSecureMessageSerializedHashed = false;
+		
+		this.isFastSecureMessageCheckValid = false;
 		this.isFastSecureMessageCheckDone = false;
 		
 		this.propertiesReader = new SecureMulticastChatSessionParameters(propertiesFilename);
@@ -121,6 +123,7 @@ public class FastSecureMessageCheck {
 		this.secureMessageSerializedHashed = secureMessageSerializedHashed;
 		
 		this.isSecureMessageSerializedHashed = true;
+		
 		this.isFastSecureMessageCheckValid = false;
 		this.isFastSecureMessageCheckDone = false;
 		
@@ -197,7 +200,7 @@ public class FastSecureMessageCheck {
 	 * @return true if the hash performed/computed over Secure Message serialized received its valid,
 	 * 		   comparing it with the Secure Message serialized hashed received and false, otherwise
 	 */
-	public boolean checkIfIsSecureMessageSerializedHashedValid() {
+	public boolean isFastSecureMessageCheckValid() {
 		if(!this.isFastSecureMessageCheckDone) {
 			// TODO
 			if(this.isSecureMessageSerializedHashed) {			
@@ -234,12 +237,13 @@ public class FastSecureMessageCheck {
 				}
 				
 				this.isFastSecureMessageCheckValid = (this.isSecureMessageSerializedHashed &&
-														   CommonUtils.fromByteArrayToHexadecimalFormat(secureMessageSerializedHashed)
-														   .equals(CommonUtils.fromByteArrayToHexadecimalFormat(secureMessageSerializedHashedToCompare))) ? 
+														   secureMessageSerializedHashed
+														   .equals(secureMessageSerializedHashedToCompare)) ? 
 																   true : false;
 				
 				if(!this.isFastSecureMessageCheckValid) {
-					System.err.println("The Fast Secure Message Check it's not valid!!!");
+					System.err.println("The Fast Secure Message Check it's not valid:");
+					System.err.println("- The Secure Message will be ignored!!!");
 				}
 				
 				this.isFastSecureMessageCheckDone = true;

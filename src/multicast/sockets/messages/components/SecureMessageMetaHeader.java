@@ -191,6 +191,36 @@ public class SecureMessageMetaHeader {
 		return this.isSecureMessageMetaHeaderSerialized ? null : this.sizeOfSecureMessagePayload;
 	}
 	
+
+	/**
+	 * Returns the size of the From Peer ID of Secure Message's Payload.
+	 * 
+	 * @return the size of the From Peer ID Secure Message's Payload
+	 */
+	public int getSizeOfFromPeerID() {
+		return this.isSecureMessageMetaHeaderSerialized ? null : this.sizeOfFromPeerID;
+	}
+	
+	/**
+	 * Returns the size of the Message of Secure Message's Payload.
+	 * 
+	 * @return the size of the Message of Secure Message's Payload
+	 */
+	public int getSizeOfMessage() {
+		return this.isSecureMessageMetaHeaderSerialized ? null : this.sizeOfMessage;
+	}
+
+	/**
+	 * Returns the size of the Message of Secure Message's Payload.
+	 * 
+	 * @return the size of the Message of Secure Message's Payload
+	 */
+	public int getSizeOfIntegrityControl() {
+		return this.isSecureMessageMetaHeaderSerialized ? null : this.sizeOfIntegrityControl;
+	}
+	
+	
+	
 	/**
 	 * Returns the size of the Secure Message.
 	 * 
