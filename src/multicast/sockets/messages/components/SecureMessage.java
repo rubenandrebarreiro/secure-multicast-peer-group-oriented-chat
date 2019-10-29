@@ -110,7 +110,7 @@ public class SecureMessage {
 																   this.secureMessageAttributesParameters.getProperty("mac"),
 																   Integer.parseInt(this.secureMessageAttributesParameters.getProperty("macks")));
 		
-		this.secureMessagePayload = new SecureMessagePayload(fromPeerID, sequenceNumber, randomNonce, datagramPacket.getData());
+		this.secureMessagePayload = new SecureMessagePayload(fromPeerID, sequenceNumber, randomNonce, datagramPacket.getData(), this.secureMessageAttributesParameters);
 		
 		
 		this.isSecureMessageSerialized = false;

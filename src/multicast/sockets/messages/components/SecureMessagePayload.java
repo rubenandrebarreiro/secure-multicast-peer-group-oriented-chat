@@ -28,7 +28,11 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.ShortBufferException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+
+import org.bouncycastle.util.encoders.Hex;
+
 import multicast.common.CommonUtils;
+import multicast.sockets.messages.utils.KeyStoreInterface;
 import multicast.sockets.messages.utils.SecureMulticastChatSessionParameters;
 
 /**
@@ -131,15 +135,19 @@ public class SecureMessagePayload {
 	private SecureMulticastChatSessionParameters secureMessageAttributesParameters;
 	
 	/**
-	 * Filename of Properties' file
+	 * Keystore interface
 	 */
-	private static final String propertiesFilename = "./res/SMCP.conf";
-	
+	private KeyStoreInterface keystoreInterface;
+
+	/**
+	 * Filename of Keystore file
+	 */
+	private static final String keystoreFilename = "./res/SMCPKeystore.jecks";
+
 	private boolean isSizeOfSecureMessagePayloadCheckValid;
 	
 	private boolean isSizeOfSecureMessagePayloadCheckDone;
 	
-
 	private boolean isIntegrityControlCheckValid;
 	
 	private boolean isIntegrityControlCheckDone;
@@ -162,7 +170,7 @@ public class SecureMessagePayload {
 	 * 		  the Secure Message's Payload
 	 */
 	public SecureMessagePayload(String fromPeerID, int sequenceNumber, int randomNonce,
-								byte[] messageSerialized) {
+								byte[] messageSerialized, SecureMulticastChatSessionParameters secureMessageAttributesParameters) {
 		
 		this.fromPeerID = fromPeerID;
 		this.sequenceNumber = sequenceNumber;
@@ -179,8 +187,9 @@ public class SecureMessagePayload {
 		this.isIntegrityControlCheckValid = false;
 		this.isIntegrityControlCheckDone = false;
 		
-		this.secureMessageAttributesParameters = new SecureMulticastChatSessionParameters(propertiesFilename);
-	}
+		this.secureMessageAttributesParameters = secureMessageAttributesParameters;
+		
+		this.keystoreInterface = new KeyStoreInterface(keystoreFilename, "CSNS1920");	}
 	
 	/**
 	 * Constructor #2:
@@ -214,6 +223,8 @@ public class SecureMessagePayload {
 		
 		this.isIntegrityControlCheckValid = false;
 		this.isIntegrityControlCheckDone = false;
+		
+		this.keystoreInterface = new KeyStoreInterface(keystoreFilename, "CSNS1920");
 	}
 	
 	
@@ -227,7 +238,7 @@ public class SecureMessagePayload {
 	 * 		   which sent the Secure Message Payload
 	 */
 	public String getFromPeerID() {
-		return this.isSecureMessagePayloadSerialized ? null : this.fromPeerID;
+		return this.fromPeerID;
 	}
 	
 	/**
@@ -236,7 +247,7 @@ public class SecureMessagePayload {
 	 * @return the Sequence Number of the Secure Message's Payload
 	 */
 	public int getSequenceNumber() {
-		return this.isSecureMessagePayloadSerialized ? null : this.sequenceNumber;
+		return this.sequenceNumber;
 	}
 	
 	/**
@@ -245,7 +256,7 @@ public class SecureMessagePayload {
 	 * @return the Random Nonce of the Secure Message's Payload
 	 */
 	public int getRandomNonce() {
-		return this.isSecureMessagePayloadSerialized ? null : this.randomNonce;
+		return this.randomNonce;
 	}
 	
 	/**
@@ -256,7 +267,7 @@ public class SecureMessagePayload {
 	 * 		   the Secure Message's Payload
 	 */
 	public byte[] getMessageSerialized() {
-		return this.isSecureMessagePayloadSerialized ? null : this.messageSerialized;
+		return this.messageSerialized;
 	}
 	
 	/**
@@ -528,20 +539,12 @@ public class SecureMessagePayload {
 			byte[] secureMessagePayloadSerialized = this.getSecureMessagePayloadSerialized();
 			
 			try {
-				
-				// TODO - Retirar/Mudar depois
-				// The byte stream input to generate a Secret Key
-				// ( 4 x 8 = 32 bytes = 32 x 8 = 256 bits ),
-				// because 1 byte is equal to 8 bits 
-				byte[] secretKeyBytes = new byte[] { 0x01, 0x23, 0x45, 0x67, (byte)0x89, (byte)0xab,(byte)0xcd, (byte)0xef, 
-													 0x01, 0x23, 0x45, 0x67, (byte)0x89, (byte)0xab,(byte)0xcd, (byte)0xef, 
-													 0x01, 0x23, 0x45, 0x67, (byte)0x89, (byte)0xab,(byte)0xcd, (byte)0xef,
-													 0x01, 0x23, 0x45, 0x67, (byte)0x89, (byte)0xab,(byte)0xcd, (byte)0xef };
-				
-		        // The Initialization Vector bytes to be used (with 128-bit size)
-				byte[] initialisingVectorBytes = new byte[] { 0x08, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00 ,
-			                         						   0x08, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00 };
-				
+				byte[] secretKeyBytes = Hex.decodeStrict(keystoreInterface.load(
+						secureMessageAttributesParameters.getProperty("ip") 
+						+ ":" +
+						secureMessageAttributesParameters.getProperty("port")
+						));
+
 				String symmetricEncryptionAlgorithm = this.secureMessageAttributesParameters.getProperty("sea");
 		 	    String symmetricEncryptionMode = this.secureMessageAttributesParameters.getProperty("mode");
 		 	    String symmetricEncryptionPadding = this.secureMessageAttributesParameters.getProperty("padding");
@@ -550,17 +553,28 @@ public class SecureMessagePayload {
 		 		// using the AES (Advanced Encryption Standard - Rijndael) Symmetric Encryption
 		 	    SecretKeySpec secretKeySpecifications = new SecretKeySpec(secretKeyBytes, symmetricEncryptionAlgorithm);
 		 	    
-				// The parameter specifications for the Initialization Vector
-				IvParameterSpec initializationVectorParameterSpecifications = new IvParameterSpec(initialisingVectorBytes);
 				
 				Cipher secureMessagePayloadSerializationSymmetricEncryptionCipher = 
 							Cipher.getInstance(String.format("%s/%s/%s",
 											   symmetricEncryptionAlgorithm, symmetricEncryptionMode, symmetricEncryptionPadding), 
 									           provider);
-				// TODO verificar se o modo em uso necessita de IV
-				secureMessagePayloadSerializationSymmetricEncryptionCipher
-									.init(Cipher.ENCRYPT_MODE, secretKeySpecifications, initializationVectorParameterSpecifications);
-				
+
+				if(requiresIV(symmetricEncryptionMode)) {
+					// Algorithms that do not need IVs: ECB
+					// The parameter specifications for the Initialization Vector				
+					System.out.println("[SecureMessagePayload.ENCRYPT] Block mode needs IV");
+					//TODO Generate IV
+					byte[] initialisingVectorBytes = new byte[] { 0x08, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00 ,
+				                         						   0x08, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00 };
+					IvParameterSpec initializationVectorParameterSpecifications = new IvParameterSpec(initialisingVectorBytes);
+					secureMessagePayloadSerializationSymmetricEncryptionCipher
+						.init(Cipher.ENCRYPT_MODE, secretKeySpecifications, initializationVectorParameterSpecifications);
+				} else {
+					System.out.println("[SecureMessagePayload.ENCRYPT] Block mode does not needs IV");
+					secureMessagePayloadSerializationSymmetricEncryptionCipher
+						.init(Cipher.ENCRYPT_MODE, secretKeySpecifications);
+				}
+								
 				this.secureMessagePayloadSerializedSymmetricEncryptionCiphered = 
 									secureMessagePayloadSerializationSymmetricEncryptionCipher.doFinal(secureMessagePayloadSerialized);
 			
@@ -619,18 +633,11 @@ public class SecureMessagePayload {
 		   this.isSecureMessagePayloadSerializedSymmetricEncryptionCiphered) {
 			
 			try {
-				// TODO - Retirar/Mudar depois
-				// The byte stream input to generate a Secret Key
-				// ( 4 x 8 = 32 bytes = 32 x 8 = 256 bits ),
-				// because 1 byte is equal to 8 bits 
-				byte[] secretKeyBytes = new byte[] { 0x01, 0x23, 0x45, 0x67, (byte)0x89, (byte)0xab,(byte)0xcd, (byte)0xef, 
-													 0x01, 0x23, 0x45, 0x67, (byte)0x89, (byte)0xab,(byte)0xcd, (byte)0xef, 
-													 0x01, 0x23, 0x45, 0x67, (byte)0x89, (byte)0xab,(byte)0xcd, (byte)0xef ,
-													 0x01, 0x23, 0x45, 0x67, (byte)0x89, (byte)0xab,(byte)0xcd, (byte)0xef };
-				
-		        // The Initialization Vector bytes to be used (with 128-bit size)
-				byte[] initialisingVectorBytes = new byte[] { 0x08, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00 ,
-			                         						   0x08, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00 };
+				byte[] secretKeyBytes = Hex.decodeStrict(keystoreInterface.load(
+						secureMessageAttributesParameters.getProperty("ip") 
+						+ ":" +
+						secureMessageAttributesParameters.getProperty("port")
+						));
 				
 				String symmetricEncryptionAlgorithm = this.secureMessageAttributesParameters.getProperty("sea");
 		 	    String symmetricEncryptionMode = this.secureMessageAttributesParameters.getProperty("mode");
@@ -640,18 +647,27 @@ public class SecureMessagePayload {
 		 		// using the AES (Advanced Encryption Standard - Rijndael) Symmetric Encryption
 		 	    SecretKeySpec secretKeySpecifications = new SecretKeySpec(secretKeyBytes, symmetricEncryptionAlgorithm);
 
-				// The parameter specifications for the Initialization Vector
-				IvParameterSpec initializationVectorParameterSpecifications = new IvParameterSpec(initialisingVectorBytes);
-				
 		 	    Cipher secureMessagePayloadSerializationSymmetricEncryptionDecipher = 
 		 	    			Cipher.getInstance(String.format("%s/%s/%s",
 										   	   symmetricEncryptionAlgorithm, symmetricEncryptionMode, symmetricEncryptionPadding), 
 								               provider);
 				
-				// TODO verificar se o modo em uso necessita de IV
-				secureMessagePayloadSerializationSymmetricEncryptionDecipher
-									.init(Cipher.DECRYPT_MODE, secretKeySpecifications, initializationVectorParameterSpecifications);
-		     
+				if(requiresIV(symmetricEncryptionMode)) {
+					// Algorithms that do not need IVs: ECB
+					// The parameter specifications for the Initialization Vector	
+					System.out.println("[SecureMessagePayload.DECRYPT] Block mode needs IV");
+					//TODO Use IV generated from sender
+					byte[] initialisingVectorBytes = new byte[] { 0x08, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00 ,
+				                         						   0x08, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00 };
+					IvParameterSpec initializationVectorParameterSpecifications = new IvParameterSpec(initialisingVectorBytes);
+					secureMessagePayloadSerializationSymmetricEncryptionDecipher
+						.init(Cipher.DECRYPT_MODE, secretKeySpecifications, initializationVectorParameterSpecifications);
+				} else {
+					System.out.println("[SecureMessagePayload.DECRYPT] Block mode does not needs IV");
+					secureMessagePayloadSerializationSymmetricEncryptionDecipher
+						.init(Cipher.DECRYPT_MODE, secretKeySpecifications);
+				}
+				
 				int sizeOfSecureMessagePayloadSerializedSymmetricEncryptionCiphered = 
 									this.secureMessagePayloadSerializedSymmetricEncryptionCiphered.length;
 				
@@ -747,5 +763,15 @@ public class SecureMessagePayload {
 		else {
 			return this.isSizeOfSecureMessagePayloadCheckValid;
 		}
+	}
+	
+	/**
+	 * Used to check if a block mode needs an IV or not.
+	 * The only block mode that does not need an IV is ECB.
+	 * @param mode string of the block to compare to.
+	 * @return true if it needs, false if not (ECB)
+	 */
+	private boolean requiresIV(String mode) {
+		return !mode.equalsIgnoreCase("ECB");
 	}
 }

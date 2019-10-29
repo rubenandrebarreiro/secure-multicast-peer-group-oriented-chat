@@ -93,7 +93,7 @@ public class FastSecureMessageCheck {
 	 * 
 	 * @param secureMessageSerialized the Secure Message serialized
 	 */
-	public FastSecureMessageCheck(byte[] secureMessageSerialized) {
+	public FastSecureMessageCheck(byte[] secureMessageSerialized, SecureMulticastChatSessionParameters propertiesReader) {
 		this.secureMessageSerialized = secureMessageSerialized;
 		
 		this.isSecureMessageSerializedHashed = false;
@@ -101,7 +101,7 @@ public class FastSecureMessageCheck {
 		this.isFastSecureMessageCheckValid = false;
 		this.isFastSecureMessageCheckDone = false;
 		
-		this.propertiesReader = new SecureMulticastChatSessionParameters(propertiesFilename);
+		this.propertiesReader = propertiesReader;
 		
 		this.keystoreInterface = new KeyStoreInterface(keystoreFilename, "CSNS1920");
 	}
@@ -116,7 +116,7 @@ public class FastSecureMessageCheck {
 	 * 
 	 * @param secureMessageSerializedHashed the Secure Message serialized hashed
 	 */
-	public FastSecureMessageCheck(byte[] secureMessageSerialized, byte[] secureMessageSerializedHashed) {
+	public FastSecureMessageCheck(byte[] secureMessageSerialized, byte[] secureMessageSerializedHashed, SecureMulticastChatSessionParameters propertiesReader) {
 		this.secureMessageSerialized = secureMessageSerialized;
 		this.secureMessageSerializedHashed = secureMessageSerializedHashed;
 		
@@ -125,7 +125,7 @@ public class FastSecureMessageCheck {
 		this.isFastSecureMessageCheckValid = false;
 		this.isFastSecureMessageCheckDone = false;
 		
-		this.propertiesReader = new SecureMulticastChatSessionParameters(propertiesFilename);
+		this.propertiesReader = propertiesReader;
 		
 		this.keystoreInterface = new KeyStoreInterface(keystoreFilename, "CSNS1920");
 	}

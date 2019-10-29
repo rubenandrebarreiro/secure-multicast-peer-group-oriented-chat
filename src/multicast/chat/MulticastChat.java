@@ -116,9 +116,9 @@ public class MulticastChat extends Thread {
 
 	    this.userUsername = userUsername;
 	    this.ipMulticastGroup = ipMulticastGroup;
-	    
-	    this.secureMulticastChatSessionParameters = new SecureMulticastChatSessionParameters(propertiesFilename);
-	    
+
+	    this.secureMulticastChatSessionParameters = new SecureMulticastChatSessionParameters(propertiesFilename, this.ipMulticastGroup.getHostAddress()+":"+port);
+	    	    
 	    this.secureMulticastChatEventListener = secureMulticastChatEventListener;
 	    
 	    this.isSecureMulticastChatActive = true;

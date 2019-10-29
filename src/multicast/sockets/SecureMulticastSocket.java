@@ -239,7 +239,7 @@ public class SecureMulticastSocket extends MulticastSocket {
 			inputOutputException.printStackTrace();
 		}
 
-		FinalSecureMessage finalSecureMessage = new FinalSecureMessage(secureMessageDatagramPacketReceived);
+		FinalSecureMessage finalSecureMessage = new FinalSecureMessage(secureMessageDatagramPacketReceived, secureMulticastChatSessionParameters);
 		finalSecureMessage.buildFinalSecureMessageComponents();
 		
 		FastSecureMessageCheck fastSecureMessageCheck = finalSecureMessage.getFastSecureMessageCheck();

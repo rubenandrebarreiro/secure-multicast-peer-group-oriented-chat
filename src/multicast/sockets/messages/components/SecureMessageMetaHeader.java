@@ -135,6 +135,7 @@ public class SecureMessageMetaHeader {
 		this.sizeOfFromPeerID = sizeOfFromPeerID;
 		this.sizeOfMessage = sizeOfMessage;
 		this.sizeOfIntegrityControl = sizeOfIntegrityControl;
+		this.sizeOfFastSecureMessageCheck = sizeOfFastSecureMessageCheck;
 		
 		this.isSecureMessageMetaHeaderSerialized = false;
 	}
@@ -375,7 +376,8 @@ public class SecureMessageMetaHeader {
 			
 			// Fills the byte array of the Secure Message Meta-Header with an outside separator,
 			// From the position corresponding to the length of 2 (outside separator)
-			System.arraycopy(outsideSeparator, 0, this.secureMessageMetaHeaderSerialized, serializationOffset, CommonUtils.META_HEADER_OUTSIDE_SEPARATORS_LENGTH);
+			System.arraycopy(outsideSeparator, 0, this.secureMessageMetaHeaderSerialized,
+							 serializationOffset, CommonUtils.META_HEADER_OUTSIDE_SEPARATORS_LENGTH);
 			serializationOffset += CommonUtils.META_HEADER_OUTSIDE_SEPARATORS_LENGTH;
 			
 			// The Secure Message's Meta-Header have already its serialization done
