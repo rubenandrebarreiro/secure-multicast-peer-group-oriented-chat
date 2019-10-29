@@ -55,6 +55,11 @@ public class SecureMessagePayload {
 	private String fromPeerID;
 	
 	/**
+	 * The size of fromPeerID when serialized
+	 */
+	private int sizeOfFromPeerIDSerialized;
+	
+	/**
 	 * The Sequence Number of the Secure Message's Payload
 	 */
 	private int sequenceNumber;
@@ -71,9 +76,20 @@ public class SecureMessagePayload {
 	private byte[] messageSerialized;
 	
 	/**
+	 * The size of the message when serialized
+	 */
+	private int sizeOfMessageSerialized;
+	
+	/**
 	 * The Integrity Control Hashed serialized of the Secure Message's Payload
 	 */
 	private byte[] integrityControlHashedSerialized;
+	
+	
+	/**
+	 * The size of integrityControlHashedSerialized
+	 */
+	private int sizeOfIntegrityControlSerialized;
 	
 	/**
 	 * The boolean to keep the value to check if
@@ -85,6 +101,11 @@ public class SecureMessagePayload {
 	 * The Secure Message's Payload serialized
 	 */
 	private byte[] secureMessagePayloadSerialized;
+	
+	/**
+	 * The size of the Secure Message's Payload serialized
+	 */
+	private int sizeOfSecureMessagePayloadSerialized;
 	
 	/**
 	 * The boolean to keep the value to check if
@@ -117,18 +138,19 @@ public class SecureMessagePayload {
 	 * Keystore interface
 	 */
 	private KeyStoreInterface keystoreInterface;
-	
-	/**
-	 * Filename of Properties' file
-	 */
-	private static final String propertiesFilename = "./res/SMCP.conf";
-	
+
 	/**
 	 * Filename of Keystore file
 	 */
 	private static final String keystoreFilename = "./res/SMCPKeystore.jecks";
 
+	private boolean isSizeOfSecureMessagePayloadCheckValid;
 	
+	private boolean isSizeOfSecureMessagePayloadCheckDone;
+	
+	private boolean isIntegrityControlCheckValid;
+	
+	private boolean isIntegrityControlCheckDone;
 	
 	
 	// Constructors:
@@ -159,10 +181,15 @@ public class SecureMessagePayload {
 		this.isSecureMessagePayloadSerialized = false;
 		this.isSecureMessagePayloadSerializedSymmetricEncryptionCiphered = false;
 		
+		this.isSizeOfSecureMessagePayloadCheckValid = false;
+		this.isSizeOfSecureMessagePayloadCheckDone = false;
+		
+		this.isIntegrityControlCheckValid = false;
+		this.isIntegrityControlCheckDone = false;
+		
 		this.secureMessageAttributesParameters = secureMessageAttributesParameters;
-	
-		this.keystoreInterface = new KeyStoreInterface(keystoreFilename, "CSNS1920");
-	}
+		
+		this.keystoreInterface = new KeyStoreInterface(keystoreFilename, "CSNS1920");	}
 	
 	/**
 	 * Constructor #2:
@@ -172,13 +199,30 @@ public class SecureMessagePayload {
 	 * @param secureMessagePayloadSerializedSymmetricEncryptionCiphered the Secure Message's Payload serialized
 	 *        and Symmetric Encryption Ciphered 
 	 */
-	public SecureMessagePayload(byte[] secureMessagePayloadSerializedSymmetricEncryptionCiphered) {
+	public SecureMessagePayload(byte[] secureMessagePayloadSerializedSymmetricEncryptionCiphered,
+								int sizeOfSecureMessagePayloadSerialized,
+								int sizeOfFromPeerIDSerialized,
+								int sizeOfMessageSerialized,
+								int sizeOfIntegrityControlSerialized ) {
+							
 		this.secureMessagePayloadSerializedSymmetricEncryptionCiphered = 
 						secureMessagePayloadSerializedSymmetricEncryptionCiphered;
+		
+		this.sizeOfSecureMessagePayloadSerialized = sizeOfSecureMessagePayloadSerialized;
+		
+		this.sizeOfFromPeerIDSerialized = sizeOfFromPeerIDSerialized;
+		this.sizeOfMessageSerialized = sizeOfMessageSerialized;
+		this.sizeOfIntegrityControlSerialized = sizeOfIntegrityControlSerialized;
 		
 		this.isIntegrityControlHashedSerialized = true;
 		this.isSecureMessagePayloadSerialized = true;
 		this.isSecureMessagePayloadSerializedSymmetricEncryptionCiphered = true;
+		
+		this.isSizeOfSecureMessagePayloadCheckValid = false;
+		this.isSizeOfSecureMessagePayloadCheckDone = false;
+		
+		this.isIntegrityControlCheckValid = false;
+		this.isIntegrityControlCheckDone = false;
 		
 		this.keystoreInterface = new KeyStoreInterface(keystoreFilename, "CSNS1920");
 	}
@@ -270,35 +314,49 @@ public class SecureMessagePayload {
 	 * 		   hashed received and false, otherwise.
 	 */
 	public boolean checkIfIsIntegrityControlHashedSerializedValid() {
+		if(!this.isIntegrityControlCheckDone) {
+			// This process it's only made if the Integrity Control Hashed serialized of the Message
+			// (i.e., the real content of the Message) of the Secure Message's Payload it's done
+			if(this.isIntegrityControlHashedSerialized && messageSerialized != null) {
+				
+				// TODO
+				byte[] messageSerializedHashedToCompare = null;
+				
+				try {
+					
+					// The configuration, initialization and update of the Integrity Control Hash process
+					MessageDigest hashFunctionAlgorithmn = MessageDigest.getInstance(this.secureMessageAttributesParameters.getProperty("inthash"));
+					
+					// Performs the final operation of Integrity Control Hash process over the Message serialized
+					messageSerializedHashedToCompare = hashFunctionAlgorithmn.digest(this.messageSerialized);
+				}
+				catch (NoSuchAlgorithmException noSuchAlgorithmException) {
+					System.err.println("Error occurred during the Hash Function over the Message:");
+					System.err.println("- Cryptographic Algorithm not found!!!");
+					noSuchAlgorithmException.printStackTrace();
+				}
 		
-		// This process it's only made if the Integrity Control Hashed serialized of the Message
-		// (i.e., the real content of the Message) of the Secure Message's Payload it's done
-		if(this.isIntegrityControlHashedSerialized && messageSerialized != null) {
-			
-			// TODO
-			byte[] messageSerializedHashedToCompare = this.messageSerialized;
-			
-			try {
+				this.isIntegrityControlCheckValid = (this.isIntegrityControlHashedSerialized &&
+													 this.integrityControlHashedSerialized
+													 .equals(messageSerializedHashedToCompare)) ? 
+															 true : false;
+				if(!this.isIntegrityControlCheckValid) {
+					System.err.println("The Integrity Control it's not valid:");
+					System.err.println("- The Secure Message will be ignored!!!");
+				}
 				
-				// The configuration, initialization and update of the Integrity Control Hash process
-				MessageDigest hashFunctionAlgorithmn = MessageDigest.getInstance(this.secureMessageAttributesParameters.getProperty("inthash"));
+				this.isIntegrityControlCheckDone = true;
 				
-				// Performs the final operation of Integrity Control Hash process over the Message serialized
-				this.integrityControlHashedSerialized = hashFunctionAlgorithmn.digest(this.messageSerialized);
+				// Returns true if the Integrity Control Hash performed/computed over Message serialized received its valid,
+				// comparing it with the Message serialized hashed received and false, otherwise
+				return this.isIntegrityControlCheckValid;
 			}
-			catch (NoSuchAlgorithmException noSuchAlgorithmException) {
-				System.err.println("Error occurred during the Hash Function over the Message:");
-				System.err.println("- Cryptographic Algorithm not found!!!");
-				noSuchAlgorithmException.printStackTrace();
-			}
-			
-			// Returns true if the Integrity Control Hash performed/computed over Message serialized received its valid,
-			// comparing it with the Message serialized hashed received and false, otherwise
-			return (this.isIntegrityControlHashedSerialized && this.integrityControlHashedSerialized.equals(messageSerializedHashedToCompare)) ? 
-					true : false;	
+		
+			return false;
 		}
-		
-		return false;
+		else {
+			return this.isIntegrityControlCheckValid;
+		}
 	}
 	
 	/**
@@ -320,7 +378,8 @@ public class SecureMessagePayload {
 		// This process it's only made if the Integrity Control Hashed serialized of the Message
 		// (i.e., the real content of the Message) of the Secure Message's Payload it's done and
 		// the Secure Message's Payload is not serialized
-		if(this.isIntegrityControlHashedSerialized && !this.isSecureMessagePayloadSerialized) {
+		if(this.isIntegrityControlHashedSerialized && !this.isSecureMessagePayloadSerialized &&
+				  !this.isSecureMessagePayloadSerializedSymmetricEncryptionCiphered) {
 			
 			// The ID of the Sender's Peer, which sent the Secure Message Payload serialized
 			byte[] fromPeerIDSerialized = this.fromPeerID.getBytes();
@@ -394,21 +453,17 @@ public class SecureMessagePayload {
 		  !this.isSecureMessagePayloadSerializedSymmetricEncryptionCiphered) {
 			
 			// The ID of the Sender's Peer, which sent the Secure Message Payload serialized TODO
-			byte[] fromPeerIDSerialized = this.fromPeerID.getBytes();
+			byte[] fromPeerIDSerialized = new byte[this.sizeOfFromPeerIDSerialized];
 			
 			// The Sequence Number of the Secure Message's Payload serialized
-			byte[] sequenceNumberSerialized = CommonUtils.fromIntToByteArray(sequenceNumber);
+			byte[] sequenceNumberSerialized = new byte[CommonUtils.INTEGER_IN_BYTES_LENGTH];
 			
 			// The Random Nonce of the Secure Message's Payload serialized
-			byte[] randomNonceSerialized = CommonUtils.fromIntToByteArray(randomNonce);
+			byte[] randomNonceSerialized = new byte[CommonUtils.INTEGER_IN_BYTES_LENGTH];
 			
-			// The size of the Secure Message's Payload serialized
-			int sizeOfSecureMessagePayloadSerialized = ( fromPeerIDSerialized.length + sequenceNumberSerialized.length + randomNonceSerialized.length + 
-														 this.messageSerialized.length + this.integrityControlHashedSerialized.length );
+			this.messageSerialized = new byte[this.sizeOfMessageSerialized];
 			
-			// The creation of the Secure Message's Payload serialized
-			this.secureMessagePayloadSerialized = new byte[sizeOfSecureMessagePayloadSerialized];
-			
+			this.integrityControlHashedSerialized = new byte[this.sizeOfIntegrityControlSerialized];
 			
 			// Operations to Fill a Byte Array, with the following parameters:
 			// 1) src - The source of the array to be copied
@@ -423,27 +478,35 @@ public class SecureMessagePayload {
 			
 			// Fills the byte array of the Secure Message Payload with the serialization of the From Peer's ID,
 			// From the position corresponding to the length of the byte array of the From Peer's ID			
-			System.arraycopy(fromPeerIDSerialized, 0, this.secureMessagePayloadSerialized, 0, fromPeerIDSerialized.length);
+			System.arraycopy(this.secureMessagePayloadSerialized, serializationOffset,
+							 fromPeerIDSerialized, 0, fromPeerIDSerialized.length);
+			this.fromPeerID = CommonUtils.fromByteArrayToString(fromPeerIDSerialized);
 			serializationOffset += fromPeerIDSerialized.length;
 			
 			// Fills the byte array of the Secure Message Payload with the serialization of the Sequence Number,
 			// From the position corresponding to the length of the byte array of the Sequence Number
-			System.arraycopy(sequenceNumberSerialized, 0, this.secureMessagePayloadSerialized, serializationOffset, sequenceNumberSerialized.length);
+			System.arraycopy(this.secureMessagePayloadSerialized, serializationOffset,
+							 sequenceNumberSerialized, 0, sequenceNumberSerialized.length);
+			this.sequenceNumber = CommonUtils.fromByteArrayToInt(sequenceNumberSerialized);
 			serializationOffset += sequenceNumberSerialized.length;
 			
 			// Fills the byte array of the Secure Message Payload with the serialization of the Random Nonce,
 			// From the position corresponding to the length of the byte array of the Random Nonce
-			System.arraycopy(randomNonceSerialized, 0, this.secureMessagePayloadSerialized, serializationOffset, randomNonceSerialized.length);
+			System.arraycopy(this.secureMessagePayloadSerialized, serializationOffset,
+							 randomNonceSerialized, 0, randomNonceSerialized.length);
+			this.randomNonce = CommonUtils.fromByteArrayToInt(randomNonceSerialized);
 			serializationOffset += randomNonceSerialized.length;
 			
 			// Fills the byte array of the Secure Message Payload with the serialization of the Message,
 			// From the position corresponding to the length of the byte array of the Message
-			System.arraycopy(this.messageSerialized, 0, this.secureMessagePayloadSerialized, serializationOffset, this.messageSerialized.length);
+			System.arraycopy(this.secureMessagePayloadSerialized, serializationOffset,
+							 this.messageSerialized, 0, this.messageSerialized.length);
 			serializationOffset += this.messageSerialized.length;
 			
 			// Fills the byte array of the Secure Message Payload with the serialization of the Integrity Control Hash,
 			// From the position corresponding to the length of the hashed byte array of the Integrity Control Hash
-			System.arraycopy(this.integrityControlHashedSerialized, 0, this.secureMessagePayloadSerialized, serializationOffset, this.integrityControlHashedSerialized.length);
+			System.arraycopy(this.secureMessagePayloadSerialized, serializationOffset,
+							 this.integrityControlHashedSerialized, 0, this.integrityControlHashedSerialized.length);
 			serializationOffset += this.integrityControlHashedSerialized.length;
 			
 			
@@ -679,6 +742,29 @@ public class SecureMessagePayload {
 					this.secureMessagePayloadSerializedSymmetricEncryptionCiphered : null;
 	}
 	
+	public boolean checkIfIsSecureMessagePayloadSerializedSizeValid() {
+		if(!this.isSizeOfSecureMessagePayloadCheckDone) {
+			if(!this.isSecureMessagePayloadSerializedSymmetricEncryptionCiphered && this.isSecureMessagePayloadSerialized) {
+				this.isSizeOfSecureMessagePayloadCheckValid = 
+						( this.sizeOfSecureMessagePayloadSerialized == this.secureMessagePayloadSerialized.length );
+				
+				if(!this.isSizeOfSecureMessagePayloadCheckValid) {
+					System.err.println("The size of the Secure Message's Payload it's not correct:");
+					System.err.println("- The Secure Message will be ignored!!!");
+				}
+				
+				this.isSizeOfSecureMessagePayloadCheckDone = true;
+				
+				return this.isSizeOfSecureMessagePayloadCheckValid;
+			}
+			
+			return false;
+		}
+		else {
+			return this.isSizeOfSecureMessagePayloadCheckValid;
+		}
+	}
+	
 	/**
 	 * Used to check if a block mode needs an IV or not.
 	 * The only block mode that does not need an IV is ECB.
@@ -688,5 +774,4 @@ public class SecureMessagePayload {
 	private boolean requiresIV(String mode) {
 		return !mode.equalsIgnoreCase("ECB");
 	}
-	
 }

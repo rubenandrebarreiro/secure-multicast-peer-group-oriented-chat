@@ -46,8 +46,10 @@ public class SecureMessageAttributes {
 	private boolean isSecureMessageAttributesSerializedHashed;
 	
 	private byte[] secureMessageAttributesSerializedHashedToCompare;
-
 	
+	private boolean isSecureMessageAttributesCheckValid;
+	
+	private boolean isSecureMessageAttributesCheckDone;
 	
 	
 	public SecureMessageAttributes(String sessionID, String sessionName, 
@@ -74,6 +76,9 @@ public class SecureMessageAttributes {
 		
 		this.isSecureMessageAttributesSerialized = false;
 		this.isSecureMessageAttributesSerializedHashed = false;
+		
+		this.isSecureMessageAttributesCheckValid = false;
+		this.isSecureMessageAttributesCheckDone = false;
 		
 		this.secureMessageAttributesParameters = null;
 	}
@@ -239,64 +244,76 @@ public class SecureMessageAttributes {
 	}
 	
 	public boolean checkIfIsSecureMessageAttributesSerializedHashedValid() {
-		
-		if(this.isSecureMessageAttributesSerialized && this.isSecureMessageAttributesSerializedHashed) {
+		if(!this.isSecureMessageAttributesCheckDone) {
 			
-			//this.sessionID = String.format("%s:%s", this.secureMessageAttributesParameters.getProperty("ip"),
-			//									    this.secureMessageAttributesParameters.getProperty("port"));
-			
-			this.sessionID = this.secureMessageAttributesParameters.getProperty("sid");
-			this.sessionName = this.secureMessageAttributesParameters.getProperty("sid");
-			
-			this.symmetricEncryptionAlgorithm = this.secureMessageAttributesParameters.getProperty("sea");
-			this.symmetricEncryptionMode = this.secureMessageAttributesParameters.getProperty("mode");
-			this.paddingMethod = this.secureMessageAttributesParameters.getProperty("padding");
-			
-			this.integrityControlCryptographicHashFunctionConstructionMethod = this.secureMessageAttributesParameters.getProperty("inthash");
-			this.fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethod = this.secureMessageAttributesParameters.getProperty("mac");
-			
-			buildSecureMessageAttributesSerialized();
-			
-			// HASHING Process
-			try {
-				// The Source/Seed of a Secure Random
-				SecureRandom secureRandom = new SecureRandom();
+			if(this.isSecureMessageAttributesSerialized && this.isSecureMessageAttributesSerializedHashed) {
 				
-				// The Initialization Vector and its Parameter's Specifications
-				Key secureMessageAttributesSerializationHashKey = 
-						CommonUtils.createKeyForAES(Integer.parseInt(this.secureMessageAttributesParameters.getProperty("macks")),
-													secureRandom);
+				//this.sessionID = String.format("%s:%s", this.secureMessageAttributesParameters.getProperty("ip"),
+				//									    this.secureMessageAttributesParameters.getProperty("port"));
 				
-				//Key secureMessageAttributesSerializationHashKey = null;  // TODO
-				Mac mac = Mac.getInstance(this.secureMessageAttributesParameters.getProperty("mac"));
-				mac.init(secureMessageAttributesSerializationHashKey);
-				mac.update(this.secureMessageAttributesSerializedHashedToCompare);
+				this.sessionID = this.secureMessageAttributesParameters.getProperty("sid");
+				this.sessionName = this.secureMessageAttributesParameters.getProperty("sid");
 				
-				this.secureMessageAttributesSerializedHashedToCompare = mac.doFinal();
-			}
-			catch (NoSuchAlgorithmException noSuchAlgorithmException) {
-				System.err.println("Error occurred during the Hashing Function over the Secure Message's Attributes:");
-				System.err.println("- Cryptographic Algorithm not found!!!");
-				noSuchAlgorithmException.printStackTrace();
-			}
-			catch (NoSuchProviderException noSuchProviderException) {
-				System.err.println("Error occurred during the Hashing Function over the Secure Message's Attributes:");
-				System.err.println("- Cryptograhic Provider not found!!!");
-				noSuchProviderException.printStackTrace();
-			}
-			catch (InvalidKeyException invalidKeyException) {
-				System.err.println("Error occurred during the Hashing Function over the Secure Message's Attributes:");
-				System.err.println("- Invalid Secret Key!!!");
-				invalidKeyException.printStackTrace();
+				this.symmetricEncryptionAlgorithm = this.secureMessageAttributesParameters.getProperty("sea");
+				this.symmetricEncryptionMode = this.secureMessageAttributesParameters.getProperty("mode");
+				this.paddingMethod = this.secureMessageAttributesParameters.getProperty("padding");
+				
+				this.integrityControlCryptographicHashFunctionConstructionMethod = this.secureMessageAttributesParameters.getProperty("inthash");
+				this.fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethod = this.secureMessageAttributesParameters.getProperty("mac");
+				
+				
+				// HASHING Process
+				try {
+					// The Source/Seed of a Secure Random
+					SecureRandom secureRandom = new SecureRandom();
+					
+					// The Initialization Vector and its Parameter's Specifications
+					Key secureMessageAttributesSerializationHashKey = 
+							CommonUtils.createKeyForAES(Integer.parseInt(this.secureMessageAttributesParameters.getProperty("macks")),
+														secureRandom);
+					
+					Mac mac = Mac.getInstance(this.secureMessageAttributesParameters.getProperty("mac"));
+					mac.init(secureMessageAttributesSerializationHashKey);
+					mac.update(this.secureMessageAttributesSerializedHashedToCompare);
+					
+					this.secureMessageAttributesSerializedHashedToCompare = mac.doFinal();
+				}
+				catch (NoSuchAlgorithmException noSuchAlgorithmException) {
+					System.err.println("Error occurred during the Hashing Function over the Secure Message's Attributes:");
+					System.err.println("- Cryptographic Algorithm not found!!!");
+					noSuchAlgorithmException.printStackTrace();
+				}
+				catch (NoSuchProviderException noSuchProviderException) {
+					System.err.println("Error occurred during the Hashing Function over the Secure Message's Attributes:");
+					System.err.println("- Cryptograhic Provider not found!!!");
+					noSuchProviderException.printStackTrace();
+				}
+				catch (InvalidKeyException invalidKeyException) {
+					System.err.println("Error occurred during the Hashing Function over the Secure Message's Attributes:");
+					System.err.println("- Invalid Secret Key!!!");
+					invalidKeyException.printStackTrace();
+				}
+				
+				this.isSecureMessageAttributesCheckValid = (this.isSecureMessageAttributesSerializedHashed &&
+						this.secureMessageAttributesSerializedHashed.equals(secureMessageAttributesSerializedHashedToCompare)) ? 
+								true : false;
+				
+				if(!this.isSecureMessageAttributesCheckValid) {
+					System.err.println("The Secure Message's Attributes for the current Session aren't valid:");
+					System.err.println("- The Secure Message will be ignored!!!");
+				}
+				
+				this.isSecureMessageAttributesCheckDone = true;
+
+				// Returns true if the hash performed/computed over Secure Message serialized received its valid,
+				// comparing it with the Secure Message serialized hashed received and false, otherwise
+				return this.isSecureMessageAttributesCheckValid;
 			}
 			
-			// Returns true if the hash performed/computed over Secure Message serialized received its valid,
-			// comparing it with the Secure Message serialized hashed received and false, otherwise
-			return (this.isSecureMessageAttributesSerializedHashed &&
-					this.secureMessageAttributesSerializedHashed.equals(secureMessageAttributesSerializedHashedToCompare)) ? 
-							true : false;	
+			return false;
 		}
-		
-		return false;
+		else {
+			return this.isSecureMessageAttributesCheckValid;
+		}
 	}
 }

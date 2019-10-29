@@ -189,7 +189,7 @@ public class SecureMessageHeader {
 	 * Builds the several parts of the Secure Message's Header from
 	 * the Secure Message's Header serialized.
 	 */
-	public void buildSecureMessageHeaderParts() {
+	public void buildSecureMessageHeaderComponents() {
 		
 		// This process it's only made if the Secure Message's Header is serialized
 		if(this.isSecureMessageHeaderSerialized) {

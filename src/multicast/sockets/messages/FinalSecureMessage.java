@@ -22,6 +22,7 @@ import multicast.common.CommonUtils;
 import multicast.sockets.messages.components.FastSecureMessageCheck;
 import multicast.sockets.messages.components.SecureMessage;
 import multicast.sockets.messages.components.SecureMessageMetaHeader;
+import multicast.sockets.messages.components.SecureMessagePayload;
 import multicast.sockets.messages.utils.SecureMulticastChatSessionParameters;
 
 /**
@@ -41,6 +42,8 @@ public class FinalSecureMessage {
 	 * The Secure Message's Meta-Header
 	 */
 	private SecureMessageMetaHeader secureMessageMetaHeader;
+	
+	
 	
 	/**
 	 * The Secure Message
@@ -93,9 +96,14 @@ public class FinalSecureMessage {
 		this.fastSecureMessageCheck = new FastSecureMessageCheck(this.secureMessage.getSecureMessageSerialized(), secureMulticastChatSessionParameters);
 		this.fastSecureMessageCheck.buildSecureMessageSerializedHashed();
 		
+		SecureMessagePayload secureMessagePayload = this.secureMessage.getSecureMessagePayload();
+		
 		this.secureMessageMetaHeader = new SecureMessageMetaHeader(this.secureMessage.getSecureMessageHeader().getSecureMessageHeaderSerialized().length,
 																   this.secureMessage.getSecureMessageAttributes().getSecureMessageAttributesSerializedHashed().length, 
-																   this.secureMessage.getSecureMessagePayload().getSecureMessagePayloadSerialized().length, 
+																   this.secureMessage.getSecureMessagePayload().getSecureMessagePayloadSerialized().length,
+																   CommonUtils.fromStringToByteArray(secureMessagePayload.getFromPeerID()).length,
+																   secureMessagePayload.getMessageSerialized().length,
+																   secureMessagePayload.getIntegrityControlSerialiazedHashed().length,
 																   this.fastSecureMessageCheck.getSecureMessageSerializedHashed().length);
 		
 		this.isFinalSecureMessageSerialized = false;
@@ -237,8 +245,18 @@ public class FinalSecureMessage {
 			
 			this.fastSecureMessageCheck = new FastSecureMessageCheck(secureMessageSerialized, fastSecureMessageCheck, this.secureMulticastChatSessionParameters);
 			
-			if(this.fastSecureMessageCheck.checkIfIsSecureMessageSerializedHashedValid()) {
-				this.secureMessage = new SecureMessage(secureMessageSerialized);
+			if(this.fastSecureMessageCheck.isFastSecureMessageCheckValid()) {
+				
+				int sizeOfSecureMessageHeader = this.secureMessageMetaHeader.getSizeOfSecureMessageHeader();
+				int sizeOfSecureMessageAttributes = this.secureMessageMetaHeader.getSizeOfSecureMessageAttributes();
+				int sizeOfSecureMessagePayload = this.secureMessageMetaHeader.getSizeOfSecureMessagePayload();
+				int sizeOfFromPeerID = this.secureMessageMetaHeader.getSizeOfFromPeerID();
+				int sizeOfMessage = this.secureMessageMetaHeader.getSizeOfMessage();
+				int sizeOfIntegrityControl = this.secureMessageMetaHeader.getSizeOfIntegrityControl();
+				
+				this.secureMessage = new SecureMessage(secureMessageSerialized, sizeOfSecureMessageHeader,
+						                               sizeOfSecureMessageAttributes, sizeOfSecureMessagePayload,
+						                               sizeOfFromPeerID, sizeOfMessage, sizeOfIntegrityControl);
 				
 				this.isFinalSecureMessageSerialized = false;
 			}

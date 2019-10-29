@@ -240,14 +240,13 @@ public class SecureMulticastSocket extends MulticastSocket {
 			System.err.println("- Input/Output error occurred!!!");
 			inputOutputException.printStackTrace();
 		}
-//
-//		System.out.println(this.sequenceNumber);
+
 		FinalSecureMessage finalSecureMessage = new FinalSecureMessage(secureMessageDatagramPacketReceived);
 		finalSecureMessage.buildFinalSecureMessageComponents();
 		
 		FastSecureMessageCheck fastSecureMessageCheck = finalSecureMessage.getFastSecureMessageCheck();
 		
-		if(fastSecureMessageCheck.checkIfIsSecureMessageSerializedHashedValid()) {
+		if(fastSecureMessageCheck.isFastSecureMessageCheckValid()) {
 			SecureMessage secureMessage = finalSecureMessage.getSecureMessage();
 			secureMessage.buildSecureMessageComponents();
 			
