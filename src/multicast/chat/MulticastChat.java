@@ -324,7 +324,7 @@ public class MulticastChat extends Thread {
 		// Writes the information related to the Byte Array Output Stream in
 		// the Data Output Stream, which this Byte Array Output Stream will be placed
 		dataOutputStream.writeLong(CommonUtils.SECURE_MULTICAST_CHAT_MAGIC_NUMBER);
-		dataOutputStream.writeInt(CommonUtils.LEAVE_MESSAGE);
+		dataOutputStream.writeInt(CommonUtils.TEXT_MESSAGE);
 		dataOutputStream.writeUTF(this.userUsername);
 		dataOutputStream.writeUTF(textMessage);
 		
