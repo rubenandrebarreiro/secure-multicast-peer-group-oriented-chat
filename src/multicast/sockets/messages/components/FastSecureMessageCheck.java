@@ -167,8 +167,9 @@ public class FastSecureMessageCheck {
 				// The Initialization Vector and its Parameter's Specifications
 				Key secureMessageSerializedMACKey = CommonUtils
 						.convertStringToKey(keystoreInterface.load(propertiesReader.getProperty("ip") + ":" + 
-																   propertiesReader.getProperty("port")));
-								
+								propertiesReader.getProperty("port") + ":" +
+								"mac"));
+				
 				// The configuration, initialization and update of the MAC Hash process
 				Mac mac = Mac.getInstance(this.propertiesReader.getProperty("mac"));
 				mac.init(secureMessageSerializedMACKey);
@@ -214,7 +215,8 @@ public class FastSecureMessageCheck {
 					// The Initialization Vector and its Parameter's Specifications
 					Key secureMessageSerializedMACKey = CommonUtils
 							.convertStringToKey(keystoreInterface.load(propertiesReader.getProperty("ip") + ":" + 
-																	   propertiesReader.getProperty("port")));
+									propertiesReader.getProperty("port") + ":" +
+									"mac"));
 					
 					// The configuration, initialization and update of the MAC Hash process
 					Mac mac = Mac.getInstance(this.propertiesReader.getProperty("mac"));
