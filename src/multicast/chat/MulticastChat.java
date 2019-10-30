@@ -397,7 +397,7 @@ public class MulticastChat extends Thread {
 			try {
 				// Sets the length of the Datagram Packet to support the reception of the related data,
 				// before the effective reception of the Datagram Packet related to the Operation Message received
-				datagramPacketReceived.setLength(datagramPacketReceivedBuffer.length);
+				datagramPacketReceived.setData(new byte[CommonUtils.DEFAULT_MESSAGE_DATAGRAM_PACKET_RECEIVED_SIZE]);
 				
 				// The effective reception of the Datagram Packet related to the Operation Message received
 				this.secureMulticastChatSocket.receive(datagramPacketReceived);
