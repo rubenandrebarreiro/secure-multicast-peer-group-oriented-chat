@@ -394,7 +394,7 @@ public class MulticastChat extends Thread {
 		// the Execution Thread of the (Secure) Multicast Chat it's still active
 		while (this.isSecureMulticastChatActive) {
 			
-			try {	
+			try {
 				// Sets the length of the Datagram Packet to support the reception of the related data,
 				// before the effective reception of the Datagram Packet related to the Operation Message received
 				datagramPacketReceived.setLength(datagramPacketReceivedBuffer.length);
@@ -414,7 +414,6 @@ public class MulticastChat extends Thread {
 				// only proceeds if the (Secure) Multicast Chat Magic Numbers of respectively both,
 				// the Operation Message and (Secure) Multicast Chat itself are different
 				if(secureMulticastChatMagicNumber != CommonUtils.SECURE_MULTICAST_CHAT_MAGIC_NUMBER) {
-					//TODO Check what is going on here!
 					continue;
 				} 
 
