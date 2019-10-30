@@ -155,6 +155,15 @@ public class CommonUtils {
 	 */
 	public static final long RANDOM_NONCES_CLEANING_TIMEOUT = 600000;
 	
+	/**
+	 * The Rate Time for verification of the Cleaning Sequence Numbers Service
+	 */
+	public static final long CLEANING_SEQUENCE_NUMBERS_SERVICE_VERIFICATION_RATE_TIME = 10000;
+	
+	/**
+	 * The Timeout for triggering the event of Cleaning/Removing old Sequence Numbers
+	 */
+	public static final long SEQUENCE_NUMBERS_CLEANING_TIMEOUT = 10000;
 	
 	
 	// Global Instance Variables:

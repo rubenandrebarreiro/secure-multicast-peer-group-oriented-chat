@@ -36,6 +36,7 @@ import multicast.sockets.messages.components.SecureMessagePayload;
 import multicast.sockets.messages.utils.SecureMulticastChatSessionParameters;
 import multicast.sockets.messages.utils.SequenceNumberData;
 import multicast.sockets.services.SecureMulticastSocketCleaningRandomNoncesService;
+import multicast.sockets.services.SecureMulticastSocketCleaningSequenceNumbersService;
 
 /**
  * 
@@ -64,6 +65,11 @@ public class SecureMulticastSocket extends MulticastSocket {
 	 * The Map of Sequence Numbers from the other clients
 	 */
 	private Map<String, SequenceNumberData> sequenceNumberMap;
+	
+	/**
+	 * The Secure Multicast Socket Cleaning Sequence Numbers Service
+	 */
+	private SecureMulticastSocketCleaningSequenceNumbersService secureMulticastSocketCleaningSequenceNumbersService;
 	
 	/**
 	 * The Secure Random seed, to generate Random Nonces
@@ -120,6 +126,12 @@ public class SecureMulticastSocket extends MulticastSocket {
 
 		this.randomNoncesMap = new LinkedHashMap<>();
 
+		this.secureMulticastSocketCleaningSequenceNumbersService =
+				new SecureMulticastSocketCleaningSequenceNumbersService(sequenceNumberMap);
+		
+		Thread sequenceNumberCleaningThread = new Thread(this.secureMulticastSocketCleaningSequenceNumbersService);
+		sequenceNumberCleaningThread.start();
+		
 		this.secureMulticastSocketCleaningRandomNoncesService = 
 				new SecureMulticastSocketCleaningRandomNoncesService(randomNoncesMap);
 
