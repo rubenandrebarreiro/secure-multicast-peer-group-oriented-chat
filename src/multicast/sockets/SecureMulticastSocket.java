@@ -276,7 +276,7 @@ public class SecureMulticastSocket extends MulticastSocket {
 							else {
 								int receivedRandomNonce = secureMessagePayload.getRandomNonce();
 								
-								if(!this.randomNoncesMap.containsKey(receivedRandomNonce)) {
+								if(!this.randomNoncesMap.containsKey(receivedRandomNonce) && secureMessagePayload.getSequenceNumber() != 1) {
 									System.err.println("Received a Secure Message with a duplicate Random Nonce, in a short period time:");
 									System.err.println("- The Secure Message will be ignored!!!");
 								}
