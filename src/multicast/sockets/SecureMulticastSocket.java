@@ -283,7 +283,7 @@ public class SecureMulticastSocket extends MulticastSocket {
 								else {
 									this.randomNoncesMap.put(receivedRandomNonce, System.currentTimeMillis());
 									//TODO Uncommenting the following line results in setLenght on receive failing!
-//									secureMessageDatagramPacketReceived.setData(secureMessagePayload.getMessageSerialized());
+									secureMessageDatagramPacketReceived.setData(secureMessagePayload.getMessageSerialized());
 								}
 							}
 						}
