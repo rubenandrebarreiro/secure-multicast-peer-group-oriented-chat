@@ -324,7 +324,7 @@ public class MulticastChat extends Thread {
 		// Writes the information related to the Byte Array Output Stream in
 		// the Data Output Stream, which this Byte Array Output Stream will be placed
 		dataOutputStream.writeLong(CommonUtils.SECURE_MULTICAST_CHAT_MAGIC_NUMBER);
-		dataOutputStream.writeInt(CommonUtils.LEAVE_MESSAGE);
+		dataOutputStream.writeInt(CommonUtils.TEXT_MESSAGE);
 		dataOutputStream.writeUTF(this.userUsername);
 		dataOutputStream.writeUTF(textMessage);
 		
@@ -394,10 +394,10 @@ public class MulticastChat extends Thread {
 		// the Execution Thread of the (Secure) Multicast Chat it's still active
 		while (this.isSecureMulticastChatActive) {
 			
-			try {	
+			try {
 				// Sets the length of the Datagram Packet to support the reception of the related data,
 				// before the effective reception of the Datagram Packet related to the Operation Message received
-				datagramPacketReceived.setLength(datagramPacketReceivedBuffer.length);
+				datagramPacketReceived.setData(new byte[CommonUtils.DEFAULT_MESSAGE_DATAGRAM_PACKET_RECEIVED_SIZE]);
 				
 				// The effective reception of the Datagram Packet related to the Operation Message received
 				this.secureMulticastChatSocket.receive(datagramPacketReceived);
@@ -414,7 +414,6 @@ public class MulticastChat extends Thread {
 				// only proceeds if the (Secure) Multicast Chat Magic Numbers of respectively both,
 				// the Operation Message and (Secure) Multicast Chat itself are different
 				if(secureMulticastChatMagicNumber != CommonUtils.SECURE_MULTICAST_CHAT_MAGIC_NUMBER) {
-					//TODO Check what is going on here!
 					continue;
 				} 
 

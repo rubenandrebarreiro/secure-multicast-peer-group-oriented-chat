@@ -306,13 +306,13 @@ public class SecureMulticastSocket extends MulticastSocket {
 								
 								///////////////////////////////////////////////////////////////////////////////
 								
-								if(!this.randomNoncesMap.containsKey(receivedRandomNonce)) {
+								if(secureMessagePayload.getSequenceNumber() != 1 && this.randomNoncesMap.containsKey(receivedRandomNonce)) {
 									System.err.println("Received a Secure Message with a duplicate Random Nonce, in a short period time:");
 									System.err.println("- The Secure Message will be ignored!!!");
 								}
 								else {
 									this.randomNoncesMap.put(receivedRandomNonce, System.currentTimeMillis());
-									
+									//TODO Uncommenting the following line results in setLenght on receive failing!
 									secureMessageDatagramPacketReceived.setData(secureMessagePayload.getMessageSerialized());
 								}
 							}
