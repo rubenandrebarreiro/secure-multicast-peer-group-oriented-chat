@@ -1,6 +1,5 @@
 package multicast.sockets.services;
 
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentMap;
 
@@ -52,8 +51,6 @@ public class SecureMulticastSocketCleaningSequenceNumbersService implements Runn
 				interruptedException.printStackTrace();
 			}
 			
-			System.out.println("[" + this.getClass().getCanonicalName() + "]: " + "Testing");
-
 			// Verification made for every sequence number currently in sequence numbers' Map
 			for(Entry<String, SequenceNumberData> sequenceTimestamp : this.sequenceNumberMap.entrySet()) {
 				long lastSequenceReceivedTimestamp = sequenceTimestamp.getValue().getTimestamp();
@@ -61,7 +58,12 @@ public class SecureMulticastSocketCleaningSequenceNumbersService implements Runn
 				// after that, they will be removed from the sequence numbers' Map
 				// Otherwise, they will be kept on the sequence numbers' Map for the remaining time,
 				// until be reached the time equal or greater than 10 minutes (600000 milliseconds)
-				if( (lastSequenceReceivedTimestamp + CommonUtils.SEQUENCE_NUMBERS_CLEANING_TIMEOUT) < System.currentTimeMillis() ) {
+				System.out.println("[" + this.getClass().getCanonicalName() + "]: " + "checking: " + sequenceTimestamp.getKey());
+				long systemTime = System.currentTimeMillis();
+				System.out.println("[" + this.getClass().getCanonicalName() + "]: " +
+						"checking: " + (lastSequenceReceivedTimestamp + CommonUtils.SEQUENCE_NUMBERS_CLEANING_TIMEOUT) + " < " + systemTime +
+						" and the result is: " + ((lastSequenceReceivedTimestamp + CommonUtils.SEQUENCE_NUMBERS_CLEANING_TIMEOUT) < systemTime));
+				if( (lastSequenceReceivedTimestamp + CommonUtils.SEQUENCE_NUMBERS_CLEANING_TIMEOUT) < systemTime ) {
 					System.out.println("[" + this.getClass().getCanonicalName() + "]: " + "Removing sequenceNumber of " + sequenceTimestamp.getKey());
 					this.sequenceNumberMap.remove(sequenceTimestamp.getKey());
 				}
