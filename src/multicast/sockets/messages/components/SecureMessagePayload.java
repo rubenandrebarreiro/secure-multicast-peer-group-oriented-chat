@@ -323,7 +323,6 @@ public class SecureMessagePayload {
 			// (i.e., the real content of the Message) of the Secure Message's Payload it's done
 			if(this.isIntegrityControlHashedSerialized && messageSerialized != null) {
 				
-				// TODO
 				byte[] messageSerializedHashedToCompare = null;
 				
 				try {
@@ -446,7 +445,7 @@ public class SecureMessagePayload {
 	}
 	
 	/**
-	 * Builds the several components of the Secure Message's Payload serialized. TODO IMPORTANTEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
+	 * Builds the several components of the Secure Message's Payload serialized.
 	 */
 	public void buildSecureMessagePayloadComponents() {
 		
@@ -456,7 +455,7 @@ public class SecureMessagePayload {
 		if(this.isIntegrityControlHashedSerialized && this.isSecureMessagePayloadSerialized &&
 		  !this.isSecureMessagePayloadSerializedCiphered) {
 			
-			// The ID of the Sender's Peer, which sent the Secure Message Payload serialized TODO
+			// The ID of the Sender's Peer, which sent the Secure Message Payload serialized
 			byte[] fromPeerIDSerialized = new byte[this.sizeOfFromPeerIDSerialized];
 			
 			// The Sequence Number of the Secure Message's Payload serialized
