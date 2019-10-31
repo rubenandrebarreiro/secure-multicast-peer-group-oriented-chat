@@ -147,8 +147,6 @@ public class SecureMulticastSocket extends MulticastSocket {
 		randomNonceCleaningThread = new Thread(this.secureMulticastSocketCleaningRandomNoncesService);
 		randomNonceCleaningThread.start();
 		
-		new Thread(this.secureMulticastSocketCleaningRandomNoncesService).start();
-
 		this.secureMulticastChatSessionParameters = secureMulticastChatSessionParameters;
 		this.firstMessage = true;
 	}
