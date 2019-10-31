@@ -25,6 +25,8 @@ import java.security.SecureRandom;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import multicast.common.MessageType;
 import multicast.sockets.messages.FinalSecureMessage;
@@ -64,7 +66,7 @@ public class SecureMulticastSocket extends MulticastSocket {
 	/**
 	 * The Map of Sequence Numbers from the other clients
 	 */
-	private Map<String, SequenceNumberData> sequenceNumberMap;
+	private ConcurrentMap<String, SequenceNumberData> sequenceNumberMap;
 	
 	/**
 	 * The Secure Multicast Socket Cleaning Sequence Numbers Service
@@ -122,7 +124,7 @@ public class SecureMulticastSocket extends MulticastSocket {
 
 		this.secureRandom = new SecureRandom();
 		
-		this.sequenceNumberMap = new LinkedHashMap<>();
+		this.sequenceNumberMap = new ConcurrentHashMap<>();
 
 		this.randomNoncesMap = new LinkedHashMap<>();
 
@@ -152,7 +154,7 @@ public class SecureMulticastSocket extends MulticastSocket {
 	public SecureMulticastSocket(Properties properties) throws IOException {
 		super();
 
-		this.sequenceNumberMap = new LinkedHashMap<>();
+		this.sequenceNumberMap = new ConcurrentHashMap<>();
 		
 		this.randomNoncesMap = new LinkedHashMap<>();
 

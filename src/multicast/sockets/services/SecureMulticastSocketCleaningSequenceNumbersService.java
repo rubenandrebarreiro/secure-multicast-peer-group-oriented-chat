@@ -2,6 +2,7 @@ package multicast.sockets.services;
 
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentMap;
 
 import multicast.common.CommonUtils;
 import multicast.sockets.messages.utils.SequenceNumberData;
@@ -12,7 +13,7 @@ public class SecureMulticastSocketCleaningSequenceNumbersService implements Runn
 	/**
 	 * The Sequence Number Map, where will be kept the current sequence numbers of the Secure Multicast Socket
 	 */
-	private Map<String, SequenceNumberData> sequenceNumberMap;
+	private ConcurrentMap<String, SequenceNumberData> sequenceNumberMap;
 	
 	
 	
@@ -27,7 +28,7 @@ public class SecureMulticastSocketCleaningSequenceNumbersService implements Runn
 	 * @param randomNoncesMap the Random Nonces' Map,
 	 *        where will be kept the current valid Random Nonces of the Secure Multicast Socket
 	 */
-	public SecureMulticastSocketCleaningSequenceNumbersService(Map<String, SequenceNumberData> sequenceNumberMap) {
+	public SecureMulticastSocketCleaningSequenceNumbersService(ConcurrentMap<String, SequenceNumberData> sequenceNumberMap) {
 		this.sequenceNumberMap = sequenceNumberMap;
 	}
 	
