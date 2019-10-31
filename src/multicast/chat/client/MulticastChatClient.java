@@ -384,26 +384,30 @@ public class MulticastChatClient extends JFrame implements SecureMulticastChatEv
 				// The Date Format Symbols' Object representation
 				DateFormatSymbols dateFormatSymbols = new DateFormatSymbols();
 				
+				Calendar calendar = Calendar.getInstance();
+				
 				// The conversion of the Month's numerical representation to text representation
-				@SuppressWarnings("deprecation")
-				String month = dateFormatSymbols.getMonths()[date.getMonth()];
-				
+				String dayOfWeek = dateFormatSymbols.getWeekdays()[calendar.get(Calendar.DAY_OF_WEEK)];
+				int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+				String month = dateFormatSymbols.getMonths()[calendar.get(Calendar.MONTH)];
+				int year = calendar.get(Calendar.YEAR);
+				int hour = calendar.get(Calendar.HOUR);
+				int minute = calendar.get(Calendar.MINUTE);
+				int second = calendar.get(Calendar.SECOND);
+			
 				// The formation of the Time's 24-Hours representation
-				@SuppressWarnings("deprecation")
-				String time24HoursNotation = String.format("%d:%d",
-														   date.getHours(), date.getMinutes());
+				String time24HoursNotation = String.format("%d:%d:%d", hour, minute, second);
 				
-				// The conversion of the Time's 24-Hours representation to the Time's 12-Hours [AM|PM] representation
-				String time12HoursAMPMNotation = LocalTime.parse(time24HoursNotation).format(DateTimeFormatter.ofPattern("h:mma"));
-				
+//				// The conversion of the Time's 24-Hours representation to the Time's 12-Hours [AM|PM] representation
+//				String time12HoursAMPMNotation = LocalTime.parse(time24HoursNotation).format(DateTimeFormatter.ofPattern("hh:mma"));
+//				
 				// The final formation of the Time and Date representation to be appended to the TEXT Message's Log
-				@SuppressWarnings("deprecation")
 				String timeAndDateLogMessageStringFormat = String.format("%s, %s %d, %d - %s",
-																		 date.getDay(), month, date.getDate(), date.getYear(),
-																		 time12HoursAMPMNotation);
+																		 dayOfWeek, month, dayOfMonth, year,
+																		 time24HoursNotation);
 				
 				// Appends the final formation of the Time and Date representation to the TEXT Message's Log
-				conversationMulticastChatTextArea.append(timeAndDateLogMessageStringFormat + "\n- " + textMessageLog);
+				conversationMulticastChatTextArea.append(timeAndDateLogMessageStringFormat + "\n- " + textMessageLog + "\n");
 			} 
 		});
 	} 
