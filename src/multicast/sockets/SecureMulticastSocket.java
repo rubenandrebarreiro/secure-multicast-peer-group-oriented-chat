@@ -231,7 +231,6 @@ public class SecureMulticastSocket extends MulticastSocket {
 	@Override
 	public void receive(DatagramPacket secureMessageDatagramPacketReceived) {
 
-		//TODO Remove if not needed
 		long receiveTimestamp = 0;
 		try {
 			super.receive(secureMessageDatagramPacketReceived);
@@ -278,10 +277,6 @@ public class SecureMulticastSocket extends MulticastSocket {
 						
 						if(secureMessagePayload.checkIfIsIntegrityControlHashedSerializedValid()) {
 							
-							///////////////////////////////////////////////////////////////////////////////
-							
-							
-							//TODO See if this ends up being necessary.
 							SequenceNumberData data = sequenceNumberMap.get(secureMessageDatagramPacketReceived.getAddress().getHostAddress());
 							if(data == null) {
 								data = new SequenceNumberData(secureMessagePayload.getSequenceNumber(), receiveTimestamp);
@@ -293,27 +288,15 @@ public class SecureMulticastSocket extends MulticastSocket {
 								System.err.println("- The Secure Message will be ignored!!!");
 							}
 							else {
-								System.out.println("[" + this.getClass().getCanonicalName() + "]" + "\n" + 
-										   "\tReceived packet from: " + secureMessage.getSecureMessagePayload().getFromPeerID() + "\n" +
-										   "\tsequenceNumber: " + secureMessagePayload.getSequenceNumber() + "\n" +
-										   "\ttimestamp: " + receiveTimestamp + "\n\n" + 
-										   "\tcurrent sequenceNumber data from this client...\n" + 
-										   "\tsequenceNumber: " + data.getSequenceNumber() + "\n" + 
-										   "\ttimestamp: " + data.getTimestamp());
 								data.updateSequenceNumber(data.getSequenceNumber() + 1, receiveTimestamp);
 								int receivedRandomNonce = secureMessagePayload.getRandomNonce();
-								
-								
-								
-								///////////////////////////////////////////////////////////////////////////////
-								
+
 								if(secureMessagePayload.getSequenceNumber() != 1 && this.randomNoncesMap.containsKey(receivedRandomNonce)) {
 									System.err.println("Received a Secure Message with a duplicate Random Nonce, in a short period time:");
 									System.err.println("- The Secure Message will be ignored!!!");
 								}
 								else {
 									this.randomNoncesMap.put(receivedRandomNonce, System.currentTimeMillis());
-									//TODO Uncommenting the following line results in setLenght on receive failing!
 									secureMessageDatagramPacketReceived.setData(secureMessagePayload.getMessageSerialized());
 								}
 							}
