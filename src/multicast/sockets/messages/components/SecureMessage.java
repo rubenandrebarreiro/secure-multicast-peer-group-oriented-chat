@@ -5,7 +5,6 @@ import java.net.DatagramPacket;
 
 import multicast.common.CommonUtils;
 import multicast.common.VersionNumber;
-import multicast.sockets.messages.utils.SecureMessageEncryptionHashingParameters;
 import multicast.sockets.messages.utils.SecureMulticastChatSessionParameters;
 
 public class SecureMessage {

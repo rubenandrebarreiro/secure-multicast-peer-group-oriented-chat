@@ -19,12 +19,9 @@ package multicast.sockets;
 import java.net.DatagramPacket;
 import java.io.IOException;
 import java.net.MulticastSocket;
-import java.net.SocketAddress;
 import java.net.SocketTimeoutException;
 import java.security.SecureRandom;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
