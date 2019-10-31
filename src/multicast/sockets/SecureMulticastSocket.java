@@ -259,13 +259,6 @@ public class SecureMulticastSocket extends MulticastSocket {
 			secureMessageHeader.buildSecureMessageHeaderComponents();
 			
 			if(secureMessageHeader.isVersionNumberAndMessageTypeSupported()) {
-				// TODO Verificar SSAtributes - Feito/Verificar
-				// TODO Nonce do Payload - Feito/Verificar
-				// TODO SeqNum do Payload - Feito/Verificar
-				// TODO Descifra do Payload - Feito/Verificar
-				// TODO size do Payload - Feito/Verificar
-				// TODO hash do Message Content do Payload - Feito/Verificar
-				// TODO contruir fromPeerID, Nonce, SeqNum, Message Content - Feito/Verificar
 				SecureMessageAttributes secureMessageAttributes = secureMessage.getSecureMessageAttributes();
 				
 				if(secureMessageAttributes.checkIfIsSecureMessageAttributesSerializedHashedValid()) {
