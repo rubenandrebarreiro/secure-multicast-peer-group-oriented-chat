@@ -19,8 +19,6 @@ package multicast.chat.client;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.text.DateFormatSymbols;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -373,7 +371,7 @@ public class MulticastChatClient extends JFrame implements SecureMulticastChatEv
 	protected void textMessageLog(final String textMessageLog) {
 		
 		// The Date's Object representation 
-		Date date = new Date();
+//		Date date = new Date();
 		
 		// The Calendar's Object representation
 		//Calendar calendar = new GregorianCalendar();
@@ -555,7 +553,7 @@ public class MulticastChatClient extends JFrame implements SecureMulticastChatEv
 	public void secureMulticastChatParticipantLeft(String userUsername, InetAddress userINETAddress, int port) {
 		this.textMessageLog("A PARTICIPANT LEFT:\n- " + userUsername
 				            + " has left the Multicast Chat's Group, from the following IP Address [" 
-				            + userINETAddress.getHostName() + ":" + port);
+				            + userINETAddress.getHostName() + ":" + port + "]");
 	} 
 
 	/**

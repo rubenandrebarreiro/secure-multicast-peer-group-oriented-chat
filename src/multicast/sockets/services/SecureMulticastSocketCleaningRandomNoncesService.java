@@ -16,8 +16,8 @@ package multicast.sockets.services;
  * 
  */
 
-import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentMap;
 
 import multicast.common.CommonUtils;
 
@@ -37,7 +37,7 @@ public class SecureMulticastSocketCleaningRandomNoncesService implements Runnabl
 	/**
 	 * The Random Nonces' Map, where will be kept the current valid Nonces of the Secure Multicast Socket
 	 */
-	private Map<Integer, Long> randomNoncesMap;
+	private ConcurrentMap<Integer, Long> randomNoncesMap;
 	
 	
 	
@@ -51,7 +51,7 @@ public class SecureMulticastSocketCleaningRandomNoncesService implements Runnabl
 	 * @param randomNoncesMap the Random Nonces' Map,
 	 *        where will be kept the current valid Random Nonces of the Secure Multicast Socket
 	 */
-	public SecureMulticastSocketCleaningRandomNoncesService(Map<Integer, Long> randomNoncesMap) {
+	public SecureMulticastSocketCleaningRandomNoncesService(ConcurrentMap<Integer, Long> randomNoncesMap) {
 		this.randomNoncesMap = randomNoncesMap;
 	}
 	
@@ -84,6 +84,9 @@ public class SecureMulticastSocketCleaningRandomNoncesService implements Runnabl
 				// after that, they will be removed from the Random Nonces' Map
 				// Otherwise, they will be kept on the Random Nonces' Map for the remaining time,
 				// until be reached the time equal or greater than 10 minutes (600000 milliseconds)
+				System.out.println("[" + this.getClass().getCanonicalName() + "]:" +
+									" Key: " + noncesTimestamps.getKey() +
+									" Value: " + noncesTimestamps.getValue());
 				if( (lastNonceReceivedTimestamp + CommonUtils.RANDOM_NONCES_CLEANING_TIMEOUT) < System.currentTimeMillis() ) {
 					this.randomNoncesMap.remove(noncesTimestamps.getKey());
 				}

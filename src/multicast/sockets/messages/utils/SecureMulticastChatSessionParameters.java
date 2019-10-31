@@ -48,54 +48,10 @@ public class SecureMulticastChatSessionParameters {
 		System.out.println(prop.getProperty("inthash"));
 		System.out.println(prop.getProperty("mac"));
 		System.out.println(prop.getProperty("macks"));
-		
-		//Backwards compatible test
-		System.out.println();
-		System.out.println("Started backwards compatible test");
-		System.out.println();
-		
-		SecureMulticastChatSessionParameters backwardsProp = new SecureMulticastChatSessionParameters("res/SMCP.conf");
-		
-		System.out.println(backwardsProp.getProperty("ip"));
-		System.out.println(backwardsProp.getProperty("port"));
-		System.out.println(backwardsProp.getProperty("sid"));
-		System.out.println(backwardsProp.getProperty("sea"));
-		System.out.println(backwardsProp.getProperty("seaks"));
-		System.out.println(backwardsProp.getProperty("mode"));
-		System.out.println(backwardsProp.getProperty("padding"));
-		System.out.println(backwardsProp.getProperty("inthash"));
-		System.out.println(backwardsProp.getProperty("mac"));
-		System.out.println(backwardsProp.getProperty("macks"));
 	}
 
 	private Map<String, Map<String, String>> propertiesMap;
 	private String currentSessionID;
-
-	/**
-	 * TODO THIS IS ABSOLUTELY TEMPORARY FOR COMPATIBILITY PURPOSES ONLY!!!
-	 * @param filename
-	 */
-	public SecureMulticastChatSessionParameters(String filename) {
-		this(filename, getSessionID(filename));
-	}
-	
-	/**
-	 * TODO THIS IS ABSOLUTELY TEMPORARY FOR COMPATIBILITY PURPOSES ONLY!!!
-	 * @param br
-	 * @throws IOException
-	 */
-	private static String getSessionID(String filename) {
-		String sessionID = null;
-		try {
-			BufferedReader br = new BufferedReader(new FileReader(filename));
-			sessionID = br.readLine();
-			sessionID = String.valueOf(sessionID.subSequence(1, sessionID.length() - 1));
-		}
-		catch(Exception e) {
-			System.err.println(e);
-		}
-		return sessionID;
-	}
 	
 	/**
 	 * Starts a reader for the SecureMulticastChatSessionParameters data.
@@ -109,6 +65,7 @@ public class SecureMulticastChatSessionParameters {
 		
 		BufferedReader br = null;
 		try {
+			@SuppressWarnings("unused")
 			String line;
 			br = new BufferedReader(new FileReader(filename));
 			do {

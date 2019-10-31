@@ -21,9 +21,9 @@ import java.io.IOException;
 import java.net.MulticastSocket;
 import java.net.SocketTimeoutException;
 import java.security.SecureRandom;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import multicast.common.MessageType;
 import multicast.sockets.messages.FinalSecureMessage;
@@ -33,7 +33,9 @@ import multicast.sockets.messages.components.SecureMessageAttributes;
 import multicast.sockets.messages.components.SecureMessageHeader;
 import multicast.sockets.messages.components.SecureMessagePayload;
 import multicast.sockets.messages.utils.SecureMulticastChatSessionParameters;
+import multicast.sockets.messages.utils.SequenceNumberData;
 import multicast.sockets.services.SecureMulticastSocketCleaningRandomNoncesService;
+import multicast.sockets.services.SecureMulticastSocketCleaningSequenceNumbersService;
 
 /**
  * 
@@ -54,10 +56,25 @@ public class SecureMulticastSocket extends MulticastSocket {
 	private String fromPeerID;
 
 	/**
-	 * The Sequence Number, which will be sent or receive
+	 * The Sequence Number of this object
 	 */
 	private int sequenceNumber;
 
+	/**
+	 * The Map of Sequence Numbers from the other clients
+	 */
+	private ConcurrentMap<String, SequenceNumberData> sequenceNumberMap;
+	
+	/**
+	 * The Secure Multicast Socket Cleaning Sequence Numbers Service
+	 */
+	private SecureMulticastSocketCleaningSequenceNumbersService secureMulticastSocketCleaningSequenceNumbersService;
+	
+	/**
+	 * Variable for accessing the Cleaning Sequence Numbers Service
+	 */
+	private Thread sequenceNumberCleaningThread;
+	
 	/**
 	 * The Secure Random seed, to generate Random Nonces
 	 */
@@ -71,13 +88,18 @@ public class SecureMulticastSocket extends MulticastSocket {
 	/**
 	 * The Map of Random Nonces
 	 */
-	private Map<Integer, Long> randomNoncesMap;
+	private ConcurrentMap<Integer, Long> randomNoncesMap;
 
 	/**
 	 * The Secure Multicast Socket Cleaning Random Nonces Service
 	 */
 	private SecureMulticastSocketCleaningRandomNoncesService secureMulticastSocketCleaningRandomNoncesService;
 
+	/**
+	 * Variable for accessing the Cleaning Random Nonces Service
+	 */
+	private Thread randomNonceCleaningThread;
+	
 	/**
 	 * The (Secure) Multicast Chat Session's Parameters,
 	 * loaded from the User (Client) using this (Secure) Multicast Socket
@@ -95,7 +117,7 @@ public class SecureMulticastSocket extends MulticastSocket {
 	// Constructors:
 	/**
 	 * Constructor #1:
-	 * - TODO Socket to send
+	 * The constructor for the Secure Multicast Socket.
 	 * @param secureMulticastChatSessionParameters 
 	 * 
 	 * @throws IOException an Input/Output Exception occurred
@@ -108,36 +130,26 @@ public class SecureMulticastSocket extends MulticastSocket {
 		this.fromPeerID = fromPeerID;
 
 		this.secureRandom = new SecureRandom();
+		
+		this.sequenceNumberMap = new ConcurrentHashMap<>();
 
-		this.randomNoncesMap = new LinkedHashMap<>();
+		this.randomNoncesMap = new ConcurrentHashMap<>();
 
+		this.secureMulticastSocketCleaningSequenceNumbersService =
+				new SecureMulticastSocketCleaningSequenceNumbersService(sequenceNumberMap);
+		
+		sequenceNumberCleaningThread = new Thread(this.secureMulticastSocketCleaningSequenceNumbersService);
+		sequenceNumberCleaningThread.start();
+		
 		this.secureMulticastSocketCleaningRandomNoncesService = 
 				new SecureMulticastSocketCleaningRandomNoncesService(randomNoncesMap);
 
+		randomNonceCleaningThread = new Thread(this.secureMulticastSocketCleaningRandomNoncesService);
+		randomNonceCleaningThread.start();
+		
 		new Thread(this.secureMulticastSocketCleaningRandomNoncesService).start();
 
 		this.secureMulticastChatSessionParameters = secureMulticastChatSessionParameters;
-		this.firstMessage = true;
-	}
-
-	/**
-	 * Constructor #2:
-	 * - TODO Socket to receive
-	 * 
-	 * @param port the port of the Multicast Group's Address
-	 * 
-	 * @throws IOException an Input/Output Exception occurred
-	 */
-	public SecureMulticastSocket(Properties properties) throws IOException {
-		super();
-
-		this.randomNoncesMap = new LinkedHashMap<>();
-
-		this.secureMulticastSocketCleaningRandomNoncesService = 
-				new SecureMulticastSocketCleaningRandomNoncesService(randomNoncesMap);
-
-		new Thread(this.secureMulticastSocketCleaningRandomNoncesService).start();
-
 		this.firstMessage = true;
 	}
 
@@ -180,24 +192,15 @@ public class SecureMulticastSocket extends MulticastSocket {
 	}	
 
 	/**
-	 * TODO
-	 * @param secureMulticastChatSessionParameters 
-	 * 
-	 * @param
+	 * Sends a datagram packet after making the packet secure.
+	 * @param secureMessageDatagramPacketToSend the packet to secure and then send
 	 */
 	@Override
 	public void send(DatagramPacket secureMessageDatagramPacketToSend) {
 
 		this.randomNonce = secureRandom.nextInt();
 
-		if(this.firstMessage) {
-			this.sequenceNumber = 1;
-
-			this.firstMessage = false;
-		}
-		else {
-			this.sequenceNumber++;
-		}
+		sequenceNumber++;
 
 		FinalSecureMessage finalSecureMessageToSend = new FinalSecureMessage(secureMessageDatagramPacketToSend,
 				this.fromPeerID, this.secureMulticastChatSessionParameters,
@@ -219,15 +222,17 @@ public class SecureMulticastSocket extends MulticastSocket {
 	}
 
 	/**
-	 * TODO
-	 * 
-	 * @param
+	 * Receives a secured datagram packet and tries to restore it to its original status
+	 * should no attempts at tampering hava ocurred.
+	 * @param secureMessageDatagramPacketReceived packet received to try to restore
 	 */
 	@Override
 	public void receive(DatagramPacket secureMessageDatagramPacketReceived) {
 
+		long receiveTimestamp = 0;
 		try {
 			super.receive(secureMessageDatagramPacketReceived);
+			receiveTimestamp = System.currentTimeMillis();
 		}
 		catch(SocketTimeoutException socketTimeoutException) {
 			//We don't need to do anything, it is expected behaviour
@@ -252,13 +257,6 @@ public class SecureMulticastSocket extends MulticastSocket {
 			secureMessageHeader.buildSecureMessageHeaderComponents();
 			
 			if(secureMessageHeader.isVersionNumberAndMessageTypeSupported()) {
-				// TODO Verificar SSAtributes - Feito/Verificar
-				// TODO Nonce do Payload - Feito/Verificar
-				// TODO SeqNum do Payload - Feito/Verificar
-				// TODO Descifra do Payload - Feito/Verificar
-				// TODO size do Payload - Feito/Verificar
-				// TODO hash do Message Content do Payload - Feito/Verificar
-				// TODO contruir fromPeerID, Nonce, SeqNum, Message Content - Feito/Verificar
 				SecureMessageAttributes secureMessageAttributes = secureMessage.getSecureMessageAttributes();
 				
 				if(secureMessageAttributes.checkIfIsSecureMessageAttributesSerializedHashedValid()) {
@@ -269,20 +267,27 @@ public class SecureMulticastSocket extends MulticastSocket {
 						secureMessagePayload.buildSecureMessagePayloadComponents();
 						
 						if(secureMessagePayload.checkIfIsIntegrityControlHashedSerializedValid()) {
-							if(secureMessagePayload.getSequenceNumber() != this.sequenceNumber++) {
+							
+							SequenceNumberData data = sequenceNumberMap.get(secureMessageDatagramPacketReceived.getAddress().getHostAddress());
+							if(data == null) {
+								data = new SequenceNumberData(secureMessagePayload.getSequenceNumber(), receiveTimestamp);
+								sequenceNumberMap.put(secureMessageDatagramPacketReceived.getAddress().getHostAddress(), data);
+							}
+
+							if(secureMessagePayload.getSequenceNumber() != data.getSequenceNumber()) {
 								System.err.println("Not received a Secure Message with the expected Sequence Number:");
 								System.err.println("- The Secure Message will be ignored!!!");
 							}
 							else {
+								data.updateSequenceNumber(data.getSequenceNumber() + 1, receiveTimestamp);
 								int receivedRandomNonce = secureMessagePayload.getRandomNonce();
-								
+
 								if(secureMessagePayload.getSequenceNumber() != 1 && this.randomNoncesMap.containsKey(receivedRandomNonce)) {
 									System.err.println("Received a Secure Message with a duplicate Random Nonce, in a short period time:");
 									System.err.println("- The Secure Message will be ignored!!!");
 								}
 								else {
 									this.randomNoncesMap.put(receivedRandomNonce, System.currentTimeMillis());
-									//TODO Uncommenting the following line results in setLenght on receive failing!
 									secureMessageDatagramPacketReceived.setData(secureMessagePayload.getMessageSerialized());
 								}
 							}

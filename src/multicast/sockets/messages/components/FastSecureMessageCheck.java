@@ -56,12 +56,15 @@ public class FastSecureMessageCheck {
 	private boolean isSecureMessageSerializedHashed;
 	
 	/**
-	 * TODO
+	 * The boolean to keep the value to check if
+	 * the hash performed/computed over Secure Message
+	 * if valid
 	 */
 	private boolean isFastSecureMessageCheckValid;
 	
 	/**
-	 * TODO
+	 * The boolean to keep the value to check if
+	 * the check if the all check operations are done
 	 */
 	private boolean isFastSecureMessageCheckDone;
 	
@@ -74,11 +77,6 @@ public class FastSecureMessageCheck {
 	 * Keystore interface
 	 */
 	private KeyStoreInterface keystoreInterface;
-	
-	/**
-	 * Filename of Properties' file
-	 */
-	private static final String propertiesFilename = "./res/SMCP.conf";
 	
 	/**
 	 * Filename of Keystore file
@@ -203,9 +201,7 @@ public class FastSecureMessageCheck {
 	 */
 	public boolean isFastSecureMessageCheckValid() {
 		if(!this.isFastSecureMessageCheckDone) {
-			// TODO
 			if(this.isSecureMessageSerializedHashed) {			
-				// TODO
 				byte[] secureMessageSerializedHashedToCompare = this.secureMessageSerialized;
 				
 				// Starts the MAC Hash process over the Secure Message serialized received (applying the HMAC or CMAC operation),

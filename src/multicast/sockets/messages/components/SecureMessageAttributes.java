@@ -1,14 +1,8 @@
 package multicast.sockets.messages.components;
 
-import java.security.InvalidKeyException;
-import java.security.Key;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.SecureRandom;
 import java.util.Arrays;
-
-import javax.crypto.Mac;
 
 import multicast.common.CommonUtils;
 import multicast.sockets.messages.utils.SecureMulticastChatSessionParameters;
@@ -20,8 +14,6 @@ public class SecureMessageAttributes {
 	
 	private String symmetricEncryptionAlgorithm;
 	
-	private int symmetricEncryptionAlgorithmKeySize;
-	
 	private String symmetricEncryptionMode;
 	
 	private String paddingMethod;
@@ -30,8 +22,6 @@ public class SecureMessageAttributes {
 
 	private String fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethod;
 	
-	private int fastSecurePayloadCheckMessageAuthenticationCodeConstructionMethodKeySize;
-
 	/**
 	 * The (Secure) Multicast Chat Session's Parameters,
 	 * loaded from the User (Client) sending this Secure Message,
@@ -195,7 +185,7 @@ public class SecureMessageAttributes {
 		
 		// TODO
 		if(this.isSecureMessageAttributesSerialized && !this.isSecureMessageAttributesSerializedHashed) {
-			byte[] secureMessageAttributesSerialized = this.getSecureMessageAttributesSerialized();
+			this.getSecureMessageAttributesSerialized();
 						
 			// HASHING Process
 			try {
