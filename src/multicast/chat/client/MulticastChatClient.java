@@ -555,7 +555,7 @@ public class MulticastChatClient extends JFrame implements SecureMulticastChatEv
 	public void secureMulticastChatParticipantLeft(String userUsername, InetAddress userINETAddress, int port) {
 		this.textMessageLog("A PARTICIPANT LEFT:\n- " + userUsername
 				            + " has left the Multicast Chat's Group, from the following IP Address [" 
-				            + userINETAddress.getHostName() + ":" + port);
+				            + userINETAddress.getHostName() + ":" + port + "]");
 	} 
 
 	/**
