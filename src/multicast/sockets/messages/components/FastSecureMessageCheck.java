@@ -76,11 +76,6 @@ public class FastSecureMessageCheck {
 	private KeyStoreInterface keystoreInterface;
 	
 	/**
-	 * Filename of Properties' file
-	 */
-	private static final String propertiesFilename = "./res/SMCP.conf";
-	
-	/**
 	 * Filename of Keystore file
 	 */
 	private static final String keystoreFilename = "./res/SMCPKeystore.jecks";
