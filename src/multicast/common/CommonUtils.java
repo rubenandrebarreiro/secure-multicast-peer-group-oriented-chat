@@ -65,7 +65,7 @@ public class CommonUtils {
 	/**
 	 * The Number of Components, contained in the Meta Header
 	 */
-	public static final int NUM_COMPONENTS_META_HEADER = 7;
+	public static final int NUM_COMPONENTS_META_HEADER = 8;
 	
 	/**
 	 * The Total Number of Outside Separators, contained in the Meta Header
@@ -80,7 +80,7 @@ public class CommonUtils {
 	/**
 	 * The Total Number of Inside Separators, contained in the Meta Header
 	 */
-	public static final int META_HEADER_INSIDE_SEPARATORS = 6;
+	public static final int META_HEADER_INSIDE_SEPARATORS = 7;
 	
 	/**
 	 * The Total Length of an Inside Separator, contained in the Meta Header
