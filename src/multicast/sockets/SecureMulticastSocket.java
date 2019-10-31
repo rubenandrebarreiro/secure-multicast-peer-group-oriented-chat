@@ -117,7 +117,7 @@ public class SecureMulticastSocket extends MulticastSocket {
 	// Constructors:
 	/**
 	 * Constructor #1:
-	 * - TODO Socket to send
+	 * The constructor for the Secure Multicast Socket.
 	 * @param secureMulticastChatSessionParameters 
 	 * 
 	 * @throws IOException an Input/Output Exception occurred
@@ -192,10 +192,8 @@ public class SecureMulticastSocket extends MulticastSocket {
 	}	
 
 	/**
-	 * TODO
-	 * @param secureMulticastChatSessionParameters 
-	 * 
-	 * @param
+	 * Sends a datagram packet after making the packet secure.
+	 * @param secureMessageDatagramPacketToSend the packet to secure and then send
 	 */
 	@Override
 	public void send(DatagramPacket secureMessageDatagramPacketToSend) {
@@ -224,9 +222,9 @@ public class SecureMulticastSocket extends MulticastSocket {
 	}
 
 	/**
-	 * TODO
-	 * 
-	 * @param
+	 * Receives a secured datagram packet and tries to restore it to its original status
+	 * should no attempts at tampering hava ocurred.
+	 * @param secureMessageDatagramPacketReceived packet received to try to restore
 	 */
 	@Override
 	public void receive(DatagramPacket secureMessageDatagramPacketReceived) {
