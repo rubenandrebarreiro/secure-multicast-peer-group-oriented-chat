@@ -163,7 +163,7 @@ public class CommonUtils {
 	/**
 	 * The Timeout for triggering the event of Cleaning/Removing old Sequence Numbers
 	 */
-	public static final long SEQUENCE_NUMBERS_CLEANING_TIMEOUT = 10000;
+	public static final long SEQUENCE_NUMBERS_CLEANING_TIMEOUT = 600000;
 	
 	
 	// Global Instance Variables:
