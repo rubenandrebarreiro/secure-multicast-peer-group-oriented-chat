@@ -90,6 +90,15 @@ public class KeyStoreInterface {
 		}
 	}
 
+	// Constructors:
+	/**
+	 * Constructor #1:
+	 * 
+	 * Creates an interface for a keystore
+	 * 
+	 * @param filename file path of the keystore
+	 * @param password password of the keystore
+	 */
 	public KeyStoreInterface(String filename, String password) {
 		open(filename, password.toCharArray());
 	}
@@ -99,9 +108,9 @@ public class KeyStoreInterface {
 	}
 	
 	/**
-	 * TODO
-	 * @param filename
-	 * @param password
+	 * Opens a keystore
+	 * @param filename file path of the keystore
+	 * @param password 
 	 */
 	public void open(String filename, char[] password) {
 		try {
@@ -120,9 +129,9 @@ public class KeyStoreInterface {
 	}
 	
 	/**
-	 * 
-	 * @param entry
-	 * @return
+	 * Loads a keystore entry
+	 * @param entry name to load
+	 * @return value associated with entry
 	 */
 	public  String load(String entry) {
 	    KeyStore.SecretKeyEntry pkEntry = null;
@@ -152,9 +161,9 @@ public class KeyStoreInterface {
 	}
 	
 	/**
-	 * 
-	 * @param alias
-	 * @param key
+	 * Stores a key associated with a name
+	 * @param alias name of the key
+	 * @param key the key string
 	 */
 	public void save(String alias, String key) {
 		byte[] decodedKey = Base64.getDecoder().decode(key);
@@ -170,7 +179,7 @@ public class KeyStoreInterface {
 	}
 
 	/**
-	 * 
+	 * Closes keystore
 	 */
 	public void close() {
 		if(ks != null) {
@@ -209,8 +218,8 @@ public class KeyStoreInterface {
 	}
 	
 	/**
-	 * 
-	 * @param alias
+	 * Deletes entry from keystore
+	 * @param alias entry to delete from keystore
 	 */
 	public void delete(String alias) {
 		try {
@@ -221,8 +230,9 @@ public class KeyStoreInterface {
 		}
 	}
 	
+
 	/**
-	 * 
+	 * Lists all key-values on keystore
 	 */
 	public void list() {
         Enumeration<String> enumeration = null;
