@@ -74,6 +74,11 @@ public class SecureMulticastSocket extends MulticastSocket {
 	private SecureMulticastSocketCleaningSequenceNumbersService secureMulticastSocketCleaningSequenceNumbersService;
 	
 	/**
+	 * Variable for accessing the Cleaning Sequence Numbers Service
+	 */
+	private Thread sequenceNumberCleaningThread;
+	
+	/**
 	 * The Secure Random seed, to generate Random Nonces
 	 */
 	private SecureRandom secureRandom;
@@ -86,13 +91,18 @@ public class SecureMulticastSocket extends MulticastSocket {
 	/**
 	 * The Map of Random Nonces
 	 */
-	private Map<Integer, Long> randomNoncesMap;
+	private ConcurrentMap<Integer, Long> randomNoncesMap;
 
 	/**
 	 * The Secure Multicast Socket Cleaning Random Nonces Service
 	 */
 	private SecureMulticastSocketCleaningRandomNoncesService secureMulticastSocketCleaningRandomNoncesService;
 
+	/**
+	 * Variable for accessing the Cleaning Random Nonces Service
+	 */
+	private Thread randomNonceCleaningThread;
+	
 	/**
 	 * The (Secure) Multicast Chat Session's Parameters,
 	 * loaded from the User (Client) using this (Secure) Multicast Socket
@@ -126,43 +136,23 @@ public class SecureMulticastSocket extends MulticastSocket {
 		
 		this.sequenceNumberMap = new ConcurrentHashMap<>();
 
-		this.randomNoncesMap = new LinkedHashMap<>();
+		this.randomNoncesMap = new ConcurrentHashMap<>();
 
 		this.secureMulticastSocketCleaningSequenceNumbersService =
 				new SecureMulticastSocketCleaningSequenceNumbersService(sequenceNumberMap);
 		
-		Thread sequenceNumberCleaningThread = new Thread(this.secureMulticastSocketCleaningSequenceNumbersService);
+		sequenceNumberCleaningThread = new Thread(this.secureMulticastSocketCleaningSequenceNumbersService);
 		sequenceNumberCleaningThread.start();
 		
 		this.secureMulticastSocketCleaningRandomNoncesService = 
 				new SecureMulticastSocketCleaningRandomNoncesService(randomNoncesMap);
 
+		randomNonceCleaningThread = new Thread(this.secureMulticastSocketCleaningRandomNoncesService);
+		randomNonceCleaningThread.start();
+		
 		new Thread(this.secureMulticastSocketCleaningRandomNoncesService).start();
 
 		this.secureMulticastChatSessionParameters = secureMulticastChatSessionParameters;
-		this.firstMessage = true;
-	}
-
-	/**
-	 * Constructor #2:
-	 * - TODO Socket to receive
-	 * 
-	 * @param port the port of the Multicast Group's Address
-	 * 
-	 * @throws IOException an Input/Output Exception occurred
-	 */
-	public SecureMulticastSocket(Properties properties) throws IOException {
-		super();
-
-		this.sequenceNumberMap = new ConcurrentHashMap<>();
-		
-		this.randomNoncesMap = new LinkedHashMap<>();
-
-		this.secureMulticastSocketCleaningRandomNoncesService = 
-				new SecureMulticastSocketCleaningRandomNoncesService(randomNoncesMap);
-
-		new Thread(this.secureMulticastSocketCleaningRandomNoncesService).start();
-
 		this.firstMessage = true;
 	}
 
