@@ -275,8 +275,8 @@ public class SecureMulticastSocket extends MulticastSocket {
 								sequenceNumberMap.put(secureMessageDatagramPacketReceived.getAddress().getHostAddress(), data);
 							}
 
-							if(secureMessagePayload.getSequenceNumber() <= data.getSequenceNumber() ||
-							   secureMessagePayload.getSequenceNumber() > data.getSequenceNumber() + CommonUtils.SEQUENCE_NUMBERS_SKIP_LIMIT) {
+							if(secureMessagePayload.getSequenceNumber() < data.getSequenceNumber() ||
+							   secureMessagePayload.getSequenceNumber() >= data.getSequenceNumber() + CommonUtils.SEQUENCE_NUMBERS_SKIP_LIMIT) {
 								System.err.println("Not received a Secure Message with the expected Sequence Number:");
 								System.err.println("- The Secure Message will be ignored!!!");
 							}
