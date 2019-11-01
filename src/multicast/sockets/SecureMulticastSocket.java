@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import multicast.common.CommonUtils;
 import multicast.common.MessageType;
 import multicast.sockets.messages.FinalSecureMessage;
 import multicast.sockets.messages.components.FastSecureMessageCheck;
@@ -274,7 +275,8 @@ public class SecureMulticastSocket extends MulticastSocket {
 								sequenceNumberMap.put(secureMessageDatagramPacketReceived.getAddress().getHostAddress(), data);
 							}
 
-							if(secureMessagePayload.getSequenceNumber() != data.getSequenceNumber()) {
+							if(secureMessagePayload.getSequenceNumber() <= data.getSequenceNumber() ||
+							   secureMessagePayload.getSequenceNumber() > data.getSequenceNumber() + CommonUtils.SEQUENCE_NUMBERS_SKIP_LIMIT) {
 								System.err.println("Not received a Secure Message with the expected Sequence Number:");
 								System.err.println("- The Secure Message will be ignored!!!");
 							}
@@ -282,7 +284,7 @@ public class SecureMulticastSocket extends MulticastSocket {
 								data.updateSequenceNumber(data.getSequenceNumber() + 1, receiveTimestamp);
 								int receivedRandomNonce = secureMessagePayload.getRandomNonce();
 
-								if(secureMessagePayload.getSequenceNumber() != 1 && this.randomNoncesMap.containsKey(receivedRandomNonce)) {
+								if(this.randomNoncesMap.containsKey(receivedRandomNonce)) {
 									System.err.println("Received a Secure Message with a duplicate Random Nonce, in a short period time:");
 									System.err.println("- The Secure Message will be ignored!!!");
 								}

@@ -165,6 +165,12 @@ public class CommonUtils {
 	 */
 	public static final long SEQUENCE_NUMBERS_CLEANING_TIMEOUT = 600000;
 	
+	/**
+	 * Maximum limit of what is acceptable as skipped sequence numbers
+	 * before the socket stops accepting a message
+	 */
+	public static final int SEQUENCE_NUMBERS_SKIP_LIMIT = 10;
+	
 	
 	// Global Instance Variables:
 	/**
