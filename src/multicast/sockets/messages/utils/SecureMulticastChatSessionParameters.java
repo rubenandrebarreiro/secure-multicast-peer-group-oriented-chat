@@ -20,7 +20,7 @@ import java.util.Map;
 public class SecureMulticastChatSessionParameters {
 
 	public static void main(String[] args) {
-		SecureMulticastChatSessionParameters prop = new SecureMulticastChatSessionParameters("res/SMCP.conf","224.5.6.7:9000");
+		SecureMulticastChatSessionParameters prop = new SecureMulticastChatSessionParameters("res/SMCP.conf","224.1.1.1:9876");
 
 		System.out.println(prop.getProperty("ip"));
 		System.out.println(prop.getProperty("port"));
@@ -35,7 +35,7 @@ public class SecureMulticastChatSessionParameters {
 		
 		System.out.println();
 		System.out.println("Changed sessionID ");
-		prop.setSessionID("230.100.100.100:6666");
+		prop.setSessionID("224.1.1.2:9876");
 		System.out.println();
 		
 		System.out.println(prop.getProperty("ip"));
