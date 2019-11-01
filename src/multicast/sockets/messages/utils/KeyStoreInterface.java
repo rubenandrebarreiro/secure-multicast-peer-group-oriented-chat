@@ -12,7 +12,9 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableEntryException;
 import java.security.cert.CertificateException;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.List;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -238,15 +240,15 @@ public class KeyStoreInterface {
         Enumeration<String> enumeration = null;
 		try {
 			enumeration = ks.aliases();
-		} catch (KeyStoreException e) {
+	        List<String> list = Collections.list(enumeration);
+	        Collections.sort(list);
+	        for (String alias : list) {
+				System.out.println(alias + " " + load(alias));
+			}
+	        } catch (KeyStoreException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        while(enumeration.hasMoreElements()) {
-            String alias = enumeration.nextElement();
-            if(!alias.equals("mykey"))
-            	System.out.println(alias + " " + load(alias));
-        }
 	}
 	
 	private void help() {
