@@ -269,10 +269,13 @@ public class SecureMulticastSocket extends MulticastSocket {
 						
 						if(secureMessagePayload.checkIfIsIntegrityControlHashedSerializedValid()) {
 							
-							SequenceNumberData data = sequenceNumberMap.get(secureMessageDatagramPacketReceived.getAddress().getHostAddress());
+							SequenceNumberData data = sequenceNumberMap.get(secureMessagePayload.getFromPeerID() +
+																		    ":" + secureMessageDatagramPacketReceived.getAddress().getHostAddress());
 							if(data == null) {
 								data = new SequenceNumberData(secureMessagePayload.getSequenceNumber(), receiveTimestamp);
-								sequenceNumberMap.put(secureMessageDatagramPacketReceived.getAddress().getHostAddress(), data);
+								sequenceNumberMap.put(secureMessagePayload.getFromPeerID() +
+									    			  ":"	+ secureMessageDatagramPacketReceived.getAddress().getHostAddress(),
+									    			  data);
 							}
 
 							if(secureMessagePayload.getSequenceNumber() < data.getSequenceNumber() ||
