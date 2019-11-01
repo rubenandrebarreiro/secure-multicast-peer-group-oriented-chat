@@ -1,3 +1,4 @@
 #!/bin/bash
 mvn clean package assembly:single
-mv target/*jar-with-dependencies*.jar ./SecureMchatClient.jar
+mkdir -p SecureMChatClient-Application-Phase1
+mv target/*jar-with-dependencies*.jar ./SecureMChatClient-Application-Phase1/SecureMchatClient.jar
