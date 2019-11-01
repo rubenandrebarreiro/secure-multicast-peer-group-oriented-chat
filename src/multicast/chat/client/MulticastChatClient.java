@@ -31,6 +31,7 @@ import multicast.chat.listener.SecureMulticastChatEventListener;
 import multicast.common.CommonUtils;
 
 import java.util.*;
+import java.util.List;
 
 /**
  * 
@@ -568,6 +569,14 @@ public class MulticastChatClient extends JFrame implements SecureMulticastChatEv
 	public void secureMulticastChatParticipantTextMessageReceived(String userUsername, InetAddress userINETAddress, int port, String textMessage) {
 		this.textMessageLog("A NEW MESSAGE FROM A PARTICIPANT:\n- " + userUsername
 				            + " @ " + userINETAddress.getHostName() + " said: " + textMessage);
+		List<String> list = Collections.list(getOnlineUsersList());
+		boolean toAdd = true;
+		for (String string : list) {
+			if(string.equals(userUsername))
+				toAdd = false;
+		}
+		if(toAdd)
+			this.addUserToTheOnlineUsersList(userUsername);
 	} 
 		
 	/**
