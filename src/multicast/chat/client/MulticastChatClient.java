@@ -547,6 +547,7 @@ public class MulticastChatClient extends JFrame implements SecureMulticastChatEv
 		this.textMessageLog("A NEW PARTICIPANT JOINED:\n- " + userUsername
 				            + " has joined to the Multicast Chat's Group, from the following IP Address [" 
 				            + userINETAddress.getHostName() + ":" + port + "]");
+		this.addUserToTheOnlineUsersList(userUsername);
 	} 
 
 	/**
@@ -557,6 +558,7 @@ public class MulticastChatClient extends JFrame implements SecureMulticastChatEv
 		this.textMessageLog("A PARTICIPANT LEFT:\n- " + userUsername
 				            + " has left the Multicast Chat's Group, from the following IP Address [" 
 				            + userINETAddress.getHostName() + ":" + port + "]");
+		this.removeUserFromTheOnlineUsersList(userUsername);
 	} 
 
 	/**
