@@ -147,8 +147,6 @@ public class SecureMulticastSocket extends MulticastSocket {
 		randomNonceCleaningThread = new Thread(this.secureMulticastSocketCleaningRandomNoncesService);
 		randomNonceCleaningThread.start();
 		
-		new Thread(this.secureMulticastSocketCleaningRandomNoncesService).start();
-
 		this.secureMulticastChatSessionParameters = secureMulticastChatSessionParameters;
 		this.firstMessage = true;
 	}
@@ -229,10 +227,8 @@ public class SecureMulticastSocket extends MulticastSocket {
 	@Override
 	public void receive(DatagramPacket secureMessageDatagramPacketReceived) {
 
-		long receiveTimestamp = 0;
 		try {
 			super.receive(secureMessageDatagramPacketReceived);
-			receiveTimestamp = System.currentTimeMillis();
 		}
 		catch(SocketTimeoutException socketTimeoutException) {
 			//We don't need to do anything, it is expected behaviour
@@ -243,6 +239,9 @@ public class SecureMulticastSocket extends MulticastSocket {
 			System.err.println("- Input/Output error occurred!!!");
 			inputOutputException.printStackTrace();
 		}
+		
+		long receiveTimestamp = System.currentTimeMillis();
+
 
 		FinalSecureMessage finalSecureMessage = new FinalSecureMessage(secureMessageDatagramPacketReceived, secureMulticastChatSessionParameters);
 		finalSecureMessage.buildFinalSecureMessageComponents();
@@ -261,6 +260,7 @@ public class SecureMulticastSocket extends MulticastSocket {
 				
 				if(secureMessageAttributes.checkIfIsSecureMessageAttributesSerializedHashedValid()) {
 					SecureMessagePayload secureMessagePayload = secureMessage.getSecureMessagePayload();
+					secureMessagePayload.setIVBytes(finalSecureMessage.getIVBytes());
 					secureMessagePayload.buildSecureMessagePayloadSerializationSymmetricEncryptionDeciphered();
 					
 					if(secureMessagePayload.checkIfIsSecureMessagePayloadSerializedSizeValid()) {

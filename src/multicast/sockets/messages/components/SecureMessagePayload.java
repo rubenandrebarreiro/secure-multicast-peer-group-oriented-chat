@@ -21,6 +21,8 @@ import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.security.SecureRandom;
+
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -125,6 +127,8 @@ public class SecureMessagePayload {
 	 */
 	private boolean isSecureMessagePayloadSerializedCiphered;
 	
+	private byte[] IVBytes;
+	
 	/**
 	 * Encryption provider
 	 */
@@ -182,6 +186,8 @@ public class SecureMessagePayload {
 		this.isSecureMessagePayloadSerialized = false;
 		this.isSecureMessagePayloadSerializedCiphered = false;
 		
+		this.IVBytes = new byte[0];
+		
 		this.isSizeOfSecureMessagePayloadCheckValid = false;
 		this.isSizeOfSecureMessagePayloadCheckDone = false;
 		
@@ -219,6 +225,8 @@ public class SecureMessagePayload {
 		this.isIntegrityControlHashedSerialized = true;
 		this.isSecureMessagePayloadSerialized = true;
 		this.isSecureMessagePayloadSerializedCiphered = true;
+		
+		this.IVBytes = new byte[0];
 		
 		this.isSizeOfSecureMessagePayloadCheckValid = false;
 		this.isSizeOfSecureMessagePayloadCheckDone = false;
@@ -541,7 +549,7 @@ public class SecureMessagePayload {
 			
 			byte[] secureMessagePayloadSerialized = this.getSecureMessagePayloadSerialized();
 			
-			try {
+			try {				
 				byte[] secretKeyBytes = Hex.decodeStrict(keystoreInterface.load(
 						secureMessageAttributesParameters.getProperty("ip") 
 						+ ":" +
@@ -566,10 +574,9 @@ public class SecureMessagePayload {
 					// Algorithms that do not need IVs: ECB
 					// The parameter specifications for the Initialization Vector				
 					System.out.println("[SecureMessagePayload.ENCRYPT] Block mode needs IV");
-					//TODO Generate IV
-					byte[] initialisingVectorBytes = new byte[] { 0x08, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00 ,
-				                         						   0x08, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00 };
-					IvParameterSpec initializationVectorParameterSpecifications = new IvParameterSpec(initialisingVectorBytes);
+					this.IVBytes = generateIV(secureMessagePayloadSerializationSymmetricEncryptionCipher);
+					System.out.println("[SecureMessagePayload.ENCRYPT] IV is: " + CommonUtils.fromByteArrayToHexadecimalFormat(this.IVBytes));
+					IvParameterSpec initializationVectorParameterSpecifications = new IvParameterSpec(this.IVBytes);
 					secureMessagePayloadSerializationSymmetricEncryptionCipher
 						.init(Cipher.ENCRYPT_MODE, secretKeySpecifications, initializationVectorParameterSpecifications);
 				} else {
@@ -659,10 +666,8 @@ public class SecureMessagePayload {
 					// Algorithms that do not need IVs: ECB
 					// The parameter specifications for the Initialization Vector	
 					System.out.println("[SecureMessagePayload.DECRYPT] Block mode needs IV");
-					//TODO Use IV generated from sender
-					byte[] initialisingVectorBytes = new byte[] { 0x08, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00 ,
-				                         						   0x08, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00 };
-					IvParameterSpec initializationVectorParameterSpecifications = new IvParameterSpec(initialisingVectorBytes);
+					System.out.println("[SecureMessagePayload.DECRYPT] IV is: " + CommonUtils.fromByteArrayToHexadecimalFormat(this.IVBytes));
+					IvParameterSpec initializationVectorParameterSpecifications = new IvParameterSpec(this.IVBytes);
 					secureMessagePayloadSerializationSymmetricEncryptionDecipher
 						.init(Cipher.DECRYPT_MODE, secretKeySpecifications, initializationVectorParameterSpecifications);
 				} else {
@@ -777,4 +782,23 @@ public class SecureMessagePayload {
 	private boolean requiresIV(String mode) {
 		return !mode.equalsIgnoreCase("ECB");
 	}
+	
+	private byte[] generateIV(Cipher cipher) {
+		byte[] result = null;
+		
+		SecureRandom random = new SecureRandom();
+		result = new byte[cipher.getBlockSize()];
+		random.nextBytes(result);
+		
+		return result;
+	}
+	
+	public void setIVBytes(byte[] IVBytes) {
+		this.IVBytes = IVBytes;
+	}
+	
+	public byte[] getIVBytes() {
+		return IVBytes;
+	}
+	
 }

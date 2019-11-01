@@ -68,7 +68,7 @@ public class FinalSecureMessage {
 	
 	private SecureMulticastChatSessionParameters secureMulticastChatSessionParameters;
 	
-	
+	private byte[] IVBytes;
 	
 	// Constructors:
 	/**
@@ -95,16 +95,16 @@ public class FinalSecureMessage {
 				
 		this.fastSecureMessageCheck = new FastSecureMessageCheck(this.secureMessage.getSecureMessageSerialized(), secureMulticastChatSessionParameters);
 		this.fastSecureMessageCheck.buildSecureMessageSerializedHashed();
-		
 		SecureMessagePayload secureMessagePayload = this.secureMessage.getSecureMessagePayload();
-		
+		this.IVBytes = secureMessagePayload.getIVBytes();
 		this.secureMessageMetaHeader = new SecureMessageMetaHeader(this.secureMessage.getSecureMessageHeader().getSecureMessageHeaderSerialized().length,
 																   this.secureMessage.getSecureMessageAttributes().getSecureMessageAttributesSerializedHashed().length, 
 																   this.secureMessage.getSecureMessagePayload().getSecureMessagePayloadSerializedCiphered().length,
 																   CommonUtils.fromStringToByteArray(fromPeerID).length,
 																   secureMessagePayload.getMessageSerialized().length,
 																   secureMessagePayload.getIntegrityControlSerialiazedHashed().length,
-																   this.fastSecureMessageCheck.getSecureMessageSerializedHashed().length);
+																   this.fastSecureMessageCheck.getSecureMessageSerializedHashed().length,
+																   IVBytes.length);
 		
 		this.isFinalSecureMessageSerialized = false;
 		
@@ -147,7 +147,8 @@ public class FinalSecureMessage {
 			 
 			this.finalSecureMessageSerialized = new byte[( secureMessageMetaHeaderSerialized.length 
 													     + secureMessageSerialized.length 
-					                                     + fastSecureMessageCheckSerializedHashed.length )];			
+					                                     + fastSecureMessageCheckSerializedHashed.length 
+					                                     + this.IVBytes.length)];			
 			
 			// Operations to Fill a Byte Array, with the following parameters:
 			// 1) src - The source of the array to be copied
@@ -180,6 +181,9 @@ public class FinalSecureMessage {
 							 this.finalSecureMessageSerialized, serializationOffset, fastSecureMessageCheckSerializedHashed.length);
 			serializationOffset += fastSecureMessageCheckSerializedHashed.length;
 			
+			System.arraycopy(this.IVBytes, 0, this.finalSecureMessageSerialized,
+							 serializationOffset, this.IVBytes.length);
+			serializationOffset += this.IVBytes.length;
 			
 			// The Final Secure Message have already its serialization done
 			this.isFinalSecureMessageSerialized = true;
@@ -245,6 +249,12 @@ public class FinalSecureMessage {
 							 fastSecureMessageCheck, 0, fastSecureMessageCheck.length);
 			serializationOffset += fastSecureMessageCheck.length;
 			
+			int ivSize = secureMessageMetaHeader.getSizeOfIVBytes();
+			this.IVBytes = new byte[ivSize];
+			
+			System.arraycopy(this.finalSecureMessageSerialized, serializationOffset,
+							 this.IVBytes, 0, ivSize);
+			
 			this.fastSecureMessageCheck = new FastSecureMessageCheck(secureMessageSerialized, fastSecureMessageCheck, this.secureMulticastChatSessionParameters);
 			
 			if(this.fastSecureMessageCheck.isFastSecureMessageCheckValid()) {
@@ -297,5 +307,13 @@ public class FinalSecureMessage {
 	 */
 	public FastSecureMessageCheck getFastSecureMessageCheck() {
 		return this.fastSecureMessageCheck;
+	}
+	
+	public void setIVBytes(byte[] IVBytes) {
+		this.IVBytes = IVBytes;
+	}
+	
+	public byte[] getIVBytes() {
+		return this.IVBytes;
 	}
 }
