@@ -18,10 +18,13 @@ package multicast.chat.client;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.security.Security;
 import java.text.DateFormatSymbols;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import multicast.chat.MulticastChat;
 import multicast.chat.listener.SecureMulticastChatEventListener;
@@ -583,6 +586,12 @@ public class MulticastChatClient extends JFrame implements SecureMulticastChatEv
 			// Exits and closes the (Secure) Multicast Chat's application
 			System.exit(1);
 		} 
+		
+		// if provider is not present, add it
+		if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
+		    // insert at specific position
+		    Security.addProvider(new BouncyCastleProvider());
+		}
 		
 		
 		// The Username of the User (Client)
